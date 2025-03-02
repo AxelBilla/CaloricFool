@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caloric Fool - [WIP]</title>
+    <link rel="stylesheet" type="text/css" href="/views/main.css">
+    <script type="text/javascript" src="/views/req.js"></script> 
+</head>
+
+
+
+<body>
+    <p id="garg"> MAIN DOOO</p>
+    <!-- Login Page -->
+    <div class="sign">
+        <div class="sign-corners"> <!-- Solid Colored Corners --> </div>
+
+        <div class="sign-login-menu">
+            <div class="sign-login-menu-title">
+                <!-- "Login" -->
+            </div>
+            <div class="sign-login-menu-fields">
+                <div class="sign-login-menu-fields-inputs">
+                    <!-- Email & Password -->
+                    <div class="sign-login-menu-fields-inputs-signup">
+                        <!-- Sign up Button -->
+                    </div>
+                </div>
+                <div class="sign-login-menu-fields-checks">
+                    <!-- Remember me? box -->
+                </div>
+                <div class="sign-login-menu-fields-signin">
+                    <!-- Sign in Button -->
+                </div>
+            </div>
+        </div>
+
+        <div class="sign-register-menu">
+            <div class="sign-register-menu-title">
+                <!-- "Register" -->
+            </div>
+            <div class="sign-register-menu-fields">
+                <div class="sign-register-menu-fields-inputs">
+                    <!-- Nickname, Email & Password -->
+                </div>
+                <div class="sign-register-menu-fields-signin">
+                    <!-- Register Button (sends to the information page to get the user's infos)-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!-- Main Page -->
+    <div class="manager">
+        <div class="manager-header">
+            <div class="manager-header-user">
+                <div class="manager-header-user-name">
+                    <!-- User's Nickname -->
+                </div>
+                <div class="manager-header-user-details">
+                    <div class="manager-header-user-details-weight">
+                        <!-- User's Weight -->
+                    </div>
+                    <div class="manager-header-user-details-height">
+                        <!-- User's Height -->
+                    </div>
+                </div>
+            </div>
+            <div class="manager-header-appname">
+                <!-- Application Name (Caloric Fool?) -->
+            </div>
+            <div class="manager-header-setting">
+                <!-- Setting's Button -->
+            </div>
+        </div>
+
+        <div class="manager-slider">
+
+
+            <!-- EVERY SLIDING BOX WILL BE HANDLED WITH DOM-->
+            <div class="manager-slider-bigbox">
+                <!-- Will be handled with DOM -->
+                <div class="manager-slider-bigbox-date">
+                    <!-- Day & Month of Entries -->
+                </div>
+                <div class="manager-slider-bigbox-year">
+                    <!-- Year of Entries -->
+                </div>
+            </div>
+            <div class="manager-slider-smallboxes">
+                <!-- Will be handled with DOM-->
+                <div class="manager-slider-smallboxes-date">
+                    <!-- Day & Month of Entries -->
+                </div>
+                <div class="manager-slider-smallboxes-year">
+                    <!-- Year of Entries -->
+                </div>
+            </div>
+            <!-- END OF BOXES -->
+
+
+        </div>
+
+        <div class="manager-info">
+
+
+            <!-- Every BOX will be handled with DOM -->
+            <div class="manager-info-box">
+                <div class="manager-info-box-entry">
+                    <div class="manager-info-box-entry-hour">
+                        <!-- Hour of addition -->
+                    </div>
+                    <div class="manager-info-box-entry-content">
+                        <div class="manager-info-box-entry-content-details">
+                            <!-- For eating -->
+                            <div class="manager-info-box-entry-content-details-gram">
+                                <!-- Quantity of Food (in grams) -->
+                            </div>
+                            <div class="manager-info-box-entry-content-details-cal">
+                                <!-- Calories per 100g of Food (in kcal) -->
+                            </div>
+
+                            <!-- For physical activity -->
+                            <div class="manager-info-box-entry-content-details-intensity">
+                                <!-- Intensity of Activity (kcal per hour) -->
+                            </div>
+                            <div class="manager-info-box-entry-content-details-duration">
+                                <!-- Duration of Activity (in minutes)-->
+                            </div>
+                        </div>
+                        
+                        <div class="manager-info-box-entry-content-divider"> <!-- Divider bar --> </div>
+
+                        <div class="manager-info-box-entry-content-comment">
+                            <!-- Comment of Entry-->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- END OF BOX -->
+
+
+        </div>
+    </div>
+
+
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!-- Settings Menu -->
+    <div class="settings">
+        <div class="settings-header">
+            <div class="settings-header-exit">
+                <!-- Exit Button-->
+            </div>
+            <div class="settings-header-title">
+                <!-- "Settings" -->
+            </div>
+        </div>
+        <div class="settings-content">
+            <div class="settings-content-theme">
+                <div class="settings-content-theme-title">
+                    <!-- Name of Setting (Themes) -->
+                </div>
+                <div class="settings-content-theme-button">
+                    <div class="settings-content-theme-button-light">
+                        <!-- Light ver. of Button -->
+                    </div>
+                    <div class="settings-content-theme-button-dark">
+                        <!-- Dark ver. of Button -->
+                    </div>
+                </div>
+            </div>
+            <div class="settings-content-unit">
+                <div class="settings-content-unit-title">
+                    <!-- Name of Setting (Units) -->
+                </div>
+                <div class="settings-content-unit-button">
+                    <div class="settings-content-unit-button-lb">
+                        <!-- Pounds ver. of Button -->
+                    </div>
+                    <div class="settings-content-unit-button-kg">
+                        <!-- Kilograms ver. of Button -->
+                    </div>
+                </div>
+            </div>
+            <div class="settings-content-???">
+                <div class="settings-content-???-title">
+                    <!-- Name of Setting (???) -->
+                </div>
+                <div class="settings-content-???-button">
+                    <div class="settings-content-???-button-?">
+                        <!-- ??? ver. of Button -->
+                    </div>
+                    <div class="settings-content-???-button-?">
+                        <!-- ???? ver. of Button -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-content-editinfo">
+                <div class="settings-content-editinfo-text">
+                    <!-- Text on Button ("Edit Infos") -->
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    
+
+    <!-- Information Menu -->
+    <div class="info">
+        <div class="info-header">
+            <div class="info-header-title">
+                <!-- "Informations" -->
+            </div>
+            <div class="info-header-exit">
+                <!-- Exit button (not displayed on first use)-->
+            </div>
+        </div>
+        <div class="info-content">
+            <div class="info-content-text">
+                <div class="info-content-text-weight">
+                    <!-- "Weight :" -->
+                </div>
+                <div class="info-content-text-height">
+                    <!-- "Height :" -->
+                </div>
+                <div class="info-content-text-age">
+                    <!-- "Age :" -->
+                </div>
+            </div>
+            <div class="info-content-boxes">
+                <div class="info-content-boxes-weight">
+                    <!--Input box (empty by default, pre-filled with user's infos)-->
+                    <!-- "Kg"/"Lb" follow the box -->
+                </div>
+                <div class="info-content-boxes-height">
+                    <!--Input box (empty by default, pre-filled with user's infos)-->
+                    <!-- "Cm"/"Inch" follow the box -->
+                </div>
+                <div class="info-content-boxes-age">
+                    <!--Input box (empty by default, pre-filled with user's infos)-->
+                    <!-- "Yo" follow the box -->
+                </div>
+            </div>
+        </div>
+        <div class="info-footer">
+            <div class="info-footer-save">
+                <!-- Save Button -->
+            </div>
+        </div>
+    </div>
+
+
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!-- New Entry Menu -->
+    <div class="entry">
+        
+    </div>
+
+
+</body>
+
+</html>
