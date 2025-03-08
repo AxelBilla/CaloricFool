@@ -11,23 +11,22 @@ export class user{
         return db_user.getUserInfos(req.token); // Gets every stored informations of a given user
     }
     static async getNewWeight(req){ // Uses the cons. & acts. entries between now and the last info update to calculate a user's weight
-        let lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user
-
+        var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user
         if(lastInfos[0].bodytype == 0){ // Changes the calcs based on the body type, 0=fem 1=masc. (Revised Harris Benedict)
-            let bmr = 447.593 + (9.247*lastInfos[0].weight) + (3.098*lastInfos[0].height) - (4.330*lastInfos[0].age);
+            var bmr = 447.593 + (9.247*lastInfos[0].weight) + (3.098*lastInfos[0].height) - (4.330*lastInfos[0].age);
         } else {
-            let bmr = 88.362 + (13.397*lastInfos[0].weight) + (4.799*lastInfos[0].height) - (5.677*lastInfos[0].age);
+            var bmr = 88.362 + (13.397*lastInfos[0].weight) + (4.799*lastInfos[0].height) - (5.677*lastInfos[0].age);
         }
 
         const currentDay = new Date(); // Creates a timestamp for the current moment in time
 
-        let intake = 0; let dayCount = 0;
-        let prevDate = new Date(); let newDate = prevDate;
+        var intake = 0; var dayCount = 0;
+        var prevDate = new Date(); var newDate = prevDate;
         const lastCons = await db_entry.getEntriesFrom(req.token, "consumptions", lastInfos[0].updatedate, currentDay);
         lastCons.forEach(entries => {
             if(dayCount==0){ // Checks if we're on the first entry or not
                 prevDate = new Date(entries.timeof); // Gives prevDate the time value of the first entry
-                dayCount = 0; // dayCount = 1; // Sets dayCount at 1
+                dayCount = 1; // dayCount = 1; // Sets dayCount at 1
             } else {
                 newDate = new Date(entries.timeof); // Gives newDate the time value of the entry n+1
                 if(prevDate<newDate){ // Proceed if newDate is greater than prevDate
