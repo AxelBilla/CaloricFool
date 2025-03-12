@@ -25,4 +25,9 @@ app.post('/request', async function(req, res){
   res.json(exec);
 })
 
+app.post('/login', async function(req, res){
+  const exec = await main(req.body);
+  res.json(exec);
+})
+
 app.listen(8080);

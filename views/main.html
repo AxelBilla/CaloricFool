@@ -5,39 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caloric Fool - [WIP]</title>
     <link rel="stylesheet" type="text/css" href="/views/main.css">
-    <script type="text/javascript" src="/views/main.js"></script> 
+    <script type="text/javascript" src="/assets/lib/jquery-3.7.1.min.js"></script> 
+    <script type="text/javascript" src="/views/req.js"></script> 
+    <script type="text/javascript" src="/views/anim.js"></script> 
+
 </head>
 
 
 
 <body>
-    <p id="garg"> TEST </p>
-     
+    <div id="background"></div>
+    
     <!-- Login Page -->
-    <div class="sign">
-        <div class="sign-corners"> <!-- Solid Colored Corners --> </div>
-
-        <div class="sign-login-menu">
+    <div class="sign" id="sign">
+              
+        <div class="sign-login-menu" id="sign-login">
             <div class="sign-login-menu-title">
-                <!-- "Login" -->
+                <h1 id="test" class="f-iconic no-select">Login</h1>
             </div>
             <div class="sign-login-menu-fields">
-                <div class="sign-login-menu-fields-inputs">
-                    <!-- Email & Password -->
-                    <div class="sign-login-menu-fields-inputs-signup">
-                        <!-- Sign up Button -->
+                <form id="sign-login-menu-fields-form" class="sign-login-menu-fields-form">
+                    <input type="text" name="email" placeholder="EMAIL" id="field-email" class="sign-login-menu-fields-form-text f-iconic" required /> 
+                    <input type="password" name="password" placeholder="PASSWORD" id="field-password" class="sign-login-menu-fields-form-text f-iconic" required />
+                    <button id="register" class="sign-login-menu-fields-form-register f-idendidad clickable">I don't have an account.</button>
+                    <div class="sign-login-menu-fields-form-button">
+                        <label for="remember" class="f-idendidad">Remember me?</label>
+                        <input type="checkbox" name="remember" id="remember">
                     </div>
-                </div>
-                <div class="sign-login-menu-fields-checks">
-                    <!-- Remember me? box -->
-                </div>
-                <div class="sign-login-menu-fields-signin">
-                    <!-- Sign in Button -->
-                </div>
+                    <input type="submit" value="LOGIN" id="login-btn" class="sign-login-menu-fields-form-submit f-iconic">
+                </form>
             </div>
         </div>
 
-        <div class="sign-register-menu">
+        <div class="sign-register-menu" id="sign-register">
             <div class="sign-register-menu-title">
                 <!-- "Register" -->
             </div>
@@ -59,7 +59,7 @@
 
 
     <!-- Main Page -->
-    <div class="manager">
+    <div class="manager" id="manager">
         <div class="manager-header">
             <div class="manager-header-user">
                 <div class="manager-header-user-name">

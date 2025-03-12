@@ -3,19 +3,36 @@
 /*------*/
 @font-face {
     font-family: 'Iconic';
-    src: url('./assets/fonts/iconic-b.ttf');
+    src: url('/assets/fonts/iconic-b.ttf');
 }
 .f-iconic {
     font-family: 'Iconic';
 }
 
+@font-face {
+    font-family: 'Idendidad';
+    src: url('/assets/fonts/identidad.otf');
+}
+.f-idendidad {
+    font-family: 'Idendidad';
+}
+
 
 
 /*------------------*/
-/* Color Controller */
+/* Color Controller */  
 /*------------------*/
 :root {
-    --background: #1f1f1f;
+    --light: #fff;
+    --gray: #F1F0FA;
+    --midgray: #ccc;
+    --darkgray: #646464;
+    --dark: #2b2b2b;
+    --menu: #cfe0f7;
+    --border: #91b7edb1;
+    --main: #01A7C2;
+    --shade: #006989;
+    --fadedtxt: #757575;
 }
 
 
@@ -23,27 +40,137 @@
 /*-----------*/
 /*   Style   */
 /*-----------*/
+html{
+    height: 100%;
+}
 body{
     display: flex;
     flex-direction: column;
-    background-color: var(--background);
-    justify-content: space-evenly;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    z-index: 0;
+    overflow:hidden;
     align-items: center;
-    color: aliceblue;
 }
 
+#background{
+    display: flex;
+    flex-grow: 1;
+    background-image: linear-gradient(to right top, #6db7d9, #a5c8e8, #d1daf2);
+    background-repeat: repeat;
+    min-width: 40000px;
+    min-height: 40000px;
+    margin-top: -20%;
+    position: absolute;
+    z-index: 1;
+    overflow: hidden;
+    transform-origin: center center;
+}
+.sign{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 640px;
+    position: absolute;
+    z-index: 1;
+    .sign-login-menu{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        background-color: var(--menu);
+        width: 30%;
+        height: 60%;
+        box-shadow: var(--border) 0px 2px 8px 0px;
+        border-radius: 25px;
+        overflow: hidden;
+        .sign-login-menu-title{
+            overflow: hidden;
+            h1{
+                color: var(--dark);
+                font-size: 6em;
+            };
+        };
+    };
+    
+    .sign-login-menu-fields-form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 10%;
+        .sign-login-menu-fields-form-text{
+            background-color: var(--light);
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--border) 0px 2px 8px 0px;
+            color: var(--dark);
+            font-size: 1.5em;
+            width: 80%;
+            height: 4vh;
+            text-align: center;
+            margin-top: 5%;
+            overflow: hidden;
+        };
+        .sign-login-menu-fields-form-register{
+            color: var(--main);
+            font-size: 1.2em;
+            font-weight: bold;
+            background: none;
+            border: none;
+            padding: 3%;
+        };
+        .sign-login-menu-fields-form-button{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            text-align: center;
+            color: var(--dark);
+            font-size: 1em;
+            overflow: hidden;
+            padding-top: 4%  
+        };
+        .sign-login-menu-fields-form-submit{
+            background-color: var(--midgray);
+            border: none;
+            border-radius: 100px;
+            box-shadow: var(--border) 0px 2px 8px 0px;
+            width: 50%;
+            height: 6vh;
+            color: var(--fadedtxt);
+            font-size: 2em;
+            text-align: center;
+            overflow: hidden;
+            margin-top: 2%;
+        };
+    };
 
+}
 
+.clickable{
+    cursor: pointer;
+}
+.no-select{
+    user-select: none;
+}
+
+/*TODO*/
 /*--------------------*/
 /*   Screen Control   */
 /*--------------------*/
-@media screen and (max-width: 350px) {
-    #main-window {
+
+/*Mobile*/
+@media screen and (max-width: 900px) {
+    #sign {
         display:none
     }
 }
 
-@media screen and (min-width: 650px) and (max-width: 1200px) {
+/*Desktop*/
+@media screen and (min-width: 900px) {
     #redad{
         font-size: 7vw;
     }

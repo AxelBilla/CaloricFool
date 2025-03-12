@@ -1,7 +1,9 @@
 export async function main(req){
     const types = new Map(); // Creates a map with our functions & control file's path
 
-    //types.set("getUser", {func: "getUser", path: import("./control.get.js")});
+    types.set("getAccount", {func: "getAccount", path: import("./control.get.js")});
+    types.set("checkLogin", {func: "checkLogin", path: import("./control.get.js")});
+
     types.set("getInfos", {func: "getInfos", path: import("./control.get.js")});
     //types.set("getEntries", {func: "getEntries", path: import("./control.get.js")});
     //types.set("getToken", {func: "getToken", path: import("./control.get.js")});

@@ -3,9 +3,13 @@ import { user as db_user } from './db.user.js';
 import { entry as db_entry } from './db.entry.js';
 
 export class user{
+    static async checkLogin(req){
+        const exec = await db_login.checkLogin(req.email, req.password);
+        return exec; // Returns the result of our request (true/false) depending on if it finds our account or not
+    }
     static async getAccount(req){
         const exec = await db_login.getAccount(req.email);
-        return exec.exists; // Returns the result of our request (true/false) depending on if it finds our account or not
+        return exec; // Returns the result of our request (true/false) depending on if it finds our account or not
     }
     static async getInfos(req){
         return db_user.getUserInfos(req.token); // Gets every stored informations of a given user

@@ -17,7 +17,7 @@ export class login{
     const request = await sql`
       SELECT EXISTS (SELECT Email FROM users WHERE email=${email})
     `.forEach(row => {
-      entries.push(row);
+      entries.push(row.exists);
     });
     return entries[0];
   }
