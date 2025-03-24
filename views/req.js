@@ -17,26 +17,26 @@ window.addEventListener("load", function(){ // [TEMP] Test Area
 
 class user{
   static async checkLogin(form){
-    const t = fetch("/login",{
+    const req = fetch("/login",{
       method: "POST",
-      body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked, type: "checkLogin"}),
+      body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked}),
       headers: {"Content-Type": "application/json"} 
     })
-    return t
+    return req;
   }
 
   static async checkEmail(addr){
-    fetch("/request",{ // Fetch request at the "[website]/request" URL
+    fetch("/checkEmail",{ // Fetch request at the "[website]/request" URL
       method: "POST",
-      body: JSON.stringify({email: addr, type: "getAccount"}), // Gives the content and type of request for the controller to sort the requests.
+      body: JSON.stringify({email: addr}), // Gives the content of request for the controller to sort the requests.
       headers: {"Content-Type": "application/json"} // Tells the type of content we're sending to our URL
     }).then(resp => resp.json().then(data => console.log("getAccount: "+data))) //[TEMP] .then() is only used rn to test, its returned data will be handled outside
   }
   
   static async fetchInfos(tkn){
-    fetch("/request",{ // same as above
+    fetch("/fetchInfos",{ // same as above
       method: "POST",
-      body: JSON.stringify({token: tkn, type: "getInfos"}), // Same as above
+      body: JSON.stringify({token: tkn}), // Same as above
       headers: {"Content-Type": "application/json"} // Same as above
     }).then(resp => resp.json().then(data => {
       const test = document.getElementById("test");
@@ -46,10 +46,10 @@ class user{
     }));
   }
   
-  static async newWeightTemp(tkn){
-    fetch("/request",{ // same as above
+  static async newWeight(tkn){
+    fetch("/newWeight",{ // same as above
       method: "POST",
-      body: JSON.stringify({token: tkn, type: "getNewWeight"}), // Same as above
+      body: JSON.stringify({token: tkn}), // Same as above
       headers: {"Content-Type": "application/json"} // Same as above
     }).then(resp => resp.json().then(data => console.log("getNewWeight: "+utils.roundNum(data))));
   }
