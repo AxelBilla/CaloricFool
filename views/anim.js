@@ -1,37 +1,45 @@
 window.addEventListener("load", function(){
     
-    bgAnim(); // Should never stop
+    bgAnim(); // Should never stop, animates the background
     
-    logHightlight(); //Triggers when both email & pswd fields are filled in the login form
-    switchInterface("sign-login", "sign-register", "register"); // Triggers when going to the sign up form from login page
+    formHightlight("sign-login", "login-btn", "login-field-email", "login-field-password"); // Triggers when the email & password fields are filled in the login form
+    formHightlight("sign-register", "register-btn", "register-field-nickname", "register-field-email", "register-field-password"); // Triggers when the username, email & password fields are filled in the sign up form
 
-    //regHightlight();  //Triggers when the username, email & pswd fields are filled in the login form
-    logEnter(); // Triggers when going back to the login page from the sign up form
+    switchInterface("sign-login", "sign-register", "register", '75'); // Triggers when going to the sign up form from login page
+    switchInterface("sign-register", "sign-login", "login"); // Triggers when going back to the login form from the sign up page
+    
+    if(user.tokenLog()==true){
+        gotoFrom("manager", "sign-login");
+    }
 
-    $('#login-form').submit(async function(e) {
+    $('#login-form').submit(function(e) {
         e.preventDefault();
-        user.checkLogin(e).then(resp => resp.json().then(data=>{
+        user.login(e).then(resp => resp.json().then(data=>{
             if(data){
-                signQuit("sign-login");
+                gotoFrom("manager", "sign-login");
             } else {
                 console.log("error pswd mail")
             };
             })
         )}
     )
-    $('#register-form').submit(async function(e) {
+
+    $('#register-form').submit(function(e) {
         e.preventDefault();
-        user.checkLogin(e).then(resp => resp.json().then(data=>{
-            if(data){
-                signQuit("sign-register");
+        user.register(e).then(resp => resp.json().then(data=>{
+            console.log(data)
+            if(!data){
+                gotoFrom("manager", "sign-register");
             } else {
-                console.log("error pswd mail")
+                console.log("error mail")
             };
             })
         )}
     )
 })
 
+
+//
 function bgAnim(){
     const bg = document.getElementById("background");
     let keyframe = {
@@ -44,56 +52,28 @@ function bgAnim(){
     bg.animate(keyframe, option); 
 }
 
-function logHightlight(){
-    var isActive=0;
-    const sign = document.getElementById("sign");
-    sign.addEventListener("keyup", function(){
-        const lgbtn = document.getElementById("login-btn");
-        const femail = document.getElementById("field-email");
-        const fpass = document.getElementById("field-password");
-        
-        const light = {value: getComputedStyle(document.documentElement).getPropertyValue('--light'), name: 'light'};
-        const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue('--midgray'), name: 'midgray'};
-        
-        const faded = {value: getComputedStyle(document.documentElement).getPropertyValue('--fadedtxt'), name: 'faded'};
-        const dark = {value: getComputedStyle(document.documentElement).getPropertyValue('--dark'), name: 'dark'};
 
-        if(femail.value!='' && fpass.value!=''){
-            if (isActive!=1){
-                colorBgAnim(lgbtn, midgray, light)
-                lgbtn.style.color=dark.value;
-                lgbtn.style.backgroundColor=`var(--${light.name})`;
-                lgbtn.classList.add('clickable')
-            }
-            isActive=1;
-        } else {
-            if(isActive===1){
-                colorBgAnim(lgbtn, light, midgray)
-                lgbtn.style.color=faded.value;
-                lgbtn.style.backgroundColor=`var(--${midgray.name})`;
-                lgbtn.classList.remove('clickable')
-            }
-            isActive=0;
-        }
-    });
-};
-
-function signQuit(id){
-    const sign = document.getElementById(id);
-    const main = document.getElementById("manager");
-    fadeToAnim(sign, 0, main);
+//
+function gotoFrom(destination, origin){
+    const start = document.getElementById(origin);
+    const end = document.getElementById(destination);
+    fadeToAnim(start, 0, end);
 }
 
-function switchInterface(crnt, nxt, btn){
+
+//
+function switchInterface(crnt, nxt, btn, height=0, width=0){
     const current = document.getElementById(crnt);
     const next = document.getElementById(nxt);
     const button = document.getElementById(btn);
 
     button.addEventListener("click", function(){
-        fadeToAnim(current, 0, next);
+        fadeToAnim(current, 0, next, height, width);
     });
 }
 
+
+//
 function colorBgAnim(element, colorStart, colorEnd){
     let keyframe = {
         backgroundColor: [colorStart.value, colorEnd.value]
@@ -105,7 +85,9 @@ function colorBgAnim(element, colorStart, colorEnd){
     element.animate(keyframe, option);
 }
 
-function fadeToAnim(element, newOpacity, nextElement){
+
+//
+function fadeToAnim(element, newOpacity, nextElement, adjustHeight=0, adjustWidth=0){
     let keyframe = {
         opacity: newOpacity,
         display: 'none'
@@ -118,25 +100,32 @@ function fadeToAnim(element, newOpacity, nextElement){
     anim.addEventListener('finish', () => {
         element.style.display = 'none';
         nextElement.style.display = 'flex';
-        let nextAnime = nextElement.animate({opacity: [0,100]},option)
+        if(adjustHeight!=0){
+            nextElement.style.height=adjustHeight+'%';
+        }
+        if(adjustWidth!=0){
+            nextElement.style.width=adjustWidth+'%';
+        }
+        let nextAnim = nextElement.animate({opacity: [0,100]},option)
       });
 }
 
 
-
-
-
-
-function formHightlight(form, btn, field1, field2="", field3="", field4=""){
+//
+function formHightlight(div, btn, field1, field2='', field3='', field4='', field5=''){
     
-    let fields=[field1, field2, field3, field4];
+    let fields=[field1, field2, field3, field4, field5];
+    let fieldTotal = 0;
+    fields.forEach(fl => {
+        if(fl!=''){
+            fieldTotal++;
+        }
+    })
 
     var isActive=0;
-    const sign = document.getElementById(form);
+    const sign = document.getElementById(div);
     sign.addEventListener("keyup", function(){
         const lgbtn = document.getElementById(btn);
-        //const femail = document.getElementById("field-email");
-        //const fpass = document.getElementById("field-password");
         
         const light = {value: getComputedStyle(document.documentElement).getPropertyValue('--light'), name: 'light'};
         const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue('--midgray'), name: 'midgray'};
@@ -144,14 +133,17 @@ function formHightlight(form, btn, field1, field2="", field3="", field4=""){
         const faded = {value: getComputedStyle(document.documentElement).getPropertyValue('--fadedtxt'), name: 'faded'};
         const dark = {value: getComputedStyle(document.documentElement).getPropertyValue('--dark'), name: 'dark'};
 
-        fields.forEach(el => {
-            if(el!=""){
-                let getEl = document.getElementById(el);
-                // KEEP ON GOING
+        let fieldValid = 0;
+        fields.forEach(fl => {
+            if(fl!=''){
+                let fieldElement = document.getElementById(fl);
+                if(fieldElement.value!=''){
+                    fieldValid++
+                }
             }
         })
         
-        if(fieldval){
+        if(fieldValid==fieldTotal){
             if (isActive!=1){
                 colorBgAnim(lgbtn, midgray, light)
                 lgbtn.style.color=dark.value;

@@ -7,6 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const path = require("path");
 
+const bcrypt = require('bcrypt');
+const saltRounds = 13;
+
 var express = require("express");
 var app = express();
 
@@ -19,25 +22,32 @@ app.get('/', function(req, res){
 });
 
 app.post('/login', async function(req, res){
-  const login = await import("/controllers/control.login.js");
-  const exec = await login.checkLogin(req.body); //only that for now
+  const sign = await import("./controllers/control.login.js");
+  const exec = await sign.login(req.body); //only that for now
   res.json(exec);
 })
 
-app.post('/checkEmail', async function(req, res){
-  const login = await import("/controllers/control.login.js");
-  const exec = await login.getAccount(req.body); //only that for now
+app.post('/register', async function(req, res){
+  const sign = await import("./controllers/control.login.js");
+  req.body.password = await bcrypt.hash(req.body.password, saltRounds);
+  const exec = await sign.register(req.body); //only that for now
+  res.json(exec);
+})
+
+app.post('/tokenLog', async function(req, res){
+  const sign = await import("./controllers/control.login.js");
+  const exec = await sign.tokenLog(req.body); //only that for now
   res.json(exec);
 })
 
 app.post('/fetchInfos', async function(req, res){
-  const user = await import("/controllers/control.user.js");
+  const user = await import("./controllers/control.user.js");
   const exec = await user.getInfos(req.body); //only that for now
   res.json(exec);
 })
 
 app.post('/newWeight', async function(req, res){
-  const user = await import("/controllers/control.user.js");
+  const user = await import("./controllers/control.user.js");
   const exec = await user.getNewWeight(req.body); //only that for now
   res.json(exec);
 })

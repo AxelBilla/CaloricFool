@@ -1,10 +1,14 @@
 // ALL THINGS RELATED TO A USER ATTEMPTING TO LOG IN
-import {user as mod} from "../models/app.user.js";
+import {user as app} from "../models/app.user.js";
 
-export function checkLogin(req){ // Checks if account with a given email AND assword exists in DB (true/false)
-    return mod.checkLogin(req)
+export function login(req){ // Checks if account with a given email AND assword exists in DB (true/false)
+    return app.login(req)
 }
 
-export function getAccount(req){ // Checks if account with a given email exists in DB (true/false)
-    return mod.getAccount(req);
+export function register(req){ // Checks if account with a given email exists in DB (true/false)
+    return app.register(req);
+}
+
+export function tokenLog(tkn){ // Checks if account with a given email exists in DB (true/false)
+    return app.tokenLog(tkn);
 }

@@ -1,19 +1,40 @@
-import { login as db_login } from './db.log.js'; 
+import { login as db_log } from './db.log.js'; 
 import { user as db_user } from './db.user.js';
 import { entry as db_entry } from './db.entry.js';
+import { token as db_token } from './db.token.js';
 
 export class user{
-    static async checkLogin(req){
-        const exec = await db_login.checkLogin(req.email, req.password);
-        return exec; // Returns the result of our request (true/false) depending on if it finds our account or not
+    static async login(req){
+        let log = await db_log.checkLogin(req.email, req.password);
+        if(log){
+            let tkn = await user.addToken(req);
+            return {status: log, token: tkn}
+        }
+        return log; // Returns the result of our request (true/false) depending on if it finds our account or not
     }
-    static async getAccount(req){
-        const exec = await db_login.getAccount(req.email);
-        return exec; // Returns the result of our request (true/false) depending on if it finds our account or not
+
+    static async register(req){
+        const exist = await db_log.getAccount(req.email);
+        if(!exist){
+            db_log.addAccount(req.user, req.email, req.password)
+            let tkn = await user.addToken(req);
+            let res = {status: true, token: tkn};
+            return res
+        }
+        return false; // Returns the result of our request (true/false) depending on if it finds our account or not
     }
+
+    static async tokenLog(tkn){
+        if(db_token.checkToken(tkn)==true){
+            return db_token.getTokenValidity(tkn);
+        }
+        return false;
+    }
+
     static async getInfos(req){
         return db_user.getUserInfos(req.token); // Gets every stored informations of a given user
     }
+
     static async getNewWeight(req){ // Uses the cons. & acts. entries between now and the last info update to calculate a user's weight
         var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user
         if(lastInfos[0].bodytype == 0){ // Changes the calcs based on the body type, 0=fem 1=masc. (Revised Harris Benedict)
@@ -54,4 +75,30 @@ export class user{
         //await db_user.addInfos(req.token, lastInfos[0]); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
         return newWeight;
     }
+
+    static async addToken(req){
+        let newToken=generateToken();
+        while(db_token.checkToken(newToken)==true){
+            newToken=generateToken();
+        };
+
+        let time = 1;
+        if(req.remember){
+            time=31;
+        }
+
+        let tknExists = await db_token.hasToken(req.email);
+        if(tknExists){
+            db_token.remToken(req.email);
+            db_token.addToken(newToken, time, req.email);
+        } else {
+           db_token.addToken(newToken, time, req.email);
+        }
+        return newToken;
+        
+    }
+}
+
+function generateToken(){
+    return Array.from(Array(50), () => Math.floor(Math.random() * 36).toString(36)).join('');
 }

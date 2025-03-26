@@ -5,14 +5,14 @@ export class token{
   static async getTokenValidity(userToken){ // Used to check if [USER]'s token is expired or  not
     let entries=[];
     const request = await sql`
-      SELECT CreateDate, ExpiDate FROM Tokens WHERE tokenid=${userToken}
+      SELECT creationdate, expiration_date FROM Tokens WHERE tokenid=${userToken}
     `.forEach(row => {
       entries.push(row);
     });
     return entries[0];
   }
 
-  static async checkToken(userToken){ // Creates a [USER]'s account after Signup
+  static async checkToken(userToken){ // Check if token exists
     let entries=[];
     const request = await sql`
       SELECT EXISTS (SELECT tokenid FROM Tokens WHERE tokenid=${userToken})
@@ -22,34 +22,29 @@ export class token{
     return entries[0];
   }
 
-  static generateToken(){ // Generates a string made up of 50 random characters (A-Z, 0-9)
-    return Array.from(Array(50), () => Math.floor(Math.random() * 36).toString(36)).join('');
-  }
-
-  static async addToken(token){ // Creates a [USER]'s "Token" after logging in
+  static async addToken(token, len, email){ // Creates a [USER]'s "Token" after logging in
     const currentDate = new Date();
     const expiryDate = currentDate;
-    expiryDate.setHours(expiryDate.getHours()+3);
+    expiryDate.setDate(expiryDate.getDate()+len);
     const request = await sql`
-      INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate})
+      INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate}, (SELECT userid FROM users WHERE email=${email}))
     `
-  }
-
-  static async addLongToken(token){ // Creates a [USER]'s account after Signup
-    const currentDate = new Date();
-    const expiryDate = currentDate;
-    expiryDate.setDate(expiryDate.setDate()+31);
-    const request = await sql`
-      INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate})
-    `
+    return true
   }
   
-  static async deleteToken(token){
-    //TODO
+  static async remToken(email){
+    const request = await sql`
+      DELETE FROM Tokens WHERE userid=(SELECT userid FROM Users WHERE email=${email})
+    `
+    return request;
   }
 
-  static async assignToken(userid){
-    //TODO
+
+  static async hasToken(email){
+    const request = await sql`
+    SELECT EXISTS (SELECT t.userid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email})
+    `
+    return request[0].exists;
   }
 
 }

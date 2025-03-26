@@ -1,15 +1,17 @@
 import sql from '../models/db.connect.js'
 
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const bcrypt = require('bcrypt');
+
 export class login{
 
   static async checkLogin(email, pswd){ // Checks if [USER]'s credentials are valid
-    let entries=[];
     const request = await sql`
-      SELECT EXISTS (SELECT Email FROM users WHERE email=${email} AND password=${pswd})
-    `.forEach(row => {
-      entries.push(row.exists);
-    });
-    return entries[0];
+      SELECT password FROM users WHERE email=${email}
+    `
+    const res = await bcrypt.compare(pswd, request[0].password);
+    return res;
   }
 
   static async getAccount(email){ // Checks if [USER] has an account
