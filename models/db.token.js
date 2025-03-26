@@ -3,23 +3,17 @@ import sql from '../models/db.connect.js';
 export class token{
 
   static async getTokenValidity(userToken){ // Used to check if [USER]'s token is expired or  not
-    let entries=[];
     const request = await sql`
       SELECT creationdate, expiration_date FROM Tokens WHERE tokenid=${userToken}
-    `.forEach(row => {
-      entries.push(row);
-    });
-    return entries[0];
+    `;
+    return request[0];
   }
 
   static async checkToken(userToken){ // Check if token exists
-    let entries=[];
     const request = await sql`
       SELECT EXISTS (SELECT tokenid FROM Tokens WHERE tokenid=${userToken})
-    `.forEach(row => {
-      entries.push(row.exists);
-    });
-    return entries[0];
+    `
+    return request[0].exists;
   }
 
   static async addToken(token, len, email){ // Creates a [USER]'s "Token" after logging in

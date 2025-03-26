@@ -8,34 +8,34 @@ window.addEventListener("load", function(){
     switchInterface("sign-login", "sign-register", "register", '75'); // Triggers when going to the sign up form from login page
     switchInterface("sign-register", "sign-login", "login"); // Triggers when going back to the login form from the sign up page
     
-    if(user.tokenLog()==true){
-        gotoFrom("manager", "sign-login");
-    }
+    user.tokenLog().then(data => {
+        console.log(data)
+        if(data){
+            gotoFrom("manager", "sign-login");
+        }
+    })
 
     $('#login-form').submit(function(e) {
         e.preventDefault();
-        user.login(e).then(resp => resp.json().then(data=>{
-            if(data){
+        user.login(e).then(data=>{
+            if(data.status){
                 gotoFrom("manager", "sign-login");
             } else {
                 console.log("error pswd mail")
             };
-            })
-        )}
-    )
+        })
+    })
 
     $('#register-form').submit(function(e) {
         e.preventDefault();
-        user.register(e).then(resp => resp.json().then(data=>{
-            console.log(data)
-            if(!data){
+        user.register(e).then(data=>{
+            if(data.status){
                 gotoFrom("manager", "sign-register");
             } else {
                 console.log("error mail")
             };
-            })
-        )}
-    )
+        })
+    })
 })
 
 

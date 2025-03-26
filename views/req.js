@@ -11,39 +11,40 @@ window.addEventListener("load", function(){ // [TEMP] Test Area
 });
 
 class user{
-  static login(form){
-    const req = fetch("/login",{
+  static async login(form){
+    const req = await fetch("/login",{
       method: "POST",
       body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked}),
       headers: {"Content-Type": "application/json"} 
     });
-    console.log(req)
-    localStorage.setItem("token", req.token);
-    console.log("was given tkn: ", req.token)
-    return req;
+    const res = await req.json()
+    localStorage.setItem("token", res.token);
+    console.log("was given tkn: ", localStorage.getItem("token"))
+    return res;
   }
 
-  static register(form){
-    const req = fetch("/register",{ // Fetch request at the "[website]/request" URL
+  static async register(form){
+    const req = await fetch("/register",{ // Fetch request at the "[website]/request" URL
       method: "POST",
       body: JSON.stringify({user: form.target[0].value, email: form.target[1].value, password: form.target[2].value, remember: form.target[4].checked}), // Gives the content of request for the controller to sort the requests.
       headers: {"Content-Type": "application/json"} // Tells the type of content we're sending to our URL
     });
-    console.log(req)
-    localStorage.setItem("token", req.token);
-    console.log("was given tkn: ", req.token);
-    return req;
+    const res = await req.json()
+    localStorage.setItem("token", res.token);
+    console.log("was given tkn: ", localStorage.getItem("token"));
+    return res;
   }
 
-  static tokenLog(){
+  static async tokenLog(){
     const tkn = localStorage.getItem("token");
-    const req = fetch("/tokenLog",{ // Fetch request at the "[website]/request" URL
+    const req = await fetch("/tokenLog",{ // Fetch request at the "[website]/request" URL
       method: "POST",
       body: JSON.stringify({token: tkn}), // Gives the content of request for the controller to sort the requests.
       headers: {"Content-Type": "application/json"} // Tells the type of content we're sending to our URL
     });
+    const res = await req.json()
     console.log("logged as tkn: ", tkn)
-    return req;
+    return res;
   }
   
   static fetchInfos(tkn){

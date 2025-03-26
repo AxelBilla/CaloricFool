@@ -24,12 +24,19 @@ export class user{
         return false; // Returns the result of our request (true/false) depending on if it finds our account or not
     }
 
-    static async tokenLog(tkn){
-        if(db_token.checkToken(tkn)==true){
-            return db_token.getTokenValidity(tkn);
+    static async tokenLog(req){
+        var status=false;
+        const check = await db_token.checkToken(req.token);
+        if(check){
+            const val = await db_token.getTokenValidity(req.token);
+            const currentDate = new Date();
+            const expDate = new Date(val.expiration_date)
+            if(expDate>=currentDate){
+                status=true;
+            }
         }
-        return false;
-    }
+        return status;
+    }     
 
     static async getInfos(req){
         return db_user.getUserInfos(req.token); // Gets every stored informations of a given user
