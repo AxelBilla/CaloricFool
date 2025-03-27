@@ -1,20 +1,31 @@
 window.addEventListener("load", function(){
     
     bgAnim(); // Should never stop, animates the background
-    
     formHightlight("sign-login", "login-btn", "login-field-email", "login-field-password"); // Triggers when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", "register-field-nickname", "register-field-email", "register-field-password"); // Triggers when the username, email & password fields are filled in the sign up form
-
-    switchInterface("sign-login", "sign-register", "register", '75'); // Triggers when going to the sign up form from login page
-    switchInterface("sign-register", "sign-login", "login"); // Triggers when going back to the login form from the sign up page
+    slideGrab("content-slider", "content-slider");
+    slideGrab("entry", "entry-slider");
     
+    //
+    const register = document.getElementById("register");
+    register.addEventListener("click", function(){
+        gotoFrom("sign-register", "sign-login", '75'); // Triggers when going to the sign up form from login page
+    })
+
+    //
+    const login = document.getElementById("login");
+    login.addEventListener("click", function(){
+        gotoFrom("sign-login", "sign-register"); // Triggers when going back to the login form from the sign up page
+    })
+    
+    //
     user.tokenLog().then(data => {
-        console.log(data)
         if(data){
             gotoFrom("manager", "sign-login");
         }
     })
 
+    //
     $('#login-form').submit(function(e) {
         e.preventDefault();
         user.login(e).then(data=>{
@@ -26,6 +37,7 @@ window.addEventListener("load", function(){
         })
     })
 
+    //
     $('#register-form').submit(function(e) {
         e.preventDefault();
         user.register(e).then(data=>{
@@ -53,28 +65,16 @@ function bgAnim(){
 }
 
 
-//
-function gotoFrom(destination, origin){
+// Switches from our current interface(origin) to another interface(destination)
+function gotoFrom(destination, origin, height=0, width=0){
     const start = document.getElementById(origin);
     const end = document.getElementById(destination);
-    fadeToAnim(start, 0, end);
+    fadeToAnim(start, 0, end, height, width);
 }
 
 
-//
-function switchInterface(crnt, nxt, btn, height=0, width=0){
-    const current = document.getElementById(crnt);
-    const next = document.getElementById(nxt);
-    const button = document.getElementById(btn);
-
-    button.addEventListener("click", function(){
-        fadeToAnim(current, 0, next, height, width);
-    });
-}
-
-
-//
-function colorBgAnim(element, colorStart, colorEnd){
+// Fades an element(element)'s background color and makes it fade from its starting color(colorStart) to our desired color(colorEnd)
+function colorBgFade(element, colorStart, colorEnd){
     let keyframe = {
         backgroundColor: [colorStart.value, colorEnd.value]
     };
@@ -86,8 +86,8 @@ function colorBgAnim(element, colorStart, colorEnd){
 }
 
 
-//
-function fadeToAnim(element, newOpacity, nextElement, adjustHeight=0, adjustWidth=0){
+// Takes a given element(element), alters its opacity to a new value(newOpacity) and then, if given as a parameter, fade in to a new element(nextElement) and adjust its width/height if desired.
+function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWidth=0){
     let keyframe = {
         opacity: newOpacity,
         display: 'none'
@@ -99,20 +99,22 @@ function fadeToAnim(element, newOpacity, nextElement, adjustHeight=0, adjustWidt
     let anim = element.animate(keyframe, option);
     anim.addEventListener('finish', () => {
         element.style.display = 'none';
-        nextElement.style.display = 'flex';
-        if(adjustHeight!=0){
-            nextElement.style.height=adjustHeight+'%';
+        if(nextElement!=0){
+            nextElement.style.display = 'flex';
+            if(adjustHeight!=0){
+                nextElement.style.height=adjustHeight+'%';
+            }
+            if(adjustWidth!=0){
+                nextElement.style.width=adjustWidth+'%';
+            }
+            let nextAnim = nextElement.animate({opacity: [0,100]},option)
         }
-        if(adjustWidth!=0){
-            nextElement.style.width=adjustWidth+'%';
-        }
-        let nextAnim = nextElement.animate({opacity: [0,100]},option)
       });
 }
 
 
-//
-function formHightlight(div, btn, field1, field2='', field3='', field4='', field5=''){
+// Takes a page(page) to listen to and alters a button(btn)'s CSS based on whether the given fields(field1->field5) are filled or not.  
+function formHightlight(page, btn, field1, field2='', field3='', field4='', field5=''){
     
     let fields=[field1, field2, field3, field4, field5];
     let fieldTotal = 0;
@@ -123,7 +125,7 @@ function formHightlight(div, btn, field1, field2='', field3='', field4='', field
     })
 
     var isActive=0;
-    const sign = document.getElementById(div);
+    const sign = document.getElementById(page);
     sign.addEventListener("keyup", function(){
         const lgbtn = document.getElementById(btn);
         
@@ -145,7 +147,7 @@ function formHightlight(div, btn, field1, field2='', field3='', field4='', field
         
         if(fieldValid==fieldTotal){
             if (isActive!=1){
-                colorBgAnim(lgbtn, midgray, light)
+                colorBgFade(lgbtn, midgray, light)
                 lgbtn.style.color=dark.value;
                 lgbtn.style.backgroundColor=`var(--${light.name})`;
                 lgbtn.classList.add('clickable')
@@ -153,7 +155,7 @@ function formHightlight(div, btn, field1, field2='', field3='', field4='', field
             isActive=1;
         } else {
             if(isActive===1){
-                colorBgAnim(lgbtn, light, midgray)
+                colorBgFade(lgbtn, light, midgray)
                 lgbtn.style.color=faded.value;
                 lgbtn.style.backgroundColor=`var(--${midgray.name})`;
                 lgbtn.classList.remove('clickable')
@@ -162,3 +164,42 @@ function formHightlight(div, btn, field1, field2='', field3='', field4='', field
         }
     });
 };
+
+// Takes a text field(textID) and executes a given function(textGetFunc) when a specific type of event(eventTrigger) is triggered to edit the HTML contained within said text field.
+function updateText(eventTrigger, textID, textGetFunc){
+    const text = document.getElementById(textID);
+    window.addEventListener(eventTrigger, function(){
+        text.innerHTML=textGetFunc;
+    })
+};
+
+function slideGrab(element, slides){
+    const page = document.getElementById(element);
+    const slider = document.getElementById(slides);
+    let mouseDown = false;
+    let startY, scrollTop;
+   
+    page.addEventListener("mousemove", (e) => {
+        e.preventDefault();
+        if(!mouseDown) {
+            return;
+        }
+        const y = e.pageY - slider.offsetTop;
+        const scroll = y - startY;
+        slider.scrollTop = scrollTop - scroll;
+    });
+   
+    page.addEventListener("mousedown", function (e) {
+        console.log(e.pageY)
+        mouseDown = true;
+        startY = e.pageY - slider.offsetTop;
+        scrollTop = slider.offsetTop;
+    }, false);
+
+    page.addEventListener("mouseup", function () {
+        mouseDown = false;
+    }, false);
+    page.addEventListener("mouseleave", function () {
+        mouseDown = false;
+    }, false);
+}

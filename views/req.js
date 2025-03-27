@@ -19,7 +19,6 @@ class user{
     });
     const res = await req.json()
     localStorage.setItem("token", res.token);
-    console.log("was given tkn: ", localStorage.getItem("token"))
     return res;
   }
 
@@ -31,7 +30,6 @@ class user{
     });
     const res = await req.json()
     localStorage.setItem("token", res.token);
-    console.log("was given tkn: ", localStorage.getItem("token"));
     return res;
   }
 
@@ -43,7 +41,6 @@ class user{
       headers: {"Content-Type": "application/json"} // Tells the type of content we're sending to our URL
     });
     const res = await req.json()
-    console.log("logged as tkn: ", tkn)
     return res;
   }
   

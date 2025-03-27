@@ -65,95 +65,176 @@
 
     <!-- Main Page -->
     <div class="manager" id="manager">
-        <div class="manager-header">
-            <div class="manager-header-user">
-                <div class="manager-header-user-name">
-                    <!-- User's Nickname -->
-                </div>
-                <div class="manager-header-user-details">
-                    <div class="manager-header-user-details-weight">
-                        <!-- User's Weight -->
-                    </div>
-                    <div class="manager-header-user-details-height">
-                        <!-- User's Height -->
-                    </div>
+        <div class="manager-header no-select">
+            <div class="manager-header-user f-iconic">
+                <p class="manager-header-user-name">
+                    Jane Doe<!-- User's Nickname -->
+                </p>
+                <div class="manager-header-user-details f-idendidad">
+                    <p class="manager-header-user-details-weight ">
+                        <span id="user-weight-amount">000</span><span id="user-weight-unit">kg</span>
+                    </p>
+                    <p class="manager-header-user-details-height">
+                        <span id="user-height-amount">000</span><span id="user-height-unit">cm</span>
+                    </p>
                 </div>
             </div>
-            <div class="manager-header-appname">
-                <!-- Application Name (Caloric Fool?) -->
+            <div class="manager-header-appname f-iconic">
+                <p>Caloric Fool</p><!-- Application Name (Caloric Fool?) -->
             </div>
             <div class="manager-header-setting">
-                <!-- Setting's Button -->
+                <button type="button" class="clickable"><img src="../assets/svg/setting-icon.svg" alt="SETTINGS"></button>
             </div>
         </div>
 
-        <div class="manager-slider">
+        <div class="manager-content">
+            <div class="manager-content-slider slider" id="content-slider">
 
 
-            <!-- EVERY SLIDING BOX WILL BE HANDLED WITH DOM-->
-            <div class="manager-slider-bigbox">
-                <!-- Will be handled with DOM -->
-                <div class="manager-slider-bigbox-date">
-                    <!-- Day & Month of Entries -->
-                </div>
-                <div class="manager-slider-bigbox-year">
-                    <!-- Year of Entries -->
-                </div>
-            </div>
-            <div class="manager-slider-smallboxes">
-                <!-- Will be handled with DOM-->
-                <div class="manager-slider-smallboxes-date">
-                    <!-- Day & Month of Entries -->
-                </div>
-                <div class="manager-slider-smallboxes-year">
-                    <!-- Year of Entries -->
-                </div>
-            </div>
-            <!-- END OF BOXES -->
+                <!-- EVERY SLIDING BOX WILL BE HANDLED WITH DOM (FIRST BOX IS ALWAYS big BY DEFAULT)-->
 
-
-        </div>
-
-        <div class="manager-info">
-
-
-            <!-- Every BOX will be handled with DOM -->
-            <div class="manager-info-box">
-                <div class="manager-info-box-entry">
-                    <div class="manager-info-box-entry-hour">
-                        <!-- Hour of addition -->
+                <div class="manager-content-slider-box f-idendidad no-select bigbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
                     </div>
-                    <div class="manager-info-box-entry-content">
-                        <div class="manager-info-box-entry-content-details">
-                            <!-- For eating -->
-                            <div class="manager-info-box-entry-content-details-gram">
-                                <!-- Quantity of Food (in grams) -->
-                            </div>
-                            <div class="manager-info-box-entry-content-details-cal">
-                                <!-- Calories per 100g of Food (in kcal) -->
-                            </div>
-
-                            <!-- For physical activity -->
-                            <div class="manager-info-box-entry-content-details-intensity">
-                                <!-- Intensity of Activity (kcal per hour) -->
-                            </div>
-                            <div class="manager-info-box-entry-content-details-duration">
-                                <!-- Duration of Activity (in minutes)-->
-                            </div>
-                        </div>
-                        
-                        <div class="manager-info-box-entry-content-divider"> <!-- Divider bar --> </div>
-
-                        <div class="manager-info-box-entry-content-comment">
-                            <!-- Comment of Entry-->
-                        </div>
-
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
                     </div>
                 </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+
+                <div class="manager-content-slider-box f-idendidad no-select smallbox-modifier" >
+                    <div class="manager-content-slider-box-date">
+                        <p>
+                            <span>00</span>/<span>00</span>
+                        </p>
+                    </div>
+                    <div class="manager-content-slider-box-year">
+                        <p>0000</p>
+                    </div>
+                </div>
+                
+                <!-- END OF BOXES -->
+
+
             </div>
-            <!-- END OF BOX -->
+            <div class="manager-content-info">
+                <div class="manager-content-info-box">
+
+                    <!-- Every BOX will be handled with DOM -->
+                    <div class="manager-content-info-box-entry slider" id="entry">
+                        <div class="manager-content-info-box-entry-hour f-idendidad">
+                            <p><span id="entry-hour">00</span>:<span id="entry-minute">00</span></p>
+                        </div>
+                        <div class="manager-content-info-box-entry-content" id="entry-slider">
+                            <div class="manager-content-info-box-entry-content-details f-idendidad">
+                                <!-- For eating -->
+                                <div class="manager-content-info-box-entry-content-details-text">
+                                    <p><span id="entry-primary-amount">000</span><span id="entry-primary-unit">xxx</span></p>
+                                </div>
+                                <div class="manager-content-info-box-entry-content-details-text">
+                                    <p>---</p>
+                                </div>
+                                <div class="manager-content-info-box-entry-content-details-text">
+                                    <p><span id="entry-secondary-amount">000</span><span id="entry-secondary-unit">xxx</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="manager-content-info-box-entry-content-main f-iconic">
+                                <div class="manager-content-info-box-entry-content-main-divider"> <!-- Divider bar --> </div>
+
+                                <div class="manager-content-info-box-entry-content-main-comment">
+                                    <p>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END OF BOX -->
 
 
+                </div>
+                <button class="manager-content-info-add f-iconic clickable">
+                    <p>ADD</p>
+                </button>
+            </div>
         </div>
     </div>
 
