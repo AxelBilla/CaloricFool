@@ -16,10 +16,7 @@ export class token{
     return request[0].exists;
   }
 
-  static async addToken(token, len, email){ // Creates a [USER]'s "Token" after logging in
-    const currentDate = new Date();
-    const expiryDate = currentDate;
-    expiryDate.setDate(expiryDate.getDate()+len);
+  static async addToken(token, email, currentDate, expiryDate){ // Creates a [USER]'s "Token" after logging in
     const request = await sql`
       INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate}, (SELECT userid FROM users WHERE email=${email}))
     `
@@ -32,7 +29,6 @@ export class token{
     `
     return request;
   }
-
 
   static async hasToken(email){
     const request = await sql`

@@ -1,15 +1,3 @@
-window.addEventListener("load", function(){ // [TEMP] Test Area
-
-  let element = document.getElementById("test"); 
-  element.addEventListener("click", function(){
-    user.fetchInfos("test2");
-    user.newWeight("test2");
-    user.checkEmail("mary@mary.com");
-    user.checkEmail("bogusemail");
-
-  });
-});
-
 class user{
   static async login(form){
     const req = await fetch("/login",{
@@ -44,30 +32,63 @@ class user{
     return res;
   }
   
-  static fetchInfos(tkn){
-    const req = fetch("/fetchInfos",{ // same as above
+  static async getLastInfo(){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getLastInfo",{ // same as above
       method: "POST",
       body: JSON.stringify({token: tkn}), // Same as above
       headers: {"Content-Type": "application/json"} // Same as above
     });
-    return req;
+    const res = await req.json()
+    console.log("lI: ",res)
+    return res;
   }
   
-  static newWeight(tkn){
-    const req = fetch("/newWeight",{ // same as above
+  static async newWeight(){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/newWeight",{ // same as above
       method: "POST",
       body: JSON.stringify({token: tkn}), // Same as above
       headers: {"Content-Type": "application/json"} // Same as above
     });
-    return req;
+    const res = await req.json()
+    return res;
   }
+
+  static async getSettings(){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getSettings",{ // same as above
+      method: "POST",
+      body: JSON.stringify({token: tkn}), // Same as above
+      headers: {"Content-Type": "application/json"} // Same as above
+    });
+    const res = await req.json()
+    console.log("sT: ",res)
+    return res;
+  }
+
+  static async getName(){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getName",{ // same as above
+      method: "POST",
+      body: JSON.stringify({token: tkn}), // Same as above
+      headers: {"Content-Type": "application/json"} // Same as above
+    });
+    const res = await req.json()
+    console.log("name: ", res)
+    return res;
+  }
+
 }
 
 class utils{
   static toLBS(num){ // Convert a KG to LBS
     return num*2.20462262185;
   }
-  static roundNum(num){ // Round up to the 3rd decimal
-    return Math.round(num * 1000) / 1000;
+  static toInch(num){ // Convert a CM to INCHES
+    return num/2.54;
+  }
+  static roundNum(num){ // Round up to the 2nd decimal
+    return Math.round(num * 10) / 10;
   }
 }

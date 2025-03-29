@@ -21,7 +21,7 @@ window.addEventListener("load", function(){
     //
     user.tokenLog().then(data => {
         if(data){
-            gotoFrom("manager", "sign-login");
+            loginSequence();
         }
     })
 
@@ -30,7 +30,7 @@ window.addEventListener("load", function(){
         e.preventDefault();
         user.login(e).then(data=>{
             if(data.status){
-                gotoFrom("manager", "sign-login");
+                loginSequence();
             } else {
                 console.log("error pswd mail")
             };
@@ -42,7 +42,7 @@ window.addEventListener("load", function(){
         e.preventDefault();
         user.register(e).then(data=>{
             if(data.status){
-                gotoFrom("manager", "sign-register");
+                registerSequence()
             } else {
                 console.log("error mail")
             };
@@ -50,6 +50,14 @@ window.addEventListener("load", function(){
     })
 })
 
+function loginSequence(){
+    gotoFrom("manager", "sign-login");
+    updateUserInfo();
+}
+
+function registerSequence(){
+    gotoFrom("manager", "sign-register");
+}
 
 //
 function bgAnim(){
@@ -202,4 +210,32 @@ function slideGrab(element, slides){
     page.addEventListener("mouseleave", function () {
         mouseDown = false;
     }, false);
+}
+
+async function updateUserInfo(){
+    const settings = await user.getSettings(); // Get USER's settings
+    const username = await user.getName(); // Get USER's name
+
+    let info = await user.getLastInfo(); // Get latest info of USER
+    let units = {weight: "kg", height: "cm"}; // Sets default values for the units
+
+    if (settings.unit){ // 0=Metric, 1=Imperial. 1==True
+        info.weight = utils.toLBS(info.weight); // Turns the collected info's weight from the default KG to LBS
+        units.weight = "lbs"; // Switch from KG to LBS
+        info.height = utils.toInch(info.height); // Turns the collection info's height from the default CM to INCHES
+        units.height = '"'; // Switch from CM to INCHES (" symbol)
+    }
+
+    const name = document.getElementById("user-name");
+    const weight = {amount: document.getElementById("user-weight-amount"), unit: document.getElementById("user-weight-unit")};
+    const height = {amount: document.getElementById("user-height-amount"), unit: document.getElementById("user-height-unit")};
+
+    weight.unit.innerHTML=units.weight; // Edits text to go from our page's weight unit value to our new weight unit value
+    height.unit.innerHTML=units.height; // Same but for height
+    
+    weight.amount.innerHTML=utils.roundNum(info.weight); // Edits text to go from our page's weight value to our new weight value, and round it down to one decimal 
+    height.amount.innerHTML=utils.roundNum(info.height); // Same but for height
+
+    name.innerHTML=username; // Edits text to go from our page's default username to our actual username
+
 }

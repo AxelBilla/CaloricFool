@@ -2,6 +2,9 @@ import { createRequire } from "module";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
+import { sign } from "./controllers/control.sign.js"
+import { user } from "./controllers/control.user.js"
+
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,33 +31,38 @@ app.get('/', function(req, res){
 });
 
 app.post('/login', async function(req, res){
-  const sign = await import("./controllers/control.login.js");
-  const exec = await sign.login(req.body);
+  const exec = await sign.login(req.body); 
   res.json(exec);
 })
 
 app.post('/register', async function(req, res){
-  const sign = await import("./controllers/control.login.js");
   req.body.password = await bcrypt.hash(req.body.password, saltRounds);
-  const exec = await sign.register(req.body);
+  const exec = await sign.register(req.body); 
   res.json(exec);
 })
 
 app.post('/tokenLog', async function(req, res){
-  const sign = await import("./controllers/control.login.js");
-  const exec = await sign.tokenLog(req.body);
+  const exec = await sign.tokenLog(req.body); 
   res.json(exec);
 })
 
-app.post('/fetchInfos', async function(req, res){
-  const user = await import("./controllers/control.user.js");
-  const exec = await user.getInfos(req.body);
+app.post('/getLastInfo', async function(req, res){
+  const exec = await user.getLastInfo(req.body); 
   res.json(exec);
 })
 
 app.post('/newWeight', async function(req, res){
-  const user = await import("./controllers/control.user.js");
   const exec = await user.getNewWeight(req.body); 
+  res.json(exec);
+})
+
+app.post('/getSettings', async function(req, res){
+  const exec = await user.getSettings(req.body); 
+  res.json(exec);
+})
+
+app.post('/getName', async function(req, res){
+  const exec = await user.getName(req.body); 
   res.json(exec);
 })
 

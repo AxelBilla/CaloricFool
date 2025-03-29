@@ -1,10 +1,24 @@
 // ALL THINGS RELATED TO GETTING A USER'S INFOS
 import {user as mod} from "../models/app.user.js";
 
-export function getInfos(req){
-    return mod.getInfos(req);
-}
+export class user{
+    static getInfos(req){
+        return mod.getInfos(req);
+    }
 
-export function getNewWeight(req){
-    return mod.getNewWeight(req);
+    static getNewWeight(req){
+        return mod.getNewWeight(req);
+    }
+
+    static getLastInfo(req){
+        return mod.getLastInfo(req);
+    }
+
+    static getSettings(req){
+        return mod.getSettings(req);
+    }
+
+    static getName(req){
+        return mod.getNickname(req);
+    }
 }
