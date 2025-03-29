@@ -12,8 +12,8 @@ const saltRounds = 13;
 
 const fs = require('fs');
 const https = require('https');
-const privateKey  = fs.readFileSync('../certs/selfsigned.key', 'utf8');
-const certificate = fs.readFileSync('../certs/selfsigned.crt', 'utf8');
+const privateKey  = fs.readFileSync('../certs/sslkey.key', 'utf8');
+const certificate = fs.readFileSync('../certs/sslcert.crt', 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 
 var express = require("express");
