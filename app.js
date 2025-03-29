@@ -29,32 +29,32 @@ app.get('/', function(req, res){
 
 app.post('/login', async function(req, res){
   const sign = await import("./controllers/control.login.js");
-  const exec = await sign.login(req.body); //only that for now
+  const exec = await sign.login(req.body);
   res.json(exec);
 })
 
 app.post('/register', async function(req, res){
   const sign = await import("./controllers/control.login.js");
   req.body.password = await bcrypt.hash(req.body.password, saltRounds);
-  const exec = await sign.register(req.body); //only that for now
+  const exec = await sign.register(req.body);
   res.json(exec);
 })
 
 app.post('/tokenLog', async function(req, res){
   const sign = await import("./controllers/control.login.js");
-  const exec = await sign.tokenLog(req.body); //only that for now
+  const exec = await sign.tokenLog(req.body);
   res.json(exec);
 })
 
 app.post('/fetchInfos', async function(req, res){
   const user = await import("./controllers/control.user.js");
-  const exec = await user.getInfos(req.body); //only that for now
+  const exec = await user.getInfos(req.body);
   res.json(exec);
 })
 
 app.post('/newWeight', async function(req, res){
   const user = await import("./controllers/control.user.js");
-  const exec = await user.getNewWeight(req.body); //only that for now
+  const exec = await user.getNewWeight(req.body); 
   res.json(exec);
 })
 
