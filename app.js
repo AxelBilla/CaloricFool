@@ -10,6 +10,12 @@ const path = require("path");
 const bcrypt = require('bcrypt');
 const saltRounds = 13;
 
+const fs = require('fs');
+const https = require('https');
+const privateKey  = fs.readFileSync('../certs/selfsigned.key', 'utf8');
+const certificate = fs.readFileSync('../certs/selfsigned.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+
 var express = require("express");
 var app = express();
 
@@ -52,4 +58,5 @@ app.post('/newWeight', async function(req, res){
   res.json(exec);
 })
 
-app.listen(8080);
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(8443);
