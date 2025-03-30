@@ -4,8 +4,8 @@ window.addEventListener("load", function(){
     formHightlight("sign-login", "login-btn", "login-field-email", "login-field-password"); // Triggers when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", "register-field-nickname", "register-field-email", "register-field-password"); // Triggers when the username, email & password fields are filled in the sign up form
     slideGrab("content-slider", "content-slider");
-    slideGrab("entry", "entry-slider");
-    
+    rolldownClick("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main");
+
     //
     const register = document.getElementById("register");
     register.addEventListener("click", function(){
@@ -59,6 +59,13 @@ function registerSequence(){
     gotoFrom("manager", "sign-register");
 }
 
+// Switches from our current interface(origin) to another interface(destination)
+function gotoFrom(destination, origin, height=0, width=0){
+    const start = document.getElementById(origin);
+    const end = document.getElementById(destination);
+    fadeToAnim(start, 0, end, height, width);
+}
+
 //
 function bgAnim(){
     const bg = document.getElementById("background");
@@ -71,15 +78,6 @@ function bgAnim(){
     };
     bg.animate(keyframe, option); 
 }
-
-
-// Switches from our current interface(origin) to another interface(destination)
-function gotoFrom(destination, origin, height=0, width=0){
-    const start = document.getElementById(origin);
-    const end = document.getElementById(destination);
-    fadeToAnim(start, 0, end, height, width);
-}
-
 
 // Fades an element(element)'s background color and makes it fade from its starting color(colorStart) to our desired color(colorEnd)
 function colorBgFade(element, colorStart, colorEnd){
@@ -98,7 +96,7 @@ function colorBgFade(element, colorStart, colorEnd){
 function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWidth=0){
     let keyframe = {
         opacity: newOpacity,
-        display: 'none'
+        //display: 'none'
     };
     let option = {
         duration: 700,
@@ -106,9 +104,9 @@ function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWi
     };
     let anim = element.animate(keyframe, option);
     anim.addEventListener('finish', () => {
-        element.style.display = 'none';
+        element.classList.add("hidden")
         if(nextElement!=0){
-            nextElement.style.display = 'flex';
+            nextElement.classList.remove("hidden");
             if(adjustHeight!=0){
                 nextElement.style.height=adjustHeight+'%';
             }
@@ -155,6 +153,7 @@ function formHightlight(page, btn, field1, field2='', field3='', field4='', fiel
         
         if(fieldValid==fieldTotal){
             if (isActive!=1){
+                // When all fields are filled do:
                 colorBgFade(lgbtn, midgray, light)
                 lgbtn.style.color=dark.value;
                 lgbtn.style.backgroundColor=`var(--${light.name})`;
@@ -163,6 +162,7 @@ function formHightlight(page, btn, field1, field2='', field3='', field4='', fiel
             isActive=1;
         } else {
             if(isActive===1){
+                // When not enough fields are filled do: 
                 colorBgFade(lgbtn, light, midgray)
                 lgbtn.style.color=faded.value;
                 lgbtn.style.backgroundColor=`var(--${midgray.name})`;
@@ -238,4 +238,18 @@ async function updateUserInfo(){
 
     name.innerHTML=username; // Edits text to go from our page's default username to our actual username
 
+}
+
+function rolldownClick(clickedPARENT, targetCHILD){
+    $(`.${clickedPARENT}`).click(function(e){ // Use JQuery to get when any single element with that class is clicked
+        const tEl = $(e.currentTarget).find(`.${targetCHILD}`)[0] // Get the sole child with that targetted class found among our JQuery's click event's currentTarget's children
+        let visibility = getComputedStyle(tEl).getPropertyValue('display')
+        if(visibility!="none"){
+            //When it's visible do:
+            tEl.classList.add("hidden")
+        } else {
+            // When it's hidden do:
+            tEl.classList.remove("hidden")
+        };
+    });
 }

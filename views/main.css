@@ -42,11 +42,8 @@
 /*   Style   */
 /*-----------*/
 
-#sign-login{
-    display: flex;
-}
-#sign-register{
-    display: none;
+.hidden{
+    display: none !important;
 }
 
 html{
@@ -166,7 +163,7 @@ body{
 }
 
 .manager{
-    display: none;
+    display: flex;
     flex-direction: column;
     width: 98%;
     height: 98%;
@@ -313,7 +310,6 @@ body{
             .manager-content-info-box{
                 display: grid;
                 grid-auto-columns: auto;
-                align-items: center;
                 width: 95%;
                 height: 90%;
                 min-height: 20px;
@@ -334,7 +330,8 @@ body{
                         align-items: center;
                         width: fit-content;
                         height: fit-content;
-                        margin: 2%;
+                        margin-left: 2%;
+                        margin-right: 2%;
                         padding: 4%;
                         padding-bottom: 0px;
                         padding-top: 0px;
@@ -345,7 +342,8 @@ body{
                         display: flex;
                         flex-direction: column;
                         justify-content: space-evenly;
-                        flex-grow: 1;
+                        width: 90%;
+                        height: fit-content;
                         border-radius: 20px;
                         background-color: var(--menu);
                         overflow: clip;
@@ -355,8 +353,20 @@ body{
                             margin: 0;
                             padding: 0px;
                             padding-left: 2%;
+                            align-items: center;
                             .manager-content-info-box-entry-content-details-text{
+                                color:var(--dark);
                                 margin-left: 1%;
+                            };
+                            .manager-content-info-box-entry-content-details-bar{
+                                display: flex;
+                                flex-direction: row;
+                                width: 5%;
+                                height: 0.3em;
+                                margin-left: 1%;
+                                margin-top: 0.5%;
+                                border-radius: 10px;
+                                background-color: var(--dark);
                             };
                         };
                         .manager-content-info-box-entry-content-main{
@@ -365,9 +375,10 @@ body{
                             justify-content: space-evenly;
                             align-items: center;
                             width: 100%;
-                            margin-bottom: 2%;
                             flex-grow: 1;
-                            .manager-content-info-box-entry-content-main-divider{
+                            margin-bottom: 2%;
+                            transition: top 0.3s;
+                            .manager-content-info-box-entry-content-main-bar{
                                 display: flex;
                                 flex-direction: row;
                                 width: 95%;
@@ -430,7 +441,6 @@ body{
         cursor: grabbing;
     };
 }
-
 
 .clickable{
     cursor: pointer;
