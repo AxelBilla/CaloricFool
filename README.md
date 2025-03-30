@@ -4,7 +4,7 @@
 ### A web app to seemlessly keep track of your weight's evolution from any device
 
 
-</br></br>
+
 ### Available at: https://calorie.billiard.dev/
 
 
