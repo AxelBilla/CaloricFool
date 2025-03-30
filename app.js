@@ -4,6 +4,7 @@ import { dirname } from "path";
 
 import { sign } from "./controllers/control.sign.js"
 import { user } from "./controllers/control.user.js"
+import { entry } from "./controllers/control.entry.js"
 
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
@@ -63,6 +64,16 @@ app.post('/getSettings', async function(req, res){
 
 app.post('/getName', async function(req, res){
   const exec = await user.getName(req.body); 
+  res.json(exec);
+})
+
+app.post('/getEntries', async function(req, res){
+  const exec = await entry.getEntries(req.body); 
+  res.json(exec);
+})
+
+app.post('/getEntriesFrom', async function(req, res){
+  const exec = await entry.getEntriesFrom(req.body); 
   res.json(exec);
 })
 

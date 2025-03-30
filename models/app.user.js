@@ -134,6 +134,35 @@ export class user{
     static getNickname(req){
         return db_user.getNickname(req.token)
     }
+
+    static async getEntries(req){
+        let newDate;
+        let entries = {cons: await db_entry.getEntries(req.token, "consumptions"), acts: await db_entry.getEntries(req.token, "activities")};
+        entries.cons.forEach(el =>{
+            newDate = new Date(el.timeof);
+            el.timeof = {day: newDate.getDate(), month: newDate.getMonth()+1, year: newDate.getFullYear(), hour: newDate.getHours(), minute: newDate.getMinutes()}
+        })
+        entries.acts.forEach(el =>{
+            newDate = new Date(el.timeof);
+            el.timeof = {day: newDate.getDate(), month: newDate.getMonth()+1, year: newDate.getFullYear(), hour: newDate.getHours(), minute: newDate.getMinutes()}
+        })
+
+        return entries;
+    }
+    static async getEntriesFrom(req){
+        let newDate;
+        let entries = {cons: await db_entry.getEntriesFrom(req.token, "consumptions", req.startDate, req.endDate), acts: await db_entry.getEntriesFrom(req.token, "activities", req.startDate, req.endDate)};
+
+        entries.cons.forEach(el =>{
+            newDate = new Date(el.timeof);
+            el.timeof = {day: newDate.getDate(), month: newDate.getMonth()+1, year: newDate.getFullYear(), hour: newDate.getHours(), minute: newDate.getMinutes()}
+        })
+        entries.acts.forEach(el =>{
+            newDate = new Date(el.timeof);
+            el.timeof = {day: newDate.getDate(), month: newDate.getMonth()+1, year: newDate.getFullYear(), hour: newDate.getHours(), minute: newDate.getMinutes()}
+        })
+        return entries;
+    }
 }
 
 function generateToken(){

@@ -23,6 +23,7 @@ export class entry{
       delete row.entryid;
       entries.push(row);
     });
+    console.log(entries, userToken, entryName, startDate, endDate)
     return entries;
   }
 

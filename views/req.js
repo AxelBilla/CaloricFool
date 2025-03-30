@@ -79,6 +79,30 @@ class user{
     return res;
   }
 
+  static async getEntries(){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getEntries",{ // same as above
+      method: "POST",
+      body: JSON.stringify({token: tkn}), // Same as above
+      headers: {"Content-Type": "application/json"} // Same as above
+    });
+    const res = await req.json()
+    console.log("e: ", res)
+    return res;
+  }
+
+  static async getEntriesFrom(sDate, eDate){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getEntriesFrom",{ // same as above
+      method: "POST",
+      body: JSON.stringify({token: tkn, startDate: sDate, endDate: eDate}), // Same as above
+      headers: {"Content-Type": "application/json"} // Same as above
+    });
+    const res = await req.json()
+    console.log("eF: ", res)
+    return res;
+  }
+
 }
 
 class utils{

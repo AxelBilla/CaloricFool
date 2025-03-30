@@ -228,16 +228,12 @@ body{
             border-radius: 20px;
             background-color: var(--menu);
             align-items: center;
-            button{
-                border: none;
-                background: none; 
+            border: none; 
+            img{
+                display: flex;
+                align-items: center;
                 margin: 0px;
                 width: 55%;
-                img{
-                    display: flex;
-                    align-items: center;
-                    width: 100%;
-                };
             };
         };
     };
@@ -308,8 +304,6 @@ body{
             width: 75%;
             margin-top: 10%;
             .manager-content-info-box{
-                display: grid;
-                grid-auto-columns: auto;
                 width: 95%;
                 height: 90%;
                 min-height: 20px;
@@ -328,7 +322,7 @@ body{
                         flex-direction: column;
                         justify-content: space-evenly;
                         align-items: center;
-                        width: fit-content;
+                        width: 7%;
                         height: fit-content;
                         margin-left: 2%;
                         margin-right: 2%;

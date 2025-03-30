@@ -4,8 +4,7 @@ window.addEventListener("load", function(){
     formHightlight("sign-login", "login-btn", "login-field-email", "login-field-password"); // Triggers when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", "register-field-nickname", "register-field-email", "register-field-password"); // Triggers when the username, email & password fields are filled in the sign up form
     slideGrab("content-slider", "content-slider");
-    rolldownClick("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main");
-
+    
     //
     const register = document.getElementById("register");
     register.addEventListener("click", function(){
@@ -50,9 +49,12 @@ window.addEventListener("load", function(){
     })
 })
 
-function loginSequence(){
+async function loginSequence(){
     gotoFrom("manager", "sign-login");
     updateUserInfo();
+
+    const entries = await user.getEntries()
+    createDayBoxes(entries);
 }
 
 function registerSequence(){
@@ -198,7 +200,6 @@ function slideGrab(element, slides){
     });
    
     page.addEventListener("mousedown", function (e) {
-        console.log(e.pageY)
         mouseDown = true;
         startY = e.pageY - slider.offsetTop;
         scrollTop = slider.offsetTop;
@@ -252,4 +253,129 @@ function rolldownClick(clickedPARENT, targetCHILD){
             tEl.classList.remove("hidden")
         };
     });
+}
+
+function dayBoxClick(){
+    $(`.manager-content-slider-box`).click(async function(e){ // Use JQuery to get when any single element with that class is clicked
+
+        let modifier = e.currentTarget.classList.contains("bigbox-modifier");
+        const slider = document.getElementById("content-slider")
+        const bigbox = $(slider).find(`.bigbox-modifier`)
+        if(!modifier){
+            // When it's small do:
+            bigbox[0].classList.remove("bigbox-modifier");
+            bigbox[0].classList.add("smallbox-modifier")
+            e.currentTarget.classList.remove("smallbox-modifier")
+            e.currentTarget.classList.add("bigbox-modifier")
+        };
+
+        let newEntries = await getEntriesOn(e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
+        createEntryBoxes(newEntries);
+    });
+}
+
+async function createEntryBoxes(entries){    
+    const settings = await user.getSettings(); // Get USER's settings
+    const parent = document.getElementById("info-menu");
+
+    try{
+        entries.cons.sort(function(a,b){
+            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
+        });
+        entries.acts.sort(function(a,b){
+            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
+        });
+    } catch(e){
+        console.log("empty entries")
+    };
+    parent.replaceChildren();
+    for(let i=0; i<Object.keys(entries).length; i++){
+        Object.entries(entries)[i][1].forEach(el =>{
+            el.primary={};
+            el.secondary={};
+            if(el.hasOwnProperty("kcal")){
+                el.primary.unit="kcal";
+                el.primary.amount=el.kcal;
+                el.secondary.amount=el.gram;
+                if(settings.unit){
+                    el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000);
+                    el.secondary.unit="lbs";
+                } else {
+                    el.secondary.unit="g";
+                }
+            } else {
+                el.primary.unit="minute(s)";
+                el.primary.amount=el.duration;
+                el.secondary.unit="kcal/h";
+                el.secondary.amount=el.burnrate;
+            }
+
+            if (`${el.timeof.hour}`.length==1){
+                el.timeof.hour=`0${el.timeof.hour}`;
+            }
+            if (`${el.timeof.minute}`.length==1){
+                el.timeof.minute=`0${el.timeof.minute}`;
+            }
+
+            let newEl = document.createElement("div");
+            newEl.classList.add("manager-content-info-box-entry");
+            newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-iconic" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div></div></div>`;
+            parent.appendChild(newEl);
+        }
+    )}
+    rolldownClick("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main");
+}
+
+
+async function createDayBoxes(entries){
+    const parent = document.getElementById("content-slider");
+    try{
+        entries.cons.sort(function(a,b){
+            return new Date(b.timeof.year+"-"+b.timeof.month+"-"+b.timeof.day) - new Date(a.timeof.year+"-"+a.timeof.month+"-"+a.timeof.day);
+        });
+        entries.acts.sort(function(a,b){
+            return new Date(b.timeof.year+"-"+b.timeof.month+"-"+b.timeof.day) - new Date(a.timeof.year+"-"+a.timeof.month+"-"+a.timeof.day);
+        });
+    } catch(e){
+        console.log("empty days")
+    }
+
+    let elFirst=true;
+    for(let i=0; i<Object.keys(entries).length; i++){
+        let currentDay; let previousDay;
+        Object.entries(entries)[i][1].forEach(async el =>{
+            currentDay = el.timeof.year+"-"+el.timeof.month+"-"+el.timeof.day
+            if(currentDay!=previousDay){
+                let newEl = document.createElement("div");
+                newEl.classList.add("manager-content-slider-box");
+                newEl.classList.add("f-idendidad");
+                newEl.classList.add("no-select");
+                if(elFirst){
+                    newEl.classList.add("bigbox-modifier");
+                    elFirst=false;
+                } else {
+                    newEl.classList.add("smallbox-modifier");
+                }
+                newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
+                parent.appendChild(newEl);
+            }
+            previousDay=currentDay;
+        }
+    )}
+    const getDate = $(parent).find(".getDate")
+    let newEntries = await getEntriesOn(getDate[0].innerHTML);
+    createEntryBoxes(newEntries);
+    dayBoxClick()
+}
+
+
+async function getEntriesOn(date) {
+    let startDate = new Date(date);
+    let endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate()+1);
+    endDate.setMilliseconds(endDate.getMilliseconds()-1);
+    startDate.setMinutes(startDate.getMinutes()-startDate.getTimezoneOffset())
+    endDate.setMinutes(endDate.getMinutes()-endDate.getTimezoneOffset())
+    let newEntries = await user.getEntriesFrom(startDate, endDate);
+    return newEntries
 }
