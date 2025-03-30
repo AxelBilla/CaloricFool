@@ -91,7 +91,7 @@ body{
         background-color: var(--menu);
         width: 30%;
         height: 60%;
-        box-shadow: var(--border) 0px 2px 8px 0px;
+        box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 6px 0px inset;
         border-radius: 25px;
         overflow: hidden;
         .sign-menu-title{
@@ -113,7 +113,7 @@ body{
                 background-color: var(--light);
                 border: none;
                 border-radius: 10px;
-                box-shadow: var(--border) 0px 2px 8px 0px;
+                box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -1px 2px 0px inset;
                 color: var(--dark);
                 font-size: 1.5em;
                 width: 80%;
@@ -149,7 +149,7 @@ body{
                 background-color: var(--midgray);
                 border: none;
                 border-radius: 100px;
-                box-shadow: var(--border) 0px 2px 8px 0px;
+                box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 3px 0px inset;
                 width: 50%;
                 height: 6vh;
                 color: var(--fadedtxt);
@@ -186,6 +186,7 @@ body{
             width: 25%;
             background-color: var(--menu);
             border-radius: 25px;
+            box-shadow: var(--border) 0px -2px 6px 0px inset;
             overflow: hidden;
             .manager-header-user-name{
                 display: flex;
@@ -227,6 +228,7 @@ body{
             width: 15%;
             border-radius: 20px;
             background-color: var(--menu);
+            box-shadow: var(--border) 0px -2px 6px 0px inset;
             align-items: center;
             border: none; 
             img{
@@ -260,7 +262,7 @@ body{
                 border-radius: 20px;
                 background-color: var(--button);
                 overflow: hidden;
-                box-shadow: var(--border) 0px 2px 8px 0px;
+                box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 6px 0px inset;
                 p{
                     margin: 0px;
                 };
@@ -311,7 +313,7 @@ body{
                 scrollbar-width: none;
                 border-radius: 20px;
                 background-color: var(--border);
-                box-shadow: var(--border) 0px 2px 8px 0px;
+                box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 6px 0px inset;
                 .manager-content-info-box-entry{
                     display: flex;
                     flex-direction: row;
@@ -331,6 +333,7 @@ body{
                         padding-top: 0px;
                         border-radius: 20px;
                         background-color: var(--menu);
+                        box-shadow: var(--border) 0px -2px 6px 0px inset;
                     };
                     .manager-content-info-box-entry-content{
                         display: flex;
@@ -340,6 +343,7 @@ body{
                         height: fit-content;
                         border-radius: 20px;
                         background-color: var(--menu);
+                        box-shadow: var(--border) 0px -2px 6px 0px inset;
                         overflow: clip;
                         .manager-content-info-box-entry-content-details{
                             display: flex;
@@ -413,7 +417,7 @@ body{
                 height: 10%;
                 border-radius: 20px;
                 border: none;
-                box-shadow: var(--border) 0px 2px 8px 0px;
+                box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 6px 0px inset;
                 background-color: var(--button);
                 p{
                     color: var(--dark);
