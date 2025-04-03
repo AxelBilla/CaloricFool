@@ -8,7 +8,6 @@ export class entry{
       SELECT x.* FROM ${sql(entryName)} x, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=x.userid
     `.forEach(row => {
       delete row.userid;
-      delete row.entryid;
       entries.push(row);
     });
     return entries;
@@ -20,7 +19,6 @@ export class entry{
       SELECT x.* FROM ${sql(entryName)} x, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=x.userid AND (x.timeof BETWEEN ${startDate} AND ${endDate})
     `.forEach(row => {
       delete row.userid;
-      delete row.entryid;
       entries.push(row);
     });
     return entries;

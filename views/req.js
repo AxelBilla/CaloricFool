@@ -112,7 +112,7 @@ class utils{
   static toInch(num){ // Convert a CM to INCHES
     return num/2.54;
   }
-  static roundNum(num){ // Round up to the 2nd decimal
-    return Math.round(num * 10) / 10;
+  static roundNum(num, decimal=1){ // Round up to the 2nd decimal by default
+    return Math.round(num * (10**decimal)) / (10**decimal);
   }
 }

@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/views/main.css">
     <script type="text/javascript" src="/assets/lib/jquery-3.7.1.min.js"></script> 
     <script type="text/javascript" src="/views/req.js"></script> 
-    <script type="text/javascript" src="/views/anim.js"></script> 
+    <script type="text/javascript" src="/views/main.js"></script> 
 
 </head>
 
@@ -27,7 +27,7 @@
                 <form id="login-form" class="sign-menu-fields-form">
                     <input type="email" name="email" placeholder="EMAIL" id="login-field-email" class="sign-menu-fields-form-text f-iconic" required /> 
                     <input type="password" name="password" placeholder="PASSWORD" id="login-field-password" class="sign-menu-fields-form-text f-iconic" required />
-                    <button id="register" class="sign-menu-fields-form-register f-idendidad clickable">I don't have an account.</button>
+                    <button type="button" id="register" class="sign-menu-fields-form-register f-idendidad clickable">I don't have an account.</button>
                     <div class="sign-menu-fields-form-button">
                         <label for="remember" class="f-idendidad">Remember me?</label>
                         <input type="checkbox" name="remember" id="remember">
@@ -46,7 +46,7 @@
                     <input type="text" name="nickname" placeholder="USERNAME" id="register-field-nickname" class="sign-menu-fields-form-text f-iconic" required />
                     <input type="email" name="email" placeholder="EMAIL" id="register-field-email" class="sign-menu-fields-form-text f-iconic" required /> 
                     <input type="password" name="password" placeholder="PASSWORD" id="register-field-password" class="sign-menu-fields-form-text f-iconic" required />
-                    <button id="login" class="sign-menu-fields-form-register f-idendidad clickable">I actually do have an account!</button>
+                    <button type="button" id="login" class="sign-menu-fields-form-register f-idendidad clickable">I actually do have an account!</button>
                     <div class="sign-menu-fields-form-button">
                         <label for="remember" class="f-idendidad">Remember me?</label>
                         <input type="checkbox" name="remember" id="remember">
@@ -82,8 +82,8 @@
             <div class="manager-header-appname f-iconic">
                 <p>Caloric Fool</p><!-- Application Name (Caloric Fool?) -->
             </div>
-            <button type="button" class="manager-header-setting clickable">
-                <img src="../assets/svg/setting-icon.svg" alt="SETTINGS">
+            <button class="manager-header-settings clickable" id="open-settings">
+                <img src="../assets/svg/settings-icon.svg" alt="open settings">
             </button>
         </div>
 
@@ -92,7 +92,7 @@
 
 
                 <!-- EVERY SLIDING BOX WILL BE HANDLED WITH DOM (FIRST BOX IS ALWAYS big BY DEFAULT)-->
-                
+
                 <!-- END OF BOXES -->
 
 
@@ -101,8 +101,8 @@
                 <div class="manager-content-info-box" id="info-menu">
                     <!-- Where every entry boxes pop up -->
                 </div>
-                <button class="manager-content-info-add f-iconic clickable">
-                    <p>EDIT</p>
+                <button class="manager-content-info-add f-iconic clickable" id="add-entry">
+                    <p>ADD</p>
                 </button>
             </div>
         </div>
@@ -114,64 +114,43 @@
     <!----------------------------------------------------------------------------------------------------------------------------->
 
 
-    <!-- Settings Menu -->
-    <div class="settings">
+    <!-- settingss Menu -->
+    <div class="settings hidden" id="settings">
         <div class="settings-header">
-            <div class="settings-header-exit">
-                <!-- Exit Button-->
+            <div class="settings-header-title no-select f-idendidad">
+                <p>Settings</p>
             </div>
-            <div class="settings-header-title">
-                <!-- "Settings" -->
+            <div class="settings-header-exit">
+                <button type="button" class="settings-header-exit-btn" id="exit-settings"> 
+                    <img src="../assets/svg/exit-icon.svg" alt="exit settings">
+                </button>
             </div>
         </div>
         <div class="settings-content">
-            <div class="settings-content-theme">
-                <div class="settings-content-theme-title">
-                    <!-- Name of Setting (Themes) -->
-                </div>
-                <div class="settings-content-theme-button">
-                    <div class="settings-content-theme-button-light">
-                        <!-- Light ver. of Button -->
-                    </div>
-                    <div class="settings-content-theme-button-dark">
-                        <!-- Dark ver. of Button -->
-                    </div>
-                </div>
-            </div>
-            <div class="settings-content-unit">
-                <div class="settings-content-unit-title">
-                    <!-- Name of Setting (Units) -->
-                </div>
-                <div class="settings-content-unit-button">
-                    <div class="settings-content-unit-button-lb">
-                        <!-- Pounds ver. of Button -->
-                    </div>
-                    <div class="settings-content-unit-button-kg">
-                        <!-- Kilograms ver. of Button -->
+            
+            <form id="settings-form" class="settings-content-form no-select">
+                <div class="settings-content-form-field">
+                    <button class="settings-content-form-field-button" id="settings-form-field-btn">
+                        <div class="settings-content-form-field-button-active">
+                            <p>Light</p> <!-- CHANGES WITH DOM DEPENDING ON ACTIVE OPTION ("Light"/"Dark")-->
+                        </div>
+                    </button>
+                    <div class="settings-content-form-field-title f-iconic">
+                        <p>Theme</p>
                     </div>
                 </div>
-            </div>
-            <div class="settings-content-???">
-                <div class="settings-content-???-title">
-                    <!-- Name of Setting (???) -->
-                </div>
-                <div class="settings-content-???-button">
-                    <div class="settings-content-???-button-?">
-                        <!-- ??? ver. of Button -->
-                    </div>
-                    <div class="settings-content-???-button-?">
-                        <!-- ???? ver. of Button -->
+                <div class="settings-content-form-field">
+                    <button class="settings-content-form-field-button"  id="settings-form-field-btn">
+                        <div class="settings-content-form-field-button-active">
+                            <p>KG</p> <!-- CHANGES WITH DOM DEPENDING ON ACTIVE OPTION ("KG"/"LBS")-->
+                        </div>
+                    </button>
+                    <div class="settings-content-form-field-title f-iconic">
+                        <p>Unit</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="settings-content-editinfo">
-                <div class="settings-content-editinfo-text">
-                    <!-- Text on Button ("Edit Infos") -->
-                </div>
-            </div>
-
-
+                <button type="button" class="settings-content-form-editinfo f-iconic" id="settings-editinfo"><p>EDIT INFORMATIONS</p></button>
+            </form>
 
         </div>
     </div>
@@ -233,43 +212,50 @@
 
 
     <!-- New Entry Menu -->
-    <div class="entry">
+    <div class="entry hidden" id="entry">
         <div class="entry-header">
-            <div class="entry-header-title">
-                <!-- "New Entry" -->
+            <div class="entry-header-title no-select f-idendidad">
+                <p>Entry</p>
             </div>
             <div class="entry-header-exit">
-                <!-- Exit button -->
+                <button type="button" class="entry-header-exit-btn" id="exit-entry"> 
+                    <img src="../assets/svg/exit-icon.svg" alt="exit entry">
+                </button>
             </div>
         </div>
         <div class="entry-content">
-            <div class="entry-content-type">
-                <!-- ADD A BUTTON BETWEEN ACT. & CONS.-->
-            </div>
-            <div class="entry-content-text">
-                <div class="entry-content-text-infoOne">
-                    <!-- "Kcal" / "Burn Rate" -->
+            
+            <form id="entry-form" class="entry-content-form no-select">
+                <div class="entry-content-form-field">
+                    <div class="entry-content-form-field-title f-iconic">
+                        <p>Gram</p>
+                    </div>
+                    <input type="number" name="primary-info" placeholder="0000" id="entry-form-primary-amount" class="entry-content-form-field-text f-idendidad" max="9999" required />
                 </div>
-                <div class="entry-content-text-infoTwo">
-                    <!-- "Gram" / "Duration" -->
+                <div class="entry-content-form-field">
+                    <div class="entry-content-form-field-title f-iconic">
+                        <p>Kcal</p>
+                    </div>
+                    <input type="number" name="secondary-info" placeholder="0000" id="entry-form-secondary-amount" class="entry-content-form-field-text f-idendidad" max="9999" required />
+
                 </div>
-            </div>
-            <div class="entry-content-boxes">
-                <div class="entry-content-boxes-infoOne">
-                    <!-- Input Box -->
+                <div class="entry-content-form-comment">
+                    <textarea name="comment-info" id="entry-form-comment" placeholder="COMMENT" class="entry-content-form-comment-text f-idendidad" required></textarea>
                 </div>
-                <div class="entry-content-boxes-infoTwo">
-                    <!-- Input Box -->
+
+                <div class="entry-content-form-time">
+                    <div class="entry-content-form-time-title f-iconic">
+                        <p>Time of Entry (Optional)</p>
+                    </div>
+                    <div class="entry-content-form-time-box">
+                        <input type="date" name="date-info" id="entry-form-date" class="entry-content-form-time-box-content f-idendidad"/>
+                        <input type="time" name="time-info" id="entry-form-hour" class="entry-content-form-time-box-content f-idendidad"/>
+                    </div>
                 </div>
-                <div class="info-content-boxes-comment">
-                    <!-- Big Input Box -->
-                </div>
-            </div>
-        </div>
-        <div class="entry-footer">
-            <div class="entry-footer-save">
-                <!-- Save Button -->
-            </div>
+                
+                <input type="submit" value="SAVE" id="entry-submit-btn" class="entry-content-form-submit f-idendidad">
+            </form>
+
         </div>
     </div>
 
