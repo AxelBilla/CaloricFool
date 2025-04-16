@@ -103,6 +103,17 @@ class user{
     return res;
   }
 
+  static async addEntry(form){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/addEntry",{
+      method: "POST",       
+      body: JSON.stringify({type: form.target[0].entryType, primaryInfo: form.target[1].value, secondaryInfo: form.target[2].value, comment: form.target[3].value, date: form.target[4].value, hour: form.target[5].value, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      headers: {"Content-Type": "application/json"} 
+    });
+    const res = await req.json()
+    return res;
+  }
+
 }
 
 class utils{

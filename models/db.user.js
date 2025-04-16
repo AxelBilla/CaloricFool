@@ -38,6 +38,16 @@ export class user{
     return entry;
   }
 
+  static async getUserHasInfo(userToken){ // Checks if [USER] has an account
+    let entries=[];
+    const request = await sql`
+      SELECT EXISTS (SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid limit 1)
+    `.forEach(row => {
+      entries.push(row.exists);
+    });
+    return entries[0];
+  }
+
   static async addInfos(userToken, newInfos){
     const request = await sql`
       INSERT INTO Informations VALUE((SELECT MAX(InformationID) FROM Informations)+1, ${newInfos.bodytype}, ${newInfos.age}, ${newInfos.weight}, ${newInfos.height}, ${newInfos.updatedate}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))

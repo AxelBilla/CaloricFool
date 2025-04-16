@@ -77,5 +77,11 @@ app.post('/getEntriesFrom', async function(req, res){
   res.json(exec);
 })
 
+app.post('/addEntry', async function(req, res){
+  //const exec = await entry.addEntry(req.body); 
+  //res.json(exec);
+  res.json({abc: "abc"})
+})
+
 const httpsServer = https.createServer(credentials, app);
 httpsServer.listen(8443);

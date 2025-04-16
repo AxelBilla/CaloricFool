@@ -1,13 +1,20 @@
 window.addEventListener("load", function(){
-    
-    bgAnim(); // Should never stop, animates the background
-    formHightlight("sign-login", "login-btn", "login-field-email", "login-field-password"); // Triggers when the email & password fields are filled in the login form
-    formHightlight("sign-register", "register-btn", "register-field-nickname", "register-field-email", "register-field-password"); // Triggers when the username, email & password fields are filled in the sign up form
-    slideGrab("content-slider", "content-slider");
+    const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
 
-    popupHandler("settings","open-settings","open-settings")
-    popupHandler("entry", "add-entry", "exit-entry")
-    
+    bgAnim(); // Should never stop, animates the background
+    formHightlight("sign-login", "login-btn", defaultHighlight, "login-field-email", "login-field-password"); // Highlights the submit button when the email & password fields are filled in the login form
+    formHightlight("sign-register", "register-btn", defaultHighlight, "register-field-nickname", "register-field-email", "register-field-password"); // Highlights the submit button when the username, email & password fields are filled in the sign up form
+    slideGrab("content-slider", "content-slider"); // Let us grab the day boxes
+
+    popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
+
+    popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
+    formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
+    switchEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
+
+    popupHandler("information", "settings-editinfo", "exit-information") // Manages the opening & closing of our information menu
+    formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
+
     //
     const register = document.getElementById("register");
     register.addEventListener("click", function(){
@@ -21,14 +28,14 @@ window.addEventListener("load", function(){
     })
     
 
-    //
+    // Triggers the login sequence if the user's "token" (held in their storedSession cache) is valid
     user.tokenLog().then(data => {
         if(data){
             loginSequence();
         }
     })
 
-    //
+    // Triggers the login sequence if the user's inputted credentials are valid
     $('#login-form').submit(function(e) {
         e.preventDefault();
         user.login(e).then(data=>{
@@ -40,28 +47,39 @@ window.addEventListener("load", function(){
         })
     })
 
-    //
+    // Triggers the register sequence if the credentials given to create the user's account do not conflict with pre-existing accounts'
     $('#register-form').submit(function(e) {
         e.preventDefault();
         user.register(e).then(data=>{
             if(data.status){
-                registerSequence()
+                registerSequence(e.target[0].value)
             } else {
                 console.log("error mail") // Will have to play with the form to show an error
             };
         })
     })
 
+
+
     //
     $('#entry-form').submit(function(e) {
         e.preventDefault();
-        return false; //temp
+        console.log(e)
+        //user.addEntry(e).then(data=>{
+            //if(data.status){
+            //    createEntryBoxes(data)
+            //} else {
+            //    console.log("error entry") // Will have to play with the form to show an error
+            //};
+        //})
+        popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
     })
 
     //
-    $('#settings-form').submit(function(e) {
+    $('#information-form').submit(function(e) {
         e.preventDefault();
-        return false; //temp
+        // DO THING
+        popOut(e.target.parentElement.parentElement); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
     })
 })
 
@@ -73,8 +91,10 @@ async function loginSequence(){
     createDayBoxes(entries);
 }
 
-function registerSequence(){
+function registerSequence(name){
     gotoFrom("manager", "sign-register");
+    const username = document.getElementById("user-name");
+    username.innerHTML=name;
     //Will trigger an event to automatically pop up the Info menu (can't close)
 }
 
@@ -138,7 +158,7 @@ function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWi
 
 
 // Takes a page(page) to listen to and alters a button(btn)'s CSS based on whether the given fields(field1->field5) are filled or not.  
-function formHightlight(page, btn, field1, field2='', field3='', field4='', field5=''){
+function formHightlight(page, btn, colors, field1, field2='', field3='', field4='', field5=''){
     
     let fields=[field1, field2, field3, field4, field5];
     let fieldTotal = 0;
@@ -147,17 +167,16 @@ function formHightlight(page, btn, field1, field2='', field3='', field4='', fiel
             fieldTotal++;
         }
     })
-
     var isActive=0;
     const sign = document.getElementById(page);
     sign.addEventListener("keyup", function(){
         const lgbtn = document.getElementById(btn);
         
-        const light = {value: getComputedStyle(document.documentElement).getPropertyValue('--light'), name: 'light'};
-        const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue('--midgray'), name: 'midgray'};
+        const light = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOn}`), name: colors.bgOn};
+        const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOff}`), name: colors.bgOff};
         
-        const faded = {value: getComputedStyle(document.documentElement).getPropertyValue('--fadedtxt'), name: 'faded'};
-        const dark = {value: getComputedStyle(document.documentElement).getPropertyValue('--dark'), name: 'dark'};
+        const faded = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.txtOff}`), name: colors.txtOff};
+        const dark = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.txtOn}`), name: colors.txtOn};
 
         let fieldValid = 0;
         fields.forEach(fl => {
@@ -172,7 +191,9 @@ function formHightlight(page, btn, field1, field2='', field3='', field4='', fiel
         if(fieldValid==fieldTotal){
             if (isActive!=1){
                 // When all fields are filled do:
-                colorBgFade(lgbtn, midgray, light)
+                if(getComputedStyle(lgbtn).backgroundColor!=light.value){
+                    colorBgFade(lgbtn, midgray, light)
+                }
                 lgbtn.style.color=dark.value;
                 lgbtn.style.backgroundColor=`var(--${light.name})`;
                 lgbtn.classList.add('clickable')
@@ -255,6 +276,16 @@ async function updateUserInfo(){
 
     name.innerHTML=username; // Edits text to go from our page's default username to our actual username
 
+
+    const editForm = {weight: document.getElementById("information-form-weight"), height: document.getElementById("information-form-height"), age: document.getElementById("information-form-age")};
+    editForm.weight.value=utils.roundNum(info.weight);
+    editForm.weight.nextElementSibling.children[0].innerHTML=units.weight;
+
+    editForm.height.value=utils.roundNum(info.height);
+    editForm.height.nextElementSibling.children[0].innerHTML=units.height;
+
+    editForm.age.value=info.age;
+
 }
 
 function rolldownClick(clickedParent, targetChild, exceptChild=""){
@@ -294,7 +325,7 @@ function dayBoxClick(){
 
 async function createEntryBoxes(entries){    
     const settings = await user.getSettings(); // Get USER's settings
-    const parent = document.getElementById("info-menu");
+    const parent = document.getElementById("entry-menu");
 
     try{
         entries.cons.sort(function(a,b){
@@ -338,7 +369,7 @@ async function createEntryBoxes(entries){
             let newEl = document.createElement("div");
             newEl.classList.add("manager-content-info-box-entry");
             console.log(el)
-            newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-iconic" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT ENTRY</button></div></div></div><div class="entry-data hidden">${el.entryid}<>`;
+            newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-iconic" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT ENTRY</button></div></div></div><div class="entry-data hidden">${el.entryid}</div>`;
             parent.appendChild(newEl);
         }
     )}
@@ -399,7 +430,7 @@ async function getEntriesOn(date) {
     return newEntries
 }
 
-function popOut(element, speed){
+function popOut(element, speed=500, bg=false){
     let keyframe = {
         opacity: [100,0],
     };
@@ -411,10 +442,21 @@ function popOut(element, speed){
     anim.addEventListener('finish', () => {
         element.classList.add("hidden")
     });
+    if(bg){
+        let bgElement = document.getElementById("inactive-bg");
+        let bganim = bgElement.animate(keyframe, option);
+        bganim.addEventListener('finish', () => {
+            bgElement.classList.add("hidden")
+        });
+    }
 }
 
-function popIn(element, speed){
+function popIn(element, speed=500, bg=false){
     element.classList.remove("hidden")
+    element.scrollTop=0
+    for(let i=0; i<element.children.length; i++){
+        element.children[i].scrollTop=0;
+    }
     let keyframe = {
         opacity: [0,100],
     };
@@ -423,9 +465,14 @@ function popIn(element, speed){
         ease: "easing"
     };
     element.animate(keyframe, option);
+    if(bg){
+        const bg = document.getElementById("inactive-bg");
+        bg.classList.remove("hidden");
+        bg.animate(keyframe, option);
+    }
 }
 
-function popupHandler(element, entryBtn, exitBtn, speed=500){
+function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false){
     const el = document.getElementById(element);
     const entrance = document.getElementById(entryBtn);
     const exit = document.getElementById(exitBtn);
@@ -433,21 +480,39 @@ function popupHandler(element, entryBtn, exitBtn, speed=500){
     if(entryBtn!=exitBtn){
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
-                popIn(el, speed);
+                popIn(el, speed, bg);
             }
         })
         exit.addEventListener("click", ()=> {
             if(!el.classList.contains("hidden")){
-                popOut(el, speed);
+                popOut(el, speed, bg);
             }
         })
     } else {
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
-                popIn(el, speed);
+                popIn(el, speed, bg);
             } else {
-                popOut(el, speed);
+                popOut(el, speed, bg);
             }
         })
     }
+}
+
+function switchEntryType(){
+    const btn = document.getElementById("entry-form-type");
+    btn["entryType"]=0; // set as a cons. by default
+    btn.addEventListener("click", (e) =>{
+        if (e.target["entryType"]==0){
+            e.target["entryType"]=1; // 1: Act.
+            e.target.value="EXERCISE MODE";
+            e.target.form[1].previousElementSibling.innerText="Minutes";
+            e.target.form[2].previousElementSibling.innerText="Kcal/h";
+        } else {
+            e.target["entryType"]=0; // 0: Cons.
+            e.target.value="INTAKE MODE";
+            e.target.form[1].previousElementSibling.innerText="Gram";
+            e.target.form[2].previousElementSibling.innerText="Kcal";
+        }
+    })
 }

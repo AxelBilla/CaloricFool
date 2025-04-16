@@ -42,8 +42,12 @@ export class user{
         return db_user.getUserInfos(req.token); // Gets every stored informations of a given user
     }
 
-    static getLastInfo(req){
-        return db_user.getUserLastInfo(req.token);
+    static async getLastInfo(req){
+        let infoExists = await db_user.getUserHasInfo(req.token);
+        if(infoExists){
+            return db_user.getUserLastInfo(req.token);
+        }
+        return {}
     }
 
     static async getNewWeight(req){ // Uses the cons. & acts. entries between now and the last info update to calculate a user's weight

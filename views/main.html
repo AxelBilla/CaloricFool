@@ -15,7 +15,8 @@
 
 <body>
     <div id="background"></div>
-    
+    <div class="hidden" id="inactive-bg"></div>
+
     <!-- Login Page -->
     <div class="sign" id="sign">
               
@@ -98,7 +99,7 @@
 
             </div>
             <div class="manager-content-info no-select">
-                <div class="manager-content-info-box" id="info-menu">
+                <div class="manager-content-info-box" id="entry-menu">
                     <!-- Where every entry boxes pop up -->
                 </div>
                 <button class="manager-content-info-add f-iconic clickable" id="add-entry">
@@ -162,46 +163,57 @@
     
 
     <!-- Information Menu -->
-    <div class="info">
-        <div class="info-header">
-            <div class="info-header-title">
-                <!-- "Informations" -->
+    <div class="information hidden" id="information">
+        <div class="information-header">
+            <div class="information-header-title no-select f-idendidad">
+                <p>Informations</p>
             </div>
-            <div class="info-header-exit">
-                <!-- Exit button (not displayed on first use)-->
-            </div>
-        </div>
-        <div class="info-content">
-            <div class="info-content-text">
-                <div class="info-content-text-weight">
-                    <!-- "Weight :" -->
-                </div>
-                <div class="info-content-text-height">
-                    <!-- "Height :" -->
-                </div>
-                <div class="info-content-text-age">
-                    <!-- "Age :" -->
-                </div>
-            </div>
-            <div class="info-content-boxes">
-                <div class="info-content-boxes-weight">
-                    <!--Input box (empty by default, pre-filled with user's infos)-->
-                    <!-- "Kg"/"Lb" follow the box -->
-                </div>
-                <div class="info-content-boxes-height">
-                    <!--Input box (empty by default, pre-filled with user's infos)-->
-                    <!-- "Cm"/"Inch" follow the box -->
-                </div>
-                <div class="info-content-boxes-age">
-                    <!--Input box (empty by default, pre-filled with user's infos)-->
-                    <!-- "Yo" follow the box -->
-                </div>
+            <div class="information-header-exit">
+                <button class="information-header-exit-btn" id="exit-information"> 
+                    <img src="../assets/svg/exit-icon.svg" alt="exit information">
+                </button>
             </div>
         </div>
-        <div class="info-footer">
-            <div class="info-footer-save">
-                <!-- Save Button -->
-            </div>
+        <div class="information-content">
+            
+            <form id="information-form" class="information-content-form no-select">
+                <div class="information-content-form-field">
+                    <div class="information-content-form-field-title f-iconic">
+                        <p>Weight</p>
+                    </div>
+                    <div class="information-content-form-field-inputs">
+                        <input type="number" name="weight-info" placeholder="000" id="information-form-weight" class="information-content-form-field-inputs-text f-idendidad" max="999" step="0.01" required />
+                        <div class="information-content-form-field-inputs-attribute f-iconic">
+                            <p>kg</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="information-content-form-field">
+                    <div class="information-content-form-field-title f-iconic">
+                        <p>Height</p>
+                    </div>
+                    <div class="information-content-form-field-inputs">
+                        <input type="number" name="height-info" placeholder="000" id="information-form-height" class="information-content-form-field-inputs-text f-idendidad" max="999" step="0.01" required />
+                        <div class="information-content-form-field-inputs-attribute f-iconic">
+                            <p>cm</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="information-content-form-field">
+                    <div class="information-content-form-field-title f-iconic">
+                        <p>Age</p>
+                    </div>
+                    <div class="information-content-form-field-inputs">
+                        <input type="number" name="age-info" placeholder="000" id="information-form-age" class="information-content-form-field-inputs-text f-idendidad" max="999" required />
+                        <div class="information-content-form-field-inputs-attribute f-iconic">
+                            <p>yo</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="submit" value="SAVE" id="information-submit-btn" class="information-content-form-submit f-idendidad">
+            </form>
+
         </div>
     </div>
 
@@ -225,7 +237,10 @@
         </div>
         <div class="entry-content">
             
-            <form id="entry-form" class="entry-content-form no-select">
+            <form id="entry-form" class="entry-content-form no-select" autocomplete="off">
+                <div class="entry-content-form-field">
+                    <input type="button" class="entry-content-form-button f-idendidad" value="INTAKE MODE" id="entry-form-type">
+                </div>
                 <div class="entry-content-form-field">
                     <div class="entry-content-form-field-title f-iconic">
                         <p>Gram</p>
@@ -240,7 +255,7 @@
 
                 </div>
                 <div class="entry-content-form-comment">
-                    <textarea name="comment-info" id="entry-form-comment" placeholder="COMMENT" class="entry-content-form-comment-text f-idendidad" required></textarea>
+                    <textarea name="comment-info" id="entry-form-comment" placeholder="COMMENT" class="entry-content-form-comment-text f-idendidad"></textarea>
                 </div>
 
                 <div class="entry-content-form-time">
