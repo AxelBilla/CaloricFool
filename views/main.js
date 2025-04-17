@@ -71,7 +71,14 @@ window.addEventListener("load", function(){
     $('#entry-form').submit(function(e) {
         e.preventDefault();
         console.log(e)
-        user.addEntry(e).then(data=>{
+        let date;
+        if(e.target[4].value===""){
+            date = new Date();
+        } else {
+            date = new Date(e.target[4].value+" "+e.target[5].value);
+        }
+        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes();
+        user.addEntry(e, date).then(data=>{
             console.log(data)
             if(data.status){
                 const slider = document.getElementById("content-slider"); 
