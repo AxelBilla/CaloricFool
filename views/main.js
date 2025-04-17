@@ -411,7 +411,7 @@ async function createEntryBoxes(entries, date){
     newEl.id="tracker-goal";
     newEl.classList.add("manager-content-info-box-goal");
     newEl.classList.add("f-idendidad");
-    newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span> / <span id="day-goal">${utils.roundNum(goal)}</span> kcal</p>`;
+    newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span>&nbsp/&nbsp<span id="day-goal">${utils.roundNum(goal)}</span>&nbspkcal</p>`;
     parent.appendChild(newEl);
 
     entries = entries.cons.concat(entries.acts);
