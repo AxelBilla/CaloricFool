@@ -67,7 +67,7 @@
     <!-- Main Page -->
     <div class="manager hidden" id="manager">
         <div class="manager-header no-select">
-            <div class="manager-header-user f-iconic">
+            <div class="manager-header-user clickable f-iconic" id="open-logout">
                 <p class="manager-header-user-name" id="user-name">
                     Jane Doe<!-- User's Nickname -->
                 </p>
@@ -90,7 +90,6 @@
 
         <div class="manager-content">
             <div class="manager-content-slider slider" id="content-slider">
-
 
                 <!-- EVERY SLIDING BOX WILL BE HANDLED WITH DOM (FIRST BOX IS ALWAYS big BY DEFAULT)-->
 
@@ -115,7 +114,7 @@
     <!----------------------------------------------------------------------------------------------------------------------------->
 
 
-    <!-- settingss Menu -->
+    <!-- settings Menu -->
     <div class="settings hidden" id="settings">
         <div class="settings-header">
             <div class="settings-header-title no-select f-idendidad">
@@ -131,7 +130,7 @@
             
             <form id="settings-form" class="settings-content-form no-select">
                 <div class="settings-content-form-field">
-                    <button class="settings-content-form-field-button" id="settings-form-field-btn">
+                    <button type="button" class="settings-content-form-field-button" id="settings-theme">
                         <div class="settings-content-form-field-button-active">
                             <p>Light</p> <!-- CHANGES WITH DOM DEPENDING ON ACTIVE OPTION ("Light"/"Dark")-->
                         </div>
@@ -141,7 +140,7 @@
                     </div>
                 </div>
                 <div class="settings-content-form-field">
-                    <button class="settings-content-form-field-button"  id="settings-form-field-btn">
+                    <button type="button" class="settings-content-form-field-button" id="settings-unit">
                         <div class="settings-content-form-field-button-active">
                             <p>KG</p> <!-- CHANGES WITH DOM DEPENDING ON ACTIVE OPTION ("KG"/"LBS")-->
                         </div>
@@ -274,6 +273,32 @@
         </div>
     </div>
 
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!-- Warning Box -->
+    <div class="warning hidden" id="warning">
+        <div class="warning-header">
+            <div class="warning-header-title no-select f-idendidad">
+                <p>Warning</p>
+            </div>
+            <div class="warning-header-exit">
+                <button type="button" class="warning-header-exit-btn" id="exit-warning"> 
+                    <img src="../assets/svg/exit-icon.svg" alt="exit warning">
+                </button>
+            </div>
+        </div>
+        <form class="warning-content no-select" id="warning-content">
+            <div class="warning-content-message f-idendidad" id="warning-message">
+                <p>Are you sure <br>you want to proceed?</p> <!-- SHOULD BE CHANGED DEPENDING ON THE WARNING ISSUED -->
+            </div>
+            <button type="submit" class="warning-content-btn clickable f-idendidad" id="warning-btn"> 
+                <p>YES</p>
+            </button>
+        </form>
+    </div>
 
 </body>
 

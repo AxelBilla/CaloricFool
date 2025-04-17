@@ -44,6 +44,18 @@ class user{
     return res;
   }
   
+  static async getInfoFrom(maxDate){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/getInfoFrom",{ // same as above
+      method: "POST",
+      body: JSON.stringify({date: maxDate, token: tkn}), // Same as above
+      headers: {"Content-Type": "application/json"} // Same as above
+    });
+    const res = await req.json()
+    console.log("fI: ",res)
+    return res;
+  }
+  
   static async newWeight(){
     const tkn = localStorage.getItem("token");
     const req = await fetch("/newWeight",{ // same as above

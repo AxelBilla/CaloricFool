@@ -52,6 +52,11 @@ app.post('/getLastInfo', async function(req, res){
   res.json(exec);
 })
 
+app.post('/getInfoFrom', async function(req, res){
+  const exec = await user.getInfoFrom(req.body); 
+  res.json(exec);
+})
+
 app.post('/newWeight', async function(req, res){
   const exec = await user.getNewWeight(req.body); 
   res.json(exec);

@@ -38,6 +38,16 @@ export class user{
     return entry;
   }
 
+  static async getUserInfoFrom(maxDate, userToken){ // Gets the latest entry of [USER] in the "Informations" table
+    const request = await sql`
+      SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid AND (i.UpdateDate <= ${maxDate}) ORDER BY UpdateDate DESC limit 1
+    `
+    let entry = request[0];
+    delete entry.userid;
+    delete entry.informationid;
+    return entry;
+  }
+
   static async getUserHasInfo(userToken){ // Checks if [USER] has an account
     let entries=[];
     const request = await sql`

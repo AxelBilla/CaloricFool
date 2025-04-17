@@ -50,6 +50,14 @@ export class user{
         return {}
     }
 
+    static async getInfoFrom(req){
+        let infoExists = await db_user.getUserHasInfo(req.token);
+        if(infoExists){
+            return db_user.getUserInfoFrom(req.date, req.token);
+        }
+        return {}
+    }
+
     static async getNewWeight(req){ // Uses the cons. & acts. entries between now and the last info update to calculate a user's weight
         try{
             var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user        

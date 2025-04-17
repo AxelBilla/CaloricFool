@@ -7,13 +7,18 @@ window.addEventListener("load", function(){
     slideGrab("content-slider", "content-slider"); // Let us grab the day boxes
 
     popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
+    switchValue("settings-theme", "theme");
+    switchValue("settings-unit", "unit");
 
     popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
-    switchEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
+    setEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
 
     popupHandler("information", "settings-editinfo", "exit-information") // Manages the opening & closing of our information menu
     formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
+
+    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("<p>Are you sure <br>you want to logout from this account?</p>", 1, "YES")) // Manages opening & closing of warning logout menu
+    popupHandler("warning","entry-menu","exit-warning", 500, true, ()=>setWarning("<p>AFAF?</p>", 0, "YES")) // Manages opening & closing of warning logout menu
 
     //
     const register = document.getElementById("register");
@@ -28,7 +33,7 @@ window.addEventListener("load", function(){
     })
     
 
-    // Triggers the login sequence if the user's "token" (held in their storedSession cache) is valid
+    // Triggers the login sequence if the user's "token" (held in their localStorage cache) is valid
     user.tokenLog().then(data => {
         if(data){
             loginSequence();
@@ -59,15 +64,13 @@ window.addEventListener("load", function(){
         })
     })
 
-
-
     //
     $('#entry-form').submit(function(e) {
         e.preventDefault();
         console.log(e)
         //user.addEntry(e).then(data=>{
             //if(data.status){
-            //    createEntryBoxes(data)
+            //    createEntryBoxes(data, date)
             //} else {
             //    console.log("error entry") // Will have to play with the form to show an error
             //};
@@ -81,10 +84,29 @@ window.addEventListener("load", function(){
         // DO THING
         popOut(e.target.parentElement.parentElement); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
     })
+
+    $('#warning-content').submit(function(e) {
+        switch (e.target[0].warnType) {
+            case 1:
+                logoutSequence()
+                break;
+            default:
+                alert("err warning")
+                break;
+        }
+        return false;
+    })
+
+    
 })
 
 async function loginSequence(){
     gotoFrom("manager", "sign-login");
+
+    const settings = await user.getSettings(); // Get USER's settings
+    localStorage.setItem("unit", settings.unit);
+    localStorage.setItem("theme", settings.theme);
+
     updateUserInfo();
 
     const entries = await user.getEntries()
@@ -93,9 +115,19 @@ async function loginSequence(){
 
 function registerSequence(name){
     gotoFrom("manager", "sign-register");
+
     const username = document.getElementById("user-name");
     username.innerHTML=name;
+
+    localStorage.setItem("unit", 0);
+    localStorage.setItem("theme", 0);
+
     //Will trigger an event to automatically pop up the Info menu (can't close)
+}
+
+function logoutSequence(){
+    localStorage.removeItem("token");
+    window.location.reload();
 }
 
 // Switches from our current interface(origin) to another interface(destination)
@@ -167,11 +199,10 @@ function formHightlight(page, btn, colors, field1, field2='', field3='', field4=
             fieldTotal++;
         }
     })
-    var isActive=0;
-    const sign = document.getElementById(page);
-    sign.addEventListener("keyup", function(){
-        const lgbtn = document.getElementById(btn);
-        
+    const lgbtn = document.getElementById(btn);
+    lgbtn['isActive']=0;
+    const el = document.getElementById(page);
+    el.addEventListener("keyup", function(){        
         const light = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOn}`), name: colors.bgOn};
         const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOff}`), name: colors.bgOff};
         
@@ -189,7 +220,7 @@ function formHightlight(page, btn, colors, field1, field2='', field3='', field4=
         })
         
         if(fieldValid==fieldTotal){
-            if (isActive!=1){
+            if (lgbtn['isActive']!=1){
                 // When all fields are filled do:
                 if(getComputedStyle(lgbtn).backgroundColor!=light.value){
                     colorBgFade(lgbtn, midgray, light)
@@ -198,16 +229,16 @@ function formHightlight(page, btn, colors, field1, field2='', field3='', field4=
                 lgbtn.style.backgroundColor=`var(--${light.name})`;
                 lgbtn.classList.add('clickable')
             }
-            isActive=1;
+            lgbtn['isActive']=1;
         } else {
-            if(isActive===1){
+            if(lgbtn['isActive']===1){
                 // When not enough fields are filled do: 
                 colorBgFade(lgbtn, light, midgray)
                 lgbtn.style.color=faded.value;
                 lgbtn.style.backgroundColor=`var(--${midgray.name})`;
                 lgbtn.classList.remove('clickable')
             }
-            isActive=0;
+            lgbtn['isActive']=0;
         }
     });
 };
@@ -251,13 +282,12 @@ function slideGrab(element, slides){
 }
 
 async function updateUserInfo(){
-    const settings = await user.getSettings(); // Get USER's settings
     const username = await user.getName(); // Get USER's name
 
     let info = await user.getLastInfo(); // Get latest info of USER
     let units = {weight: "kg", height: "cm"}; // Sets default values for the units
 
-    if (settings.unit){ // 0=Metric, 1=Imperial. 1==True
+    if (localStorage.getItem("unit")){ // 0=Metric, 1=Imperial. 1==True
         info.weight = utils.toLBS(info.weight); // Turns the collected info's weight from the default KG to LBS
         units.weight = "lbs"; // Switch from KG to LBS
         info.height = utils.toInch(info.height); // Turns the collection info's height from the default CM to INCHES
@@ -318,12 +348,13 @@ function dayBoxClick(){
             e.currentTarget.classList.add("bigbox-modifier")
         };
 
-        let newEntries = await getEntriesOn(e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
-        createEntryBoxes(newEntries);
+        let boxDate = e.currentTarget.getElementsByClassName("getDate")[0].innerHTML;
+        let newEntries = await getEntriesOn(boxDate);
+        createEntryBoxes(newEntries, boxDate);
     });
 }
 
-async function createEntryBoxes(entries){    
+async function createEntryBoxes(entries, date){    
     const settings = await user.getSettings(); // Get USER's settings
     const parent = document.getElementById("entry-menu");
 
@@ -338,6 +369,30 @@ async function createEntryBoxes(entries){
         console.log("empty entries")
     };
     parent.replaceChildren();
+
+    let maxDate = new Date(date)
+    let infos = await user.getInfoFrom(maxDate);
+
+    let goal=0;
+    if(infos.bodytype==0){
+        goal = utils.roundNum(447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))
+    } else {
+        goal = utils.roundNum(88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))
+    }
+    let intake=0;
+    console.log(entries)
+    entries.cons.forEach(cal =>{
+        intake+=(cal.kcal*(cal.gram/100));
+    });
+    entries.acts.forEach(exe =>{
+        intake-=((exe.duration/60)*exe.burnrate);
+    });
+    let newEl = document.createElement("div");
+    newEl.classList.add("manager-content-info-box-goal");
+    newEl.classList.add("f-idendidad");
+    newEl.innerHTML = `<p><span id="day-intake">${intake}</span> / <span id="day-goal">${goal}</span>kcal</p>`;
+    parent.appendChild(newEl);
+
     for(let i=0; i<Object.keys(entries).length; i++){
         Object.entries(entries)[i][1].forEach(el =>{
             el.primary={};
@@ -346,7 +401,7 @@ async function createEntryBoxes(entries){
                 el.primary.unit="kcal";
                 el.primary.amount=el.kcal;
                 el.secondary.amount=el.gram;
-                if(settings.unit){
+                if(localStorage.getItem("unit")){
                     el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000, 2);
                     el.secondary.unit="lbs";
                 } else {
@@ -414,7 +469,7 @@ async function createDayBoxes(entries){
     )}
     const getDate = $(parent).find(".getDate")
     let newEntries = await getEntriesOn(getDate[0].innerHTML);
-    createEntryBoxes(newEntries);
+    createEntryBoxes(newEntries, getDate[0].innerHTML);
     dayBoxClick()
 }
 
@@ -472,14 +527,16 @@ function popIn(element, speed=500, bg=false){
     }
 }
 
-function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false){
+function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc=()=>{console.log("default2")}){
     const el = document.getElementById(element);
     const entrance = document.getElementById(entryBtn);
     const exit = document.getElementById(exitBtn);
 
+
     if(entryBtn!=exitBtn){
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
+                extraFunc();
                 popIn(el, speed, bg);
             }
         })
@@ -491,6 +548,7 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false){
     } else {
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
+                extraFunc();
                 popIn(el, speed, bg);
             } else {
                 popOut(el, speed, bg);
@@ -499,7 +557,7 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false){
     }
 }
 
-function switchEntryType(){
+function setEntryType(){
     const btn = document.getElementById("entry-form-type");
     btn["entryType"]=0; // set as a cons. by default
     btn.addEventListener("click", (e) =>{
@@ -515,4 +573,25 @@ function switchEntryType(){
             e.target.form[2].previousElementSibling.innerText="Kcal";
         }
     })
+}
+
+async function switchValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
+    const element = document.getElementById(btn);
+    element.addEventListener("click", ()=>{
+        if(localStorage.getItem(item)==valueOn){
+            localStorage.setItem(item, valueOff);
+            effectFunc();
+        } else {
+            localStorage.setItem(item, valueOn);
+            effectFunc();
+        }
+    })
+}
+
+function setWarning(txtMsg, warnType=0, txtBtn="YES"){
+    const warnMsg = document.getElementById("warning-message")
+    const warnBtn = document.getElementById("warning-btn")
+    warnMsg.innerHTML=txtMsg;
+    warnBtn.children[0].innerHTML=txtBtn;
+    warnBtn["warnType"]=warnType;
 }

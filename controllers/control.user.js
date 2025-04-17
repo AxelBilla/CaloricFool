@@ -14,6 +14,10 @@ export class user{
         return mod.getLastInfo(req);
     }
 
+    static getInfoFrom(req){
+        return mod.getInfoFrom(req);
+    }
+
     static getSettings(req){
         return mod.getSettings(req);
     }
