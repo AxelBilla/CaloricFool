@@ -9,4 +9,8 @@ export class entry{
     static getEntriesFrom(req){
         return mod.getEntriesFrom(req);
     }
+
+    static addEntry(req){
+        return mod.addEntry(req);
+    }
 }

@@ -24,10 +24,17 @@ export class entry{
     return entries;
   }
 
-  static async addEntry(userToken, entryName, gram, kcal, comment, date){ // Gets every entry of [USER] in either the "Activities" or "Consumptions" table based on a given [entryName]
+  static async addEntry(userToken, entryName, primary, secondary, comment, date){ // Gets every entry of [USER] in either the "Activities" or "Consumptions" table based on a given [entryName]
     const request = await sql`
-      INSERT INTO ${sql(entryName)} VALUES((SELECT MAX(userid) FROM Users)+1, ${gram}, ${kcal}, ${comment}, to_timestamp(${date}), (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
+      INSERT INTO ${sql(entryName)} VALUES((SELECT MAX(entryid) FROM ${sql(entryName)})+1, ${primary}, ${secondary}, ${comment}, ${date}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
     `
+    let entry;
+    if(entryName=="consumptions"){
+      entry={type: entryName, gram: primary, kcal: secondary, comment: comment, timeof: date}
+    } else {
+      entry={type: entryName, duration: primary, burnrate: secondary, comment: comment, timeof: date}
+    }
+    return {status: true, entry: entry};
   }
 
 }

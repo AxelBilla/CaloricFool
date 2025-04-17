@@ -2,24 +2,27 @@ window.addEventListener("load", function(){
     const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
 
     bgAnim(); // Should never stop, animates the background
+    
     formHightlight("sign-login", "login-btn", defaultHighlight, "login-field-email", "login-field-password"); // Highlights the submit button when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", defaultHighlight, "register-field-nickname", "register-field-email", "register-field-password"); // Highlights the submit button when the username, email & password fields are filled in the sign up form
+    
     slideGrab("content-slider", "content-slider"); // Let us grab the day boxes
-
-    popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
-    switchValue("settings-theme", "theme");
-    switchValue("settings-unit", "unit");
 
     popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
     setEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
 
+    openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button");
+
     popupHandler("information", "settings-editinfo", "exit-information") // Manages the opening & closing of our information menu
     formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
 
+    popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
+    switchValue("settings-theme", "theme");
+    switchValue("settings-unit", "unit");
+    
     popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("<p>Are you sure <br>you want to logout from this account?</p>", 1, "YES")) // Manages opening & closing of warning logout menu
-    popupHandler("warning","entry-menu","exit-warning", 500, true, ()=>setWarning("<p>AFAF?</p>", 0, "YES")) // Manages opening & closing of warning logout menu
-
+    
     //
     const register = document.getElementById("register");
     register.addEventListener("click", function(){
@@ -68,13 +71,28 @@ window.addEventListener("load", function(){
     $('#entry-form').submit(function(e) {
         e.preventDefault();
         console.log(e)
-        //user.addEntry(e).then(data=>{
-            //if(data.status){
-            //    createEntryBoxes(data, date)
-            //} else {
-            //    console.log("error entry") // Will have to play with the form to show an error
-            //};
-        //})
+        user.addEntry(e).then(data=>{
+            console.log(data)
+            if(data.status){
+                const slider = document.getElementById("content-slider"); 
+                const bigbox = $(slider).find(`.bigbox-modifier`)[0]
+                if(bigbox.lastElementChild.innerHTML==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){
+                    let entries = document.getElementById("entry-menu");
+                    let entryDate = new Date(`2024-04-04 ${data.entry.timeof.hour}:${data.entry.timeof.minute}`)
+                    let goal = entries.children[0];
+                    for(let i = 1; i<entries.children.length; i++){
+                        let newDate = new Date(`2024-04-04 ${entries.children[i].children[0].children[0].children[0].textContent}:${entries.children[i].children[0].children[0].children[1].textContent}`)
+                        if(newDate.getTime()>=entryDate.getTime()){
+                            goal=entries.children[i];
+                        }
+                    }
+                    let newEntry = createEntry(data.entry);
+                    goal.parentNode.insertBefore(newEntry, goal.nextSibling);
+                }
+            } else {
+                console.log("error entry") // Will have to play with the form to show an error
+            };
+        })
         popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
     })
 
@@ -318,17 +336,23 @@ async function updateUserInfo(){
 
 }
 
-function rolldownClick(clickedParent, targetChild, exceptChild=""){
-    $(`.${clickedParent}`).click(function(e){ // Use JQuery to get when any single element with that class is clicked
-        if(!e.originalEvent.target.classList.contains(exceptChild)){ // Checks if the exact div we clicked on has our "exceptChild" in its classes 
-            const targetC = $(e.delegateTarget).find(`.${targetChild}`)[0] // Get the sole child with that targetted class found among our JQuery's click event's currentTarget's children
-            let visibility = getComputedStyle(targetC).getPropertyValue('display')
-            if(visibility!="none"){
+function openElement(clickedParent, targetChild, exceptChild=""){
+    $(document).on("click", `.${clickedParent}`,function(e){ // Use JQuery to get when any single element with that class is clicked
+        let childID;
+        for(let i = 0; i<e.currentTarget.children.length; i++){
+            if(e.currentTarget.children[i].classList.contains(targetChild)){
+                childID=i;
+                break;
+            }
+        };
+
+        if(!e.target.classList.contains(exceptChild)){ // Checks if the exact div we clicked on has our "exceptChild" in its classes 
+            if(!e.currentTarget.children[childID].classList.contains("hidden")){
                 //When it's visible do:
-                targetC.classList.add("hidden")
+                e.currentTarget.children[childID].classList.add("hidden")
             } else {
                 // When it's hidden do:
-                targetC.classList.remove("hidden")
+                e.currentTarget.children[childID].classList.remove("hidden")
             };
         }
     });
@@ -354,33 +378,22 @@ function dayBoxClick(){
     });
 }
 
-async function createEntryBoxes(entries, date){    
-    const settings = await user.getSettings(); // Get USER's settings
+async function createEntryBoxes(entries, date){
     const parent = document.getElementById("entry-menu");
-
-    try{
-        entries.cons.sort(function(a,b){
-            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
-        });
-        entries.acts.sort(function(a,b){
-            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
-        });
-    } catch(e){
-        console.log("empty entries")
-    };
     parent.replaceChildren();
 
-    let maxDate = new Date(date)
-    let infos = await user.getInfoFrom(maxDate);
+    if(!date instanceof Date){
+        date = new Date(date)
+    }
+    let infos = await user.getInfoFrom(date);
 
     let goal=0;
     if(infos.bodytype==0){
-        goal = utils.roundNum(447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))
+        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))
     } else {
-        goal = utils.roundNum(88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))
+        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))
     }
     let intake=0;
-    console.log(entries)
     entries.cons.forEach(cal =>{
         intake+=(cal.kcal*(cal.gram/100));
     });
@@ -388,49 +401,55 @@ async function createEntryBoxes(entries, date){
         intake-=((exe.duration/60)*exe.burnrate);
     });
     let newEl = document.createElement("div");
+    newEl.id="tracker-goal";
     newEl.classList.add("manager-content-info-box-goal");
     newEl.classList.add("f-idendidad");
-    newEl.innerHTML = `<p><span id="day-intake">${intake}</span> / <span id="day-goal">${goal}</span>kcal</p>`;
+    newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span> / <span id="day-goal">${utils.roundNum(goal)}</span> kcal</p>`;
     parent.appendChild(newEl);
 
-    for(let i=0; i<Object.keys(entries).length; i++){
-        Object.entries(entries)[i][1].forEach(el =>{
-            el.primary={};
-            el.secondary={};
-            if(el.hasOwnProperty("kcal")){
-                el.primary.unit="kcal";
-                el.primary.amount=el.kcal;
-                el.secondary.amount=el.gram;
-                if(localStorage.getItem("unit")){
-                    el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000, 2);
-                    el.secondary.unit="lbs";
-                } else {
-                    el.secondary.unit="g";
-                }
-            } else {
-                el.primary.unit="minute(s)";
-                el.primary.amount=el.duration;
-                el.secondary.unit="kcal/h";
-                el.secondary.amount=el.burnrate;
-            }
-
-            if (`${el.timeof.hour}`.length==1){
-                el.timeof.hour=`0${el.timeof.hour}`;
-            }
-            if (`${el.timeof.minute}`.length==1){
-                el.timeof.minute=`0${el.timeof.minute}`;
-            }
-
-            let newEl = document.createElement("div");
-            newEl.classList.add("manager-content-info-box-entry");
-            console.log(el)
-            newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-iconic" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT ENTRY</button></div></div></div><div class="entry-data hidden">${el.entryid}</div>`;
-            parent.appendChild(newEl);
-        }
-    )}
-    rolldownClick("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button");
+    entries = entries.cons.concat(entries.acts);
+    try{
+        entries.sort(function(a,b){
+            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
+        });
+    } catch(e){
+        console.log("empty entries")
+    };
+    for(let i=0; i<entries.length; i++){
+        parent.appendChild(createEntry(entries[i]));
+    }
 }
 
+function createEntry(el){
+    el.primary={};
+    el.secondary={};
+    if(el.hasOwnProperty("kcal")){
+        el.primary.unit=" kcal";
+        el.primary.amount=el.kcal;
+        el.secondary.amount=el.gram;
+        if(localStorage.getItem("unit")){
+            el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000, 2);
+            el.secondary.unit=" lbs";
+        } else {
+            el.secondary.unit=" g";
+        }
+    } else {
+        el.primary.unit=" minute(s)";
+        el.primary.amount=el.duration;
+        el.secondary.unit=" kcal/h";
+        el.secondary.amount=el.burnrate;
+    }
+    if (`${el.timeof.hour}`.length==1){
+        el.timeof.hour=`0${el.timeof.hour}`;
+    }
+    if (`${el.timeof.minute}`.length==1){
+        el.timeof.minute=`0${el.timeof.minute}`;
+    }
+    let newEl = document.createElement("div");
+    newEl.classList.add("manager-content-info-box-entry");
+    newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT ENTRY</button></div></div></div><div class="entry-data hidden">${el.entryid}</div>`;
+    return newEl;
+}
 
 async function createDayBoxes(entries){
     const parent = document.getElementById("content-slider");

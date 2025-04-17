@@ -175,6 +175,23 @@ export class user{
         })
         return entries;
     }
+
+    static async addEntry(req){
+        if (req.type==0){
+            req.type="consumptions"
+        } else {
+            req.type="activities"
+        };
+        if(req.date.day===""){
+            req.date=new Date();
+        } else {
+            req.date= new Date(req.date.day+" "+req.date.hour);
+        }
+        console.log(req)
+        let exec = await db_entry.addEntry(req.token, req.type, req.primaryInfo, req.secondaryInfo, req.comment, req.date)
+        exec.entry.timeof = {day: req.date.getDate(), month: req.date.getMonth()+1, year: req.date.getFullYear(), hour: req.date.getHours(), minute: req.date.getMinutes()};
+        return exec;
+    }
 }
 
 function generateToken(){
