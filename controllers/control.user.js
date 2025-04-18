@@ -25,4 +25,8 @@ export class user{
     static getName(req){
         return mod.getNickname(req);
     }
+
+    static addInfo(req){
+        return mod.addInfo(req);
+    }
 }

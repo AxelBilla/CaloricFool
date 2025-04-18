@@ -167,7 +167,7 @@
             <div class="information-header-title no-select f-idendidad">
                 <p>Informations</p>
             </div>
-            <div class="information-header-exit">
+            <div class="information-header-exit" id="exit-header-information">
                 <button class="information-header-exit-btn" id="exit-information"> 
                     <img src="../assets/svg/exit-icon.svg" alt="exit information">
                 </button>
@@ -209,7 +209,17 @@
                         </div>
                     </div>
                 </div>
-                
+                <div class="information-content-form-field">
+                    <div class="information-content-form-field-title f-iconic">
+                        <p>Gender</p>
+                    </div>
+                    <div class="information-content-form-field-inputs">
+                        <button type="button" id="information-form-bodytype" class="information-content-form-field-inputs-btn clickable f-idendidad">
+                            <img src="../assets/svg/bodytype0-icon.svg" alt="switch gender" class="information-content-form-field-inputs-btn-type0"> <!--0-->
+                            <img src="../assets/svg/bodytype1-icon.svg" alt="switch gender" class="information-content-form-field-inputs-btn-type1 hidden"> <!--1-->
+                        </button>
+                    </div>
+                </div>
                 <input type="submit" value="SAVE" id="information-submit-btn" class="information-content-form-submit f-idendidad">
             </form>
 
@@ -262,7 +272,7 @@
                         <p>Time of Entry (Optional)</p>
                     </div>
                     <div class="entry-content-form-time-box">
-                        <input type="date" name="date-info" id="entry-form-date" class="entry-content-form-time-box-content f-idendidad"/>
+                        <input type="date" name="date-info" id="entry-form-date" class="entry-content-form-time-box-content f-idendidad" min="2000-01-01"/>
                         <input type="time" name="time-info" id="entry-form-hour" class="entry-content-form-time-box-content f-idendidad"/>
                     </div>
                 </div>

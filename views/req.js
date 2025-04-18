@@ -126,15 +126,36 @@ class user{
     return res;
   }
 
+  static async addInfo(form, date){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/addInfo",{
+      method: "POST",       
+      body: JSON.stringify({weight: form.target[0].value, height: form.target[1].value, age: form.target[2].value, bodytype: form.target[3].bodyType, date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      headers: {"Content-Type": "application/json"} 
+    });
+    const res = await req.json()
+    return res;
+  }
+
 }
 
 class utils{
-  static toLBS(num){ // Convert a KG to LBS
+  static toLBS(num){ // Convert KG to LBS
     return num*2.20462262185;
   }
-  static toInch(num){ // Convert a CM to INCHES
+  
+  static toKG(num){ // Convert LBS to KG
+    return num*0.45359237;
+  }
+
+  static toInch(num){ // Convert CM to INCHES
     return num/2.54;
   }
+
+  static toCM(num){ // Convert INCHES to CM
+    return num*2.54;
+  }
+
   static roundNum(num, decimal=1){ // Round up to the 2nd decimal by default
     return Math.round(num * (10**decimal)) / (10**decimal);
   }

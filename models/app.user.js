@@ -16,7 +16,7 @@ export class user{
     static async register(req){
         const exist = await db_log.getAccount(req.email);
         if(!exist){
-            db_log.addAccount(req.user, req.email, req.password)
+            await db_log.addAccount(req.user, req.email, req.password)
             let tkn = await user.addToken(req);
             let res = {status: true, token: tkn};
             return res
@@ -102,7 +102,7 @@ export class user{
                 
                 lastInfos.weight=newWeight; // Sets our latest infos' weight to our new weight
                 lastInfos.updatedate=currentDate; // Sets our latest infos' date to today
-                //await db_user.addInfos(req.token, lastInfos); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
+                await db_user.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
                 return newWeight; // temporary testing measure
             } else {
                 return 0;
@@ -186,6 +186,12 @@ export class user{
         let exec = await db_entry.addEntry(req.token, req.type, req.primaryInfo, req.secondaryInfo, req.comment, req.date)
         exec.entry.timeof = {day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear(), hour: date.getHours(), minute: date.getMinutes()};
         return exec;
+    }
+
+    static async addInfo(req){
+        let date = new Date(req.date)
+        console.log(req, date)
+        return await db_user.addInfo(req.token, req, date)
     }
 }
 

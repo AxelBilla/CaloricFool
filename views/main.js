@@ -6,7 +6,7 @@ window.addEventListener("load", function(){
     formHightlight("sign-login", "login-btn", defaultHighlight, "login-field-email", "login-field-password"); // Highlights the submit button when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", defaultHighlight, "register-field-nickname", "register-field-email", "register-field-password"); // Highlights the submit button when the username, email & password fields are filled in the sign up form
     
-    slideGrab("content-slider", "content-slider"); // Let us grab the day boxes
+    slideGrab("content-slider"); // Let us grab the day boxes
 
     popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
@@ -14,14 +14,25 @@ window.addEventListener("load", function(){
 
     openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button");
 
-    popupHandler("information", "settings-editinfo", "exit-information") // Manages the opening & closing of our information menu
     formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
+    popupHandler("information", "settings-editinfo", "exit-information", 500, false, ()=>{
+        document.getElementById("information").children[0].children[1].classList.remove("hidden");
+        triggerEvent(document.getElementById("information-form"), "input")
+    }) // Manages the opening & closing of our information menu
+
+    switchElementValue("information-form-bodytype", "bodyType", 1, 0, 
+        ()=>{
+            let userType=document.getElementById("information-form-bodytype"); 
+            switchElement(userType.children[0], userType.children[1], userType["bodyType"], 1);
+        });
+
 
     popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
-    switchValue("settings-theme", "theme");
-    switchValue("settings-unit", "unit");
+    switchCacheValue("settings-theme", "theme");
+    switchCacheValue("settings-unit", "unit");
     
     popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("<p>Are you sure <br>you want to logout from this account?</p>", 1, "YES")) // Manages opening & closing of warning logout menu
+    
     
     //
     const register = document.getElementById("register");
@@ -70,44 +81,93 @@ window.addEventListener("load", function(){
     //
     $('#entry-form').submit(function(e) {
         e.preventDefault();
-        console.log(e)
         let date;
         if(e.target[4].value===""){
             date = new Date();
         } else {
             date = new Date(e.target[4].value+" "+e.target[5].value);
         }
-        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes();
+        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        console.log(e, date)
         user.addEntry(e, date).then(data=>{
-            console.log(data)
             if(data.status){
                 const slider = document.getElementById("content-slider"); 
-                const bigbox = $(slider).find(`.bigbox-modifier`)[0]
-                if(bigbox.lastElementChild.innerHTML==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){
-                    let entries = document.getElementById("entry-menu");
-                    let entryDate = new Date(`2024-04-04 ${data.entry.timeof.hour}:${data.entry.timeof.minute}`)
-                    let goal = entries.children[0];
-                    for(let i = 1; i<entries.children.length; i++){
-                        let newDate = new Date(`2024-04-04 ${entries.children[i].children[0].children[0].children[0].textContent}:${entries.children[i].children[0].children[0].children[1].textContent}`)
-                        if(newDate.getTime()>=entryDate.getTime()){
-                            goal=entries.children[i];
+                let day = createDay(data.entry);
+                console.log("tos: ", slider.children.length, slider.children.length>0)
+                if(slider.children.length>0){
+                    let dayDate = new Date(`${data.entry.timeof.year}-${data.entry.timeof.month}-${data.entry.timeof.day}`);
+                    let targetDay=0;
+                    for(let i = 0; i<slider.children.length; i++){
+                        let newDate = new Date(slider.children[i].lastElementChild.innerHTML);
+                        if(newDate.getTime()>=dayDate.getTime()){
+                            console.log(newDate, dayDate)
+                            if(newDate.getTime()===dayDate.getTime()){
+                                targetDay=0;
+                                break;
+                            } else {
+                                targetDay=slider.children[i];
+                            }
                         }
                     }
-                    let newEntry = createEntry(data.entry);
-                    goal.parentNode.insertBefore(newEntry, goal.nextSibling);
+                    console.log(targetDay)
+                    if(targetDay!==0){
+                        targetDay.parentNode.insertBefore(day, targetDay.nextSibling);
+                    } else {
+                        slider.insertBefore(day, slider.children[0])
+                    }
+                    const bigbox = $(slider).find(`.bigbox-modifier`)[0]
+                    if(bigbox.lastElementChild.innerHTML==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){
+                        let entries = document.getElementById("entry-menu");
+                        let entryDate = new Date(`2024-04-04 ${data.entry.timeof.hour}:${data.entry.timeof.minute}`)
+                        let goal = entries.children[0];
+                        for(let i = 1; i<entries.children.length; i++){
+                            let newDate = new Date(`2024-04-04 ${entries.children[i].children[0].children[0].children[0].textContent}:${entries.children[i].children[0].children[0].children[1].textContent}`)
+                            if(newDate.getTime()>=entryDate.getTime()){
+                                goal=entries.children[i];
+                            }
+                        }
+                        let newEntry = createEntry(data.entry);
+                        goal.parentNode.insertBefore(newEntry, goal.nextSibling);
+                    }
+                } else {
+                    day.classList.add("bigbox-modifier");
+                    day.classList.remove("smallbox-modifier")
+                    slider.appendChild(day)
+                    triggerEvent(day, "click");
                 }
+                dayBoxClick();
+                popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
             } else {
-                console.log("error entry") // Will have to play with the form to show an error
+                console.log("error entry"); // Will have to play with the form to show an error
             };
         })
-        popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
     })
 
     //
     $('#information-form').submit(function(e) {
         e.preventDefault();
-        // DO THING
-        popOut(e.target.parentElement.parentElement); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
+        if(localStorage.getItem("unit")==="1"){
+            e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
+            e.target[1].value=utils.roundNum(utils.toCM(e.target[1].value), 3);
+        };
+        e.target[3].bodyType ??= 0;
+        
+        date = new Date();
+        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        
+        user.addInfo(e, date).then(data => {
+            if(data.status){
+                updateUserInfo();
+                if(e.target["isRegistering"]===1){
+                    e.target["isRegistering"]=0;
+                    popOut(e.target.parentElement.parentElement, 500, true);
+                } else {
+                    popOut(e.target.parentElement.parentElement);
+                }
+            } else {
+                console.log("error info"); // Will have to play with the form to show an error
+            }
+        })
     })
 
     $('#warning-content').submit(function(e) {
@@ -133,9 +193,9 @@ async function loginSequence(){
     localStorage.setItem("theme", settings.theme);
 
     updateUserInfo();
+    createDayBoxes();
 
-    const entries = await user.getEntries()
-    createDayBoxes(entries);
+    console.log("ttttt:", localStorage.getItem("unit"), localStorage.getItem("unit")==="1")
 }
 
 function registerSequence(name){
@@ -146,6 +206,17 @@ function registerSequence(name){
 
     localStorage.setItem("unit", 0);
     localStorage.setItem("theme", 0);
+
+    const infoMenu = document.getElementById("information")
+    infoMenu.children[0].children[1].classList.add("hidden");
+    infoMenu.children[1].children[0]["isRegistering"]=1;
+    if(infoMenu.children[1].children[0][0].value!==""){
+        infoMenu.children[1].children[0][0].value="";
+        infoMenu.children[1].children[0][1].value="";
+        infoMenu.children[1].children[0][2].value="";
+    }
+
+    popIn(infoMenu, 500, true)
 
     //Will trigger an event to automatically pop up the Info menu (can't close)
 }
@@ -215,19 +286,16 @@ function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWi
 
 
 // Takes a page(page) to listen to and alters a button(btn)'s CSS based on whether the given fields(field1->field5) are filled or not.  
-function formHightlight(page, btn, colors, field1, field2='', field3='', field4='', field5=''){
+function formHightlight(page, btn, colors, ...fields){
     
-    let fields=[field1, field2, field3, field4, field5];
-    let fieldTotal = 0;
-    fields.forEach(fl => {
-        if(fl!=''){
-            fieldTotal++;
-        }
-    })
+    let fieldTotal = fields.length;
     const lgbtn = document.getElementById(btn);
-    lgbtn['isActive']=0;
+    if(lgbtn['isActive']!==1){
+        lgbtn['isActive']=0;
+    }
     const el = document.getElementById(page);
-    el.addEventListener("keyup", function(){        
+    
+    el.addEventListener("input", ()=>{        
         const light = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOn}`), name: colors.bgOn};
         const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOff}`), name: colors.bgOff};
         
@@ -276,34 +344,44 @@ function updateText(eventTrigger, textID, textGetFunc){
     })
 };
 
-function slideGrab(element, slides){
-    const page = document.getElementById(element);
+function slideGrab(slides){
     const slider = document.getElementById(slides);
-    let mouseDown = false;
-    let startY, scrollTop;
-   
-    page.addEventListener("mousemove", (e) => {
-        e.preventDefault();
-        if(!mouseDown) {
-            return;
-        }
-        const y = e.pageY - slider.offsetTop;
-        const scroll = y - startY;
-        slider.scrollTop = scrollTop - scroll;
-    });
-   
-    page.addEventListener("mousedown", function (e) {
-        mouseDown = true;
-        startY = e.pageY - slider.offsetTop;
-        scrollTop = slider.offsetTop;
-    }, false);
 
-    page.addEventListener("mouseup", function () {
-        mouseDown = false;
-    }, false);
-    page.addEventListener("mouseleave", function () {
-        mouseDown = false;
-    }, false);
+    let isDown = false;
+    let startX;
+    let startY;
+    let scrollLeft;
+    let scrollTop;
+
+    slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - slider.offsetLeft;
+    startY = e.pageY - slider.offsetTop;
+    scrollLeft = slider.scrollLeft;
+    scrollTop = slider.scrollTop;
+    slider.style.cursor = 'grabbing';
+    });
+
+    slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const y = e.pageY - slider.offsetTop;
+    const walkX = (x - startX) * 1; // Change this number to adjust the scroll speed
+    const walkY = (y - startY) * 1; // Change this number to adjust the scroll speed
+    slider.scrollLeft = scrollLeft - walkX;
+    slider.scrollTop = scrollTop - walkY;
+    });
 }
 
 async function updateUserInfo(){
@@ -312,7 +390,7 @@ async function updateUserInfo(){
     let info = await user.getLastInfo(); // Get latest info of USER
     let units = {weight: "kg", height: "cm"}; // Sets default values for the units
 
-    if (localStorage.getItem("unit")){ // 0=Metric, 1=Imperial. 1==True
+    if(localStorage.getItem("unit")==="1"){ // 0=Metric, 1=Imperial. 1==True
         info.weight = utils.toLBS(info.weight); // Turns the collected info's weight from the default KG to LBS
         units.weight = "lbs"; // Switch from KG to LBS
         info.height = utils.toInch(info.height); // Turns the collection info's height from the default CM to INCHES
@@ -332,7 +410,7 @@ async function updateUserInfo(){
     name.innerHTML=username; // Edits text to go from our page's default username to our actual username
 
 
-    const editForm = {weight: document.getElementById("information-form-weight"), height: document.getElementById("information-form-height"), age: document.getElementById("information-form-age")};
+    const editForm = {weight: document.getElementById("information-form-weight"), height: document.getElementById("information-form-height"), age: document.getElementById("information-form-age"), bodytype: document.getElementById("information-form-bodytype"), submit: document.getElementById("information-submit-btn")};
     editForm.weight.value=utils.roundNum(info.weight);
     editForm.weight.nextElementSibling.children[0].innerHTML=units.weight;
 
@@ -341,6 +419,8 @@ async function updateUserInfo(){
 
     editForm.age.value=info.age;
 
+    editForm.bodytype["bodyType"]=info.bodytype;
+    switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype["bodyType"], 1);
 }
 
 function openElement(clickedParent, targetChild, exceptChild=""){
@@ -400,19 +480,25 @@ async function createEntryBoxes(entries, date){
     } else {
         goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))
     }
+
     let intake=0;
     entries.cons.forEach(cal =>{
         intake+=(cal.kcal*(cal.gram/100));
     });
-    entries.acts.forEach(exe =>{
-        intake-=((exe.duration/60)*exe.burnrate);
+    entries.acts.forEach(exer =>{
+        intake-=((exer.duration/60)*exer.burnrate);
     });
+
     let newEl = document.createElement("div");
     newEl.id="tracker-goal";
     newEl.classList.add("manager-content-info-box-goal");
     newEl.classList.add("f-idendidad");
     newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span>&nbsp/&nbsp<span id="day-goal">${utils.roundNum(goal)}</span>&nbspkcal</p>`;
-    parent.appendChild(newEl);
+    if(parent.hasChildNodes()){
+        parent.replaceChildren(newEl)
+    } else {
+        parent.appendChild(newEl);
+    }
 
     entries = entries.cons.concat(entries.acts);
     try{
@@ -434,7 +520,7 @@ function createEntry(el){
         el.primary.unit=" kcal";
         el.primary.amount=el.kcal;
         el.secondary.amount=el.gram;
-        if(localStorage.getItem("unit")){
+        if(localStorage.getItem("unit")==="1"){
             el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000, 2);
             el.secondary.unit=" lbs";
         } else {
@@ -458,8 +544,11 @@ function createEntry(el){
     return newEl;
 }
 
-async function createDayBoxes(entries){
+async function createDayBoxes(){
     const parent = document.getElementById("content-slider");
+    let entries = await user.getEntries()
+    parent.replaceChildren();
+
     try{
         entries.cons.sort(function(a,b){
             return new Date(b.timeof.year+"-"+b.timeof.month+"-"+b.timeof.day) - new Date(a.timeof.year+"-"+a.timeof.month+"-"+a.timeof.day);
@@ -471,23 +560,18 @@ async function createDayBoxes(entries){
         console.log("empty days")
     }
 
-    let elFirst=true;
+    let elFirst = true;
     for(let i=0; i<Object.keys(entries).length; i++){
         let currentDay; let previousDay;
         Object.entries(entries)[i][1].forEach(async el =>{
             currentDay = el.timeof.year+"-"+el.timeof.month+"-"+el.timeof.day
             if(currentDay!=previousDay){
-                let newEl = document.createElement("div");
-                newEl.classList.add("manager-content-slider-box");
-                newEl.classList.add("f-idendidad");
-                newEl.classList.add("no-select");
+                let newEl = createDay(el);
                 if(elFirst){
                     newEl.classList.add("bigbox-modifier");
+                    newEl.classList.remove("smallbox-modifier")
                     elFirst=false;
-                } else {
-                    newEl.classList.add("smallbox-modifier");
                 }
-                newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
                 parent.appendChild(newEl);
             }
             previousDay=currentDay;
@@ -511,7 +595,7 @@ async function getEntriesOn(date) {
     return newEntries
 }
 
-function popOut(element, speed=500, bg=false){
+function popOut(element, speed=500, bg=false, extraFunc=()=>{console.log("default3")}){
     let keyframe = {
         opacity: [100,0],
     };
@@ -530,9 +614,10 @@ function popOut(element, speed=500, bg=false){
             bgElement.classList.add("hidden")
         });
     }
+    extraFunc();
 }
 
-function popIn(element, speed=500, bg=false){
+function popIn(element, speed=500, bg=false, extraFunc=()=>{console.log("default4")}){
     element.classList.remove("hidden")
     element.scrollTop=0
     for(let i=0; i<element.children.length; i++){
@@ -551,6 +636,7 @@ function popIn(element, speed=500, bg=false){
         bg.classList.remove("hidden");
         bg.animate(keyframe, option);
     }
+    extraFunc();
 }
 
 function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc=()=>{console.log("default2")}){
@@ -601,10 +687,10 @@ function setEntryType(){
     })
 }
 
-async function switchValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
+function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
-        if(localStorage.getItem(item)==valueOn){
+        if(localStorage.getItem(item)===valueOn){
             localStorage.setItem(item, valueOff);
             effectFunc();
         } else {
@@ -614,10 +700,48 @@ async function switchValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{con
     })
 }
 
+function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
+    const element = document.getElementById(btn);
+    element.addEventListener("click", ()=>{
+        if(element[item]==valueOn){
+            element[item]= valueOff;
+            effectFunc();
+        } else {
+            element[item]= valueOn;
+            effectFunc();
+        }
+    })
+}
+
+function switchElement(firstEl, secondEl, anchorData, dataOn){
+    if (anchorData!==dataOn){
+        secondEl.classList.add("hidden")
+        popIn(firstEl)
+    } else {
+        firstEl.classList.add("hidden")
+        popIn(secondEl)
+    }
+}
+
 function setWarning(txtMsg, warnType=0, txtBtn="YES"){
     const warnMsg = document.getElementById("warning-message")
     const warnBtn = document.getElementById("warning-btn")
     warnMsg.innerHTML=txtMsg;
     warnBtn.children[0].innerHTML=txtBtn;
     warnBtn["warnType"]=warnType;
+}
+
+function triggerEvent(target, event){
+    let newEvent = new Event(event);
+    target.dispatchEvent(newEvent);
+}
+
+function createDay(el){
+    let newEl = document.createElement("div");
+    newEl.classList.add("manager-content-slider-box");
+    newEl.classList.add("f-idendidad");
+    newEl.classList.add("no-select");
+    newEl.classList.add("smallbox-modifier");
+    newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
+    return newEl;
 }

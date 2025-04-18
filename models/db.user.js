@@ -39,9 +39,14 @@ export class user{
   }
 
   static async getUserInfoFrom(maxDate, userToken){ // Gets the latest entry of [USER] in the "Informations" table
-    const request = await sql`
+    let request = await sql`
       SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid AND (i.UpdateDate <= ${maxDate}) ORDER BY UpdateDate DESC limit 1
     `
+    if(request==""){
+      request = await sql`
+      SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid AND (i.UpdateDate >= ${maxDate}) ORDER BY UpdateDate ASC limit 1
+    `
+    }
     let entry = request[0];
     delete entry.userid;
     delete entry.informationid;
@@ -58,10 +63,11 @@ export class user{
     return entries[0];
   }
 
-  static async addInfos(userToken, newInfos){
+  static async addInfo(userToken, newInfo, date){
     const request = await sql`
-      INSERT INTO Informations VALUE((SELECT MAX(InformationID) FROM Informations)+1, ${newInfos.bodytype}, ${newInfos.age}, ${newInfos.weight}, ${newInfos.height}, ${newInfos.updatedate}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
+      INSERT INTO Informations VALUES((SELECT MAX(InformationID) FROM Informations)+1, ${newInfo.bodytype}, ${newInfo.age}, ${newInfo.weight}, ${newInfo.height}, ${date}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
     `
+    return {status: true};
   }
 
 }
