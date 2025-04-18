@@ -72,7 +72,7 @@ body{
     min-width: 40000px;
     min-height: 40000px;
     margin-top: -20%;
-    position: absolute;
+    position: fixed;
     z-index: 1;
     overflow: hidden;
     transform-origin: center center;
@@ -289,8 +289,8 @@ body{
                 width: 70%;
                 height: 25%;
                 margin-left: 15%;
-                margin-top: 10%;
-                margin-bottom: 10%;
+                margin-top: 5%;
+                margin-bottom: 5%;
                 .manager-content-slider-box-date{
                     color: var(--dark);
                     font-size: 3em;
@@ -366,6 +366,7 @@ body{
                     display: flex;
                     flex-direction: row;
                     width: 95%;
+                    font-size: 1em;
                     margin-top: 2%;
                     margin-left: 2.5%;
                     .manager-content-info-box-entry-hour{
@@ -567,6 +568,8 @@ body{
         background-color: cyan;
         width: 100%;
         flex-grow: 1;
+        overflow-y: scroll;
+        scrollbar-width: none;
         .settings-content-form{
             display: flex;
             flex-direction: column;
@@ -1087,24 +1090,74 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 /*Mobile*/
 @media screen and (max-width: 900px) {
-    body{
-        display:none
-    }
-}
+    .manager{
+        .manager-header{
+            height: 15%;
+            .manager-header-user{
+                .manager-header-user-name{
+                    font-size: 2.5em;
+                };
+                .manager-header-user-details{
+                    p{
+                        font-size: 0.9em;
+                    };
+                };
+            };
+            .manager-header-appname{
+                p{
+                    font-size: 3em;
+                };
+            };
+        };
+        .manager-content{
+            .manager-content-slider{
+                margin-top: 20%;
+                .manager-content-slider-box{
+                    .manager-content-slider-box-date{
+                        p{
+                            font-size: 0.6em;
+                        };
+                    };
+                    .manager-content-slider-box-year{
+                        p{
+                            font-size: 0.6em;
+                        };
+                    };
+                };
+                .smallbox-modifier{
+                    height: 12%;
+                    p{
+                        font-size: 0.7em;
+                    };
+                };
+                .bigbox-modifier{
+                    height: 17%;
+                };
+            };
+            .manager-content-info{
+                margin-top: 15%;
+                .manager-content-info-add{
+                    p{
+                        font-size: 2em;
+                    };
+                };
 
-/*Desktop*/
-@media screen and (min-width: 900px) {
-    #redad{
-        font-size: 7vw;
-    }
-    #deafd{   
-        max-width: 7vw;
-        max-height: 17vw;
-        margin-right: 1.5em;
-    }
-    #daed{
-        margin-right: 2.5em;
-        max-width: 7vw;
-        max-height: 17vw;
-    }
+                .manager-content-info-box{
+                    height: 70%;
+                    padding-top: 20%;
+                    .manager-content-info-box-goal{
+                        height: 13%;
+                        margin-top: -15%;
+                    };
+                    .manager-content-info-box-entry{
+                        p{
+                            font-size: 0.8em;
+                        };
+                    };
+                };
+            };
+        };
+    };
+
+    
 }

@@ -93,27 +93,28 @@ window.addEventListener("load", function(){
             if(data.status){
                 const slider = document.getElementById("content-slider"); 
                 let day = createDay(data.entry);
-                console.log("tos: ", slider.children.length, slider.children.length>0)
                 if(slider.children.length>0){
                     let dayDate = new Date(`${data.entry.timeof.year}-${data.entry.timeof.month}-${data.entry.timeof.day}`);
-                    let targetDay=0;
+                    var targetDay=slider.children[0];
+                    let targetCheck=0;
                     for(let i = 0; i<slider.children.length; i++){
                         let newDate = new Date(slider.children[i].lastElementChild.innerHTML);
                         if(newDate.getTime()>=dayDate.getTime()){
-                            console.log(newDate, dayDate)
                             if(newDate.getTime()===dayDate.getTime()){
-                                targetDay=0;
+                                targetCheck=1;
                                 break;
                             } else {
                                 targetDay=slider.children[i];
+                                targetCheck=2;
                             }
                         }
                     }
-                    console.log(targetDay)
-                    if(targetDay!==0){
-                        targetDay.parentNode.insertBefore(day, targetDay.nextSibling);
-                    } else {
-                        slider.insertBefore(day, slider.children[0])
+                    if(targetCheck!==1){
+                        if(targetCheck!==0){
+                            targetDay.parentNode.insertBefore(day, targetDay.nextSibling);
+                        } else {
+                            targetDay.parentNode.insertBefore(day, targetDay);
+                        }
                     }
                     const bigbox = $(slider).find(`.bigbox-modifier`)[0]
                     if(bigbox.lastElementChild.innerHTML==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){
@@ -194,8 +195,6 @@ async function loginSequence(){
 
     updateUserInfo();
     createDayBoxes();
-
-    console.log("ttttt:", localStorage.getItem("unit"), localStorage.getItem("unit")==="1")
 }
 
 function registerSequence(name){
@@ -595,7 +594,7 @@ async function getEntriesOn(date) {
     return newEntries
 }
 
-function popOut(element, speed=500, bg=false, extraFunc=()=>{console.log("default3")}){
+function popOut(element, speed=500, bg=false, extraFunc=()=>{return;}){
     let keyframe = {
         opacity: [100,0],
     };
@@ -617,7 +616,7 @@ function popOut(element, speed=500, bg=false, extraFunc=()=>{console.log("defaul
     extraFunc();
 }
 
-function popIn(element, speed=500, bg=false, extraFunc=()=>{console.log("default4")}){
+function popIn(element, speed=500, bg=false, extraFunc=()=>{return;}){
     element.classList.remove("hidden")
     element.scrollTop=0
     for(let i=0; i<element.children.length; i++){
@@ -639,7 +638,7 @@ function popIn(element, speed=500, bg=false, extraFunc=()=>{console.log("default
     extraFunc();
 }
 
-function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc=()=>{console.log("default2")}){
+function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc=()=>{return;}){
     const el = document.getElementById(element);
     const entrance = document.getElementById(entryBtn);
     const exit = document.getElementById(exitBtn);
@@ -687,7 +686,7 @@ function setEntryType(){
     })
 }
 
-function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
+function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{return;}){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
         if(localStorage.getItem(item)===valueOn){
@@ -700,7 +699,7 @@ function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{cons
     })
 }
 
-function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{console.log("default1")}){
+function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{return;}){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
         if(element[item]==valueOn){
