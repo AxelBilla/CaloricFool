@@ -476,9 +476,9 @@ async function createEntryBoxes(entries, date){
 
     let goal=0;
     if(infos.bodytype==0){
-        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))
+        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))*1.2
     } else {
-        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))
+        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))*1.2
     }
 
     let intake=0;
