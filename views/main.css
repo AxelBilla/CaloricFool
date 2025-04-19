@@ -651,7 +651,6 @@ body{
     .information-header{
         display: flex;
         flex-direction: row;
-        flex-direction: row;
         width: 100%;
         background-color: red;
         .information-header-title{

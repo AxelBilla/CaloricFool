@@ -2,11 +2,12 @@ window.addEventListener("load", function(){
     const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
 
     bgAnim(); // Should never stop, animates the background
-    
+
     formHightlight("sign-login", "login-btn", defaultHighlight, "login-field-email", "login-field-password"); // Highlights the submit button when the email & password fields are filled in the login form
     formHightlight("sign-register", "register-btn", defaultHighlight, "register-field-nickname", "register-field-email", "register-field-password"); // Highlights the submit button when the username, email & password fields are filled in the sign up form
     
     slideGrab("content-slider"); // Let us grab the day boxes
+    exitPopup(); // Let's you exit popups up with the [Escape] key
 
     popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
@@ -151,7 +152,7 @@ window.addEventListener("load", function(){
             e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
             e.target[1].value=utils.roundNum(utils.toCM(e.target[1].value), 3);
         };
-        e.target[3].bodyType ??= 0;
+        e.target[3].bodyType ??= 0; // Yes, I learned about those operators. Yes, I fucking hate how there's built-in operators for undefined/null.
         
         date = new Date();
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
@@ -595,6 +596,11 @@ async function getEntriesOn(date) {
 }
 
 function popOut(element, speed=500, bg=false, extraFunc=()=>{return;}){
+    if(sessionStorage.getItem("currentPopup")==="information"){
+        sessionStorage.setItem("currentPopup", "settings")
+    } else {
+        sessionStorage.setItem("currentPopup", "")
+    }
     let keyframe = {
         opacity: [100,0],
     };
@@ -617,6 +623,9 @@ function popOut(element, speed=500, bg=false, extraFunc=()=>{return;}){
 }
 
 function popIn(element, speed=500, bg=false, extraFunc=()=>{return;}){
+    if(element.id!==""){
+        sessionStorage.setItem("currentPopup", element.id)
+    }
     element.classList.remove("hidden")
     element.scrollTop=0
     for(let i=0; i<element.children.length; i++){
@@ -743,4 +752,19 @@ function createDay(el){
     newEl.classList.add("smallbox-modifier");
     newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
     return newEl;
+}
+
+function exitPopup(){
+    window.addEventListener("keydown", (e)=>{
+        if(e.key==="Escape"){
+            let popup = sessionStorage.getItem("currentPopup");
+            if(popup!==""){
+                if(popup!=="information"){
+                    popOut(document.getElementById(popup), 500, true)
+                } else {
+                    popOut(document.getElementById(popup)) // Since information is the only popup without a bg
+                }
+            }
+        }
+    })
 }
