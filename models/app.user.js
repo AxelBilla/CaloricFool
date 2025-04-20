@@ -6,7 +6,7 @@ import { token as db_token } from './db.token.js';
 export class user{
     static async login(req){
         let log = await db_log.checkLogin(req.email, req.password);
-        if(log){
+        if(log.status){
             let tkn = await user.addToken(req);
             await user.getNewWeight({token: tkn, date: req.date})
             return {status: log, token: tkn}

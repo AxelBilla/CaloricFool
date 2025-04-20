@@ -10,7 +10,12 @@ export class login{
     const request = await sql`
       SELECT password FROM users WHERE email=${email}
     `
-    const res = await bcrypt.compare(pswd, request[0].password);
+    let res;
+    try{
+      res=await bcrypt.compare(pswd, request[0].password);
+    } catch (e) {
+      res={status: false, err: e}
+    }
     return res;
   }
 

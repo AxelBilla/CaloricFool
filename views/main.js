@@ -53,7 +53,7 @@ window.addEventListener("load", function(){
         });
     
     
-    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("<p>Are you sure <br>you want to logout from this account?</p>", 1, "YES")) // Manages opening & closing of warning logout menu
+    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("Are you sure\nyou want to logout from this account?", 1, "YES")) // Manages opening & closing of warning logout menu
     
     
     //
@@ -83,7 +83,8 @@ window.addEventListener("load", function(){
             if(data.status){
                 loginSequence();
             } else {
-                console.log("error pswd mail") // Will have to play with the form to show an error
+                setWarning("Invalid Credentials,\nplease try again.", 0, "RETRY")
+                popIn(document.getElementById("warning"), 500, true)
             };
         })
     })
@@ -95,7 +96,8 @@ window.addEventListener("load", function(){
             if(data.status){
                 registerSequence(e.target[0].value)
             } else {
-                console.log("error mail") // Will have to play with the form to show an error
+                setWarning("An account\nis already\n registered with this email.", 0, "RETRY")
+                popIn(document.getElementById("warning"), 500, true)
             };
         })
     })
@@ -161,7 +163,8 @@ window.addEventListener("load", function(){
                 dayBoxClick();
                 popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
             } else {
-                console.log("error entry"); // Will have to play with the form to show an error
+                setWarning("An error has occured,\nplease try again.", 0, "RETRY")
+                popIn(document.getElementById("warning"), 500, true)
             };
         })
     })
@@ -188,7 +191,8 @@ window.addEventListener("load", function(){
                     popOut(e.target.parentElement.parentElement);
                 }
             } else {
-                console.log("error info"); // Will have to play with the form to show an error
+                setWarning("An error has occured,\nplease try again.", 0, "RETRY")
+                popIn(document.getElementById("warning"), 500, true)
             }
         })
     })
@@ -199,7 +203,6 @@ window.addEventListener("load", function(){
                 logoutSequence()
                 break;
             default:
-                alert("err warning")
                 break;
         }
         return false;
@@ -773,7 +776,7 @@ function switchElement(firstEl, secondEl, anchorData, dataOn){
 function setWarning(txtMsg, warnType=0, txtBtn="YES"){
     const warnMsg = document.getElementById("warning-message")
     const warnBtn = document.getElementById("warning-btn")
-    warnMsg.innerHTML=txtMsg;
+    warnMsg.children[0].innerText=txtMsg;
     warnBtn.children[0].innerHTML=txtBtn;
     warnBtn.setAttribute("warnType", warnType);
 }
