@@ -8,6 +8,7 @@ export class user{
         let log = await db_log.checkLogin(req.email, req.password);
         if(log){
             let tkn = await user.addToken(req);
+            await user.getNewWeight({token: tkn, date: req.date})
             return {status: log, token: tkn}
         }
         return log; // Returns the result of our request (true/false) depending on if it finds our account or not
@@ -33,6 +34,7 @@ export class user{
             const expDate = new Date(val.expiration_date)
             if(expDate>=currentDate){
                 status=true;
+                await user.getNewWeight(req)
             }
         }
         return status;
@@ -47,7 +49,7 @@ export class user{
         if(infoExists){
             return db_user.getUserLastInfo(req.token);
         }
-        return {}
+        return {status: false};
     }
 
     static async getInfoFrom(req){
@@ -55,14 +57,14 @@ export class user{
         if(infoExists){
             return db_user.getUserInfoFrom(req.date, req.token);
         }
-        return {}
+        return {status: false};
     }
 
     static async getNewWeight(req){ // Uses the cons. & acts. entries between now and the last info update to calculate a user's weight
         try{
             var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user        
-            
-            const currentDate = new Date(); // Creates a timestamp for the current moment in time
+
+            const currentDate = new Date(req.date); // Creates a timestamp for the current moment in time
             const infoDate = new Date(lastInfos.updatedate);
             
             const infoDay = infoDate.getDate()+"/"+infoDate.getMonth()+"/"+infoDate.getFullYear();
@@ -75,41 +77,36 @@ export class user{
                     var bmr = 88.362 + (13.397*lastInfos.weight) + (4.799*lastInfos.height) - (5.677*lastInfos.age);
                 }
 
-                var intake = 0; var dayCount = 0;
-                var prevDate = new Date(); var newDate = prevDate;
+                let intake = 0; let dayList=[];
                 const lastCons = await db_entry.getEntriesFrom(req.token, "consumptions", infoDate, currentDate);
                 lastCons.forEach(entries => {
-                    if(dayCount==0){ // Checks if we're on the first entry or not
-                        prevDate = new Date(entries.timeof); // Gives prevDate the time value of the first entry
-                        dayCount = 1; // dayCount = 1; // Sets dayCount at 1
+                    let day = entries.timeof.getFullYear()+"-"+(entries.timeof.getMonth()+1)+"-"+entries.timeof.getDate();
+                    if(dayList.length===0){ // Checks if we're on the first entry or not
+                        dayList.push(day)
                     } else {
-                        newDate = new Date(entries.timeof); // Gives newDate the time value of the entry n+1
-                        if(prevDate<newDate){ // Proceed if newDate is greater than prevDate
-                            if(prevDate.getDate()!=newDate.getDate() || prevDate.getMonth!=newDate.getMonth || prevDate.getFullYear!=newDate.getFullYear()){ // Proceed if newDate is not only greater, but also takes place on a different day than prevDate. (Day-wise, 24/10 > 21/11, and 11/10/2025 16:00 == 11/10/2025 18:00)                            prevDate = newDate; // Turns prevDate into this loop's newDate
-                                dayCount+=1; // Adds one to our day counter
-                            }
+                        if(!dayList.includes(day)){
+                            dayList.push(day)
                         }
                     }
                     intake+= entries.kcal * (entries.gram/100) ;// Add the calorific value of this entry to our total intake
                 });
 
                 const lastActs = await db_entry.getEntriesFrom(req.token, "activities", infoDate, currentDate); // Gets every entries under the category "Activities"
-                lastActs.forEach(entries => {intake-= entries.burnRate * (entries.duration/60)}); // Substracts the calories burnt from our total intake
-
-                intake = intake/dayCount; // Divides our intake by the amount of days to get the daily intake (Let us ignore any day without entries, as they most likely were forgotten and not a result of not eating at all (which would be uncommon, but also expected to appear as a 0kcal 0g entry).)
+                lastActs.forEach(entries => {intake-= (entries.burnrate * (entries.duration/60))}); // Substracts the calories burnt from our total intake
                 
-                const newWeight = lastInfos.weight+((((intake-(bmr*1.25)))/7700)*dayCount); // Calcs to get someone's new weight. By taking our daily intake and substracting it with our Basal Metabolic Rate multiplied by 1.25(Sendentary PA, chosen since we're handling physical activities ourselves) and dividing that sum by the calorific value of 1kg of fat (7700), we get the amount lost in a day. Which we can then multiply by the number of days and add to our latest weight to calculate our new weight.
+                intake = intake/dayList.length; // Divides our intake by the amount of days to get the daily intake (Let us ignore any day without entries, as they most likely were forgotten and not a result of not eating at all (which would be uncommon, but also expected to appear as a 0kcal 0g entry).)
+                const newWeight = lastInfos.weight+((((intake-(bmr*1.2)))/7700)*dayList.length); // Calcs to get someone's new weight. By taking our daily intake and substracting it with our Basal Metabolic Rate multiplied by 1.25(Sendentary PA, chosen since we're handling physical activities ourselves) and dividing that sum by the calorific value of 1kg of fat (7700), we get the amount lost in a day. Which we can then multiply by the number of days and add to our latest weight to calculate our new weight.
                 
                 lastInfos.weight=newWeight; // Sets our latest infos' weight to our new weight
                 lastInfos.updatedate=currentDate; // Sets our latest infos' date to today
-                await db_user.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
-                return newWeight; // temporary testing measure
+                console.log("\n\n---tr---\n newWeight \n----tr----\n", req.token, lastInfos)
+                return await db_user.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
             } else {
-                return 0;
+                return {status: false};
             };
         } catch(e){
             console.log(e)
-            return 0;
+            return {status: false};
         }
     }
 
@@ -161,6 +158,7 @@ export class user{
 
         return entries;
     }
+
     static async getEntriesFrom(req){
         let newDate;
         let entries = {cons: await db_entry.getEntriesFrom(req.token, "consumptions", req.startDate, req.endDate), acts: await db_entry.getEntriesFrom(req.token, "activities", req.startDate, req.endDate)};
@@ -188,14 +186,22 @@ export class user{
         return exec;
     }
 
-    static async addInfo(req){
-        let date = new Date(req.date)
-        console.log(req, date)
-        return await db_user.addInfo(req.token, req, date)
+    static async addInfo(req, date){
+        let toDate = new Date(date)
+        return await db_user.addInfo(req.token, req, toDate)
     }
 
     static async editSettings(req){
         return await db_user.editSettings(req.token, req)
+    }
+
+    static async editEntry(req){
+        if(req.type){
+            req.type={name: "consumptions", primary: "gram", secondary: "kcal"};
+        } else {
+            req.type={name: "activities", primary: "duration", secondary: "burnrate"};
+        }
+        return await db_entry.editEntry(req.token, req)
     }
 }
 

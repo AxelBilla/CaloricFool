@@ -1,8 +1,10 @@
 class requests{
   static async login(form){
+    let date = new Date();
+    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();;
     const req = await fetch("/login",{
       method: "POST",
-      body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked}),
+      body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked, date: date}),
       headers: {"Content-Type": "application/json"} 
     });
     const res = await req.json()
@@ -22,10 +24,12 @@ class requests{
   }
 
   static async tokenLog(){
+    let date = new Date();
+    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
     const tkn = localStorage.getItem("token");
     const req = await fetch("/tokenLog",{ // Fetch request at the "[website]/request" URL
       method: "POST",
-      body: JSON.stringify({token: tkn}), // Gives the content of request for the controller to sort the requests.
+      body: JSON.stringify({token: tkn, date: date}), // Gives the content of request for the controller to sort the requests.
       headers: {"Content-Type": "application/json"} // Tells the type of content we're sending to our URL
     });
     const res = await req.json()
@@ -115,11 +119,11 @@ class requests{
     return res;
   }
 
-  static async editEntry(form, id){
+  static async editEntry(form){
     const tkn = localStorage.getItem("token");
-    const req = await fetch("/addEntry",{
+    const req = await fetch("/editEntry",{
       method: "POST",       
-      body: JSON.stringify({type: form.target[0].entryType, primaryInfo: form.target[1].value, secondaryInfo: form.target[2].value, comment: form.target[3].value, id: id, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      body: JSON.stringify({type: form.type, primary: form.primary, secondary: form.secondary, comment: form.comment, id: form.id, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
       headers: {"Content-Type": "application/json"} 
     });
     const res = await req.json()

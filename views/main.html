@@ -289,6 +289,41 @@
         </div>
     </div>
 
+    <div class="entry hidden" id="edit-entry">
+        <div class="entry-header">
+            <div class="entry-header-title no-select f-idendidad">
+                <p>Edit Entry</p>
+            </div>
+            <div class="entry-header-exit">
+                <button type="button" class="entry-header-exit-btn" id="exit-edit-entry"> 
+                    <img src="../assets/svg/exit-icon.svg" alt="exit entry">
+                </button>
+            </div>
+        </div>
+        <div class="entry-content">    
+            <form id="edit-entry-form" class="entry-content-form no-select" autocomplete="off">
+                <div class="entry-content-form-field">
+                    <div class="entry-content-form-field-title f-iconic">
+                        <p>Gram</p>
+                    </div>
+                    <input type="number" name="primary-info" placeholder="0000" id="edit-entry-form-primary-amount" class="entry-content-form-field-text f-idendidad" max="9999" step="0.01" required />
+                </div>
+                <div class="entry-content-form-field">
+                    <div class="entry-content-form-field-title f-iconic">
+                        <p>Kcal</p>
+                    </div>
+                    <input type="number" name="secondary-info" placeholder="0000" id="edit-entry-form-secondary-amount" class="entry-content-form-field-text f-idendidad" max="9999" step="0.01" required />
+    
+                </div>
+                <div class="entry-content-form-comment">
+                    <textarea name="comment-info" id="edit-entry-form-comment" placeholder="COMMENT" class="entry-content-form-comment-text f-idendidad"></textarea>
+                </div>
+                
+                <input type="submit" value="SAVE" id="edit-entry-submit-btn" class="entry-content-form-submit f-idendidad">
+            </form>
+        </div>
+    </div>
+
     <!----------------------------------------------------------------------------------------------------------------------------->
     <!----------------------------------------------------------------------------------------------------------------------------->
     <!----------------------------------------------------------------------------------------------------------------------------->

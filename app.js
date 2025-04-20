@@ -48,13 +48,13 @@ app.post('/tokenLog', async function(req, res){
 })
 
 app.post('/getLastInfo', async function(req, res){
-  console.log("---tr---\n getLastInfo \n----tr----", req.body)
+  console.log("\n\n---tr---\n getLastInfo \n----tr----\n", req.body)
   const exec = await user.getLastInfo(req.body); 
   res.json(exec);
 })
 
 app.post('/getInfoFrom', async function(req, res){
-  console.log("---tr---\n getInfoFrom \n----tr----", req.body)
+  console.log("\n\n---tr---\n getInfoFrom \n----tr----\n", req.body)
   const exec = await user.getInfoFrom(req.body); 
   res.json(exec);
 })
@@ -65,43 +65,49 @@ app.post('/newWeight', async function(req, res){
 })
 
 app.post('/getSettings', async function(req, res){
-  console.log("---tr---\n getSettings \n----tr----", req.body)
+  console.log("\n\n---tr---\n getSettings \n----tr----\n", req.body)
   const exec = await user.getSettings(req.body); 
   res.json(exec);
 })
 
 app.post('/getName', async function(req, res){
-  console.log("---tr---\n getName \n----tr----", req.body)
+  console.log("\n\n---tr---\n getName \n----tr----\n", req.body)
   const exec = await user.getName(req.body); 
   res.json(exec);
 })
 
 app.post('/getEntries', async function(req, res){
-  console.log("---tr---\n getEntries \n----tr----", req.body)
+  console.log("\n\n---tr---\n getEntries \n----tr----\n", req.body)
   const exec = await entry.getEntries(req.body); 
   res.json(exec);
 })
 
 app.post('/getEntriesFrom', async function(req, res){
-  console.log("---tr---\n getEntriesFrom \n----tr----", req.body)
+  console.log("\n\n---tr---\n getEntriesFrom \n----tr----\n", req.body)
   const exec = await entry.getEntriesFrom(req.body); 
   res.json(exec);
 })
 
 app.post('/addEntry', async function(req, res){
-  console.log("---tr---\n addEntry \n----tr----", req.body)
+  console.log("\n\n---tr---\n addEntry \n----tr----\n", req.body)
   const exec = await entry.addEntry(req.body); 
   res.json(exec);
 })
 
+app.post('/editEntry', async function(req, res){
+  console.log("\n\n---tr---\n editEntry \n----tr----\n", req.body)
+  const exec = await entry.editEntry(req.body); 
+  res.json(exec);
+})
+
 app.post('/addInfo', async function(req, res){
-  console.log("---tr---\n addInfo \n----tr----", req.body)
+  console.log("\n\n---tr---\n addInfo \n----tr----\n", req.body)
   const exec = await user.addInfo(req.body); 
   res.json(exec);
 })
 
 app.post('/editSettings', async function(req, res){
-  console.log("---tr---\n editSettings \n----tr----", req.body)
+  console.log("\n\n---tr---\n editSettings \n----tr----\n", req.body)
   const exec = await user.editSettings(req.body); 
   res.json(exec);
 })

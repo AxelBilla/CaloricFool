@@ -27,7 +27,7 @@ export class user{
     }
 
     static addInfo(req){
-        return mod.addInfo(req);
+        return mod.addInfo(req, req.date);
     }
 
     static editSettings(req){

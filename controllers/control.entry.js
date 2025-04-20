@@ -13,4 +13,8 @@ export class entry{
     static addEntry(req){
         return mod.addEntry(req);
     }
+
+    static editEntry(req){
+        return mod.editEntry(req);
+    }
 }

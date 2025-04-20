@@ -1,4 +1,5 @@
 import sql from '../models/db.connect.js'
+import { user } from './db.user.js';
 
 export class entry{
 
@@ -35,6 +36,13 @@ export class entry{
       entry={type: entryName, duration: primary, burnrate: secondary, comment: comment, timeof: date}
     }
     return {status: true, entry: entry};
+  }
+
+  static async editEntry(userToken, req){ // Gets every entry of [USER] in either the "Activities" or "Consumptions" table based on a given [entryName]
+    const request = await sql`
+      UPDATE ${sql(req.type.name)} SET ${sql(req.type.primary)}=${req.primary}, ${sql(req.type.secondary)}=${req.secondary}, comment=${req.comment} WHERE entryid=${req.id} AND userid=(SELECT userid FROM tokens WHERE tokenid=${userToken})
+    `
+    return {status: true};
   }
 
 }

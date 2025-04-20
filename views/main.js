@@ -13,6 +13,8 @@ window.addEventListener("load", function(){
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
     setEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
 
+    formHightlight("edit-entry", "edit-entry-submit-btn", defaultHighlight, "edit-entry-form-primary-amount", "edit-entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
+
     openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button");
 
     formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
@@ -24,7 +26,7 @@ window.addEventListener("load", function(){
     switchElementValue("information-form-bodytype", "bodyType", 1, 0, 
         ()=>{
             let userType=document.getElementById("information-form-bodytype"); 
-            switchElement(userType.children[0], userType.children[1], userType["bodyType"], 1);
+            switchElement(userType.children[0], userType.children[1], userType.getAttribute("bodyType"), 1);
         });
 
 
@@ -75,7 +77,7 @@ window.addEventListener("load", function(){
     })
 
     // Triggers the login sequence if the user's inputted credentials are valid
-    $('#login-form').submit(function(e) {
+    document.getElementById("login-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         requests.login(e).then(data=>{
             if(data.status){
@@ -87,7 +89,7 @@ window.addEventListener("load", function(){
     })
 
     // Triggers the register sequence if the credentials given to create the user's account do not conflict with pre-existing accounts'
-    $('#register-form').submit(function(e) {
+    document.getElementById("register-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         requests.register(e).then(data=>{
             if(data.status){
@@ -99,7 +101,7 @@ window.addEventListener("load", function(){
     })
 
     //
-    $('#entry-form').submit(function(e) {
+    document.getElementById("entry-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         let date;
         if(e.target[4].value===""){
@@ -108,7 +110,6 @@ window.addEventListener("load", function(){
             date = new Date(e.target[4].value+" "+e.target[5].value);
         }
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        console.log(e, date)
         requests.addEntry(e, date).then(data=>{
             if(data.status){
                 const slider = document.getElementById("content-slider"); 
@@ -149,6 +150,7 @@ window.addEventListener("load", function(){
                         }
                         let newEntry = createEntry(data.entry);
                         goal.parentNode.insertBefore(newEntry, goal.nextSibling);
+                        editEntry();
                     }
                 } else {
                     day.classList.add("bigbox-modifier");
@@ -165,7 +167,7 @@ window.addEventListener("load", function(){
     })
 
     //
-    $('#information-form').submit(function(e) {
+    document.getElementById("information-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         if(localStorage.getItem("unit")==="1"){
             e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
@@ -179,8 +181,8 @@ window.addEventListener("load", function(){
         requests.addInfo(e, date).then(data => {
             if(data.status){
                 updateUser();
-                if(e.target["isRegistering"]===1){
-                    e.target["isRegistering"]=0;
+                if(e.target.getAttribute("isRegistering")===1){
+                    e.target.setAttribute("isRegistering", 0);
                     popOut(e.target.parentElement.parentElement, 500, true);
                 } else {
                     popOut(e.target.parentElement.parentElement);
@@ -191,7 +193,7 @@ window.addEventListener("load", function(){
         })
     })
 
-    $('#warning-content').submit(function(e) {
+    document.getElementById("warning-content").addEventListener("submit", (e)=>{
         switch (e.target[0].warnType) {
             case 1:
                 logoutSequence()
@@ -228,7 +230,7 @@ function registerSequence(name){
 
     const infoMenu = document.getElementById("information")
     infoMenu.children[0].children[1].classList.add("hidden");
-    infoMenu.children[1].children[0]["isRegistering"]=1;
+    infoMenu.children[1].children[0].setAttribute("isRegistering", 1);
     if(infoMenu.children[1].children[0][0].value!==""){
         infoMenu.children[1].children[0][0].value="";
         infoMenu.children[1].children[0][1].value="";
@@ -448,8 +450,8 @@ async function updateUser(){
 
     editForm.age.value=info.age;
 
-    editForm.bodytype["bodyType"]=info.bodytype;
-    switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype["bodyType"], 1);
+    editForm.bodytype.setAttribute("bodyType", info.bodytype);
+    switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype.getAttribute("bodyType"), 1);
     
 }
 
@@ -542,6 +544,7 @@ async function createEntryBoxes(entries, date){
     for(let i=0; i<entries.length; i++){
         parent.appendChild(createEntry(entries[i]));
     }
+    editEntry();
 }
 
 function createEntry(el){
@@ -569,9 +572,12 @@ function createEntry(el){
     if (`${el.timeof.minute}`.length==1){
         el.timeof.minute=`0${el.timeof.minute}`;
     }
+
+
     let newEl = document.createElement("div");
     newEl.classList.add("manager-content-info-box-entry");
-    newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT</button></div></div></div><div class="entry-data hidden">${el.entryid}::${el.hasOwnProperty("kcal")}</div>`; // Keeps ID & Type (true == Cons. & false == Acts.) so we can edit them later.
+    newEl.setAttribute("entry-data", JSON.stringify({id: el.entryid, type: el.hasOwnProperty("kcal"), primary: el.primary.amount, secondary: el.secondary.amount, comment: el.comment}))
+    newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT</button></div></div></div>`; // Keeps ID & Type (true == Cons. & false == Acts.) so we can edit them later.
     return newEl;
 }
 
@@ -599,15 +605,15 @@ async function createDayBoxes(){
             currentDay = el.timeof.year+"-"+el.timeof.month+"-"+el.timeof.day
             if(!allDays.includes(currentDay)){
                 let newEl = createDay(el);
-                console.log("I am: ", el)
                 if(elFirst){
                     newEl.classList.add("bigbox-modifier");
-                    newEl.classList.remove("smallbox-modifier")
+                    newEl.classList.remove("smallbox-modifier");
+                    sessionStorage.setItem("currentBox", currentDay);
                     elFirst=false;
                 }
                 parent.appendChild(newEl);
             }
-            allDays.push(currentDay)
+            allDays.push(currentDay);
         }
     )}
     const getDate = $(parent).find(".getDate")
@@ -619,7 +625,7 @@ async function createDayBoxes(){
 
 async function getEntriesOn(date) {
     let startDate = new Date(date);
-    let endDate = new Date(startDate);
+    let endDate = new Date(date);
     endDate.setDate(endDate.getDate()+1);
     endDate.setMilliseconds(endDate.getMilliseconds()-1);
     startDate.setMinutes(startDate.getMinutes()-startDate.getTimezoneOffset())
@@ -712,15 +718,15 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc
 
 function setEntryType(){
     const btn = document.getElementById("entry-form-type");
-    btn["entryType"]=0; // set as a cons. by default
+    btn.setAttribute("entryType", 0); // set as a cons. by default
     btn.addEventListener("click", (e) =>{
-        if (e.target["entryType"]==0){
-            e.target["entryType"]=1; // 1: Act.
+        if (e.target.getAttribute("entryType")==0){
+            e.target.setAttribute("entryType", 1); // 1: Act.
             e.target.value="EXERCISE MODE";
             e.target.form[1].previousElementSibling.innerText="Minutes";
             e.target.form[2].previousElementSibling.innerText="Kcal/h";
         } else {
-            e.target["entryType"]=0; // 0: Cons.
+            e.target.setAttribute("entryType", 0); // 0: Cons.
             e.target.value="INTAKE MODE";
             e.target.form[1].previousElementSibling.innerText="Gram";
             e.target.form[2].previousElementSibling.innerText="Kcal";
@@ -755,14 +761,11 @@ function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc){
 }
 
 function switchElement(firstEl, secondEl, anchorData, dataOn){
-    console.log("FTRKQ: ", firstEl, secondEl)
     if (anchorData!==dataOn){
         secondEl.classList.add("hidden");
-        console.log("fakku")
         popIn(firstEl);
     } else {
         firstEl.classList.add("hidden");
-        console.log("tappu")
         popIn(secondEl);
     }
 }
@@ -772,7 +775,7 @@ function setWarning(txtMsg, warnType=0, txtBtn="YES"){
     const warnBtn = document.getElementById("warning-btn")
     warnMsg.innerHTML=txtMsg;
     warnBtn.children[0].innerHTML=txtBtn;
-    warnBtn["warnType"]=warnType;
+    warnBtn.setAttribute("warnType", warnType);
 }
 
 function triggerEvent(target, event){
@@ -806,7 +809,7 @@ function exitPopup(){
 }
 
 function updateTheme(){
-    
+    // TO DO (switches CSS)
 }
 
 async function updateUnit(){
@@ -814,4 +817,60 @@ async function updateUnit(){
     let boxDate = sessionStorage.getItem("currentBox");
     let newEntries = await getEntriesOn(boxDate);
     createEntryBoxes(newEntries, boxDate);
+}
+
+function editEntry(){
+    $(`.manager-content-info-box-entry-content-main-edit-button`).click(async function(e){
+        let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
+
+        const edit = document.getElementById("edit-entry")
+        if (data.type){
+            edit.children[1].children[0].children[0].children[0].children[0].innerText="Gram";
+            edit.children[1].children[0].children[0].children[1].value=data.primary;
+            edit.children[1].children[0].children[1].children[0].children[0].innerText="Kcal";
+            edit.children[1].children[0].children[1].children[1].value=data.secondary;
+        } else {
+            edit.children[1].children[0].children[0].children[0].children[0].innerText="Minutes";
+            edit.children[1].children[0].children[0].children[1].value=data.primary;
+            edit.children[1].children[0].children[1].children[0].children[0].innerText="Kcal/h";
+            edit.children[1].children[0].children[1].children[1].value=data.secondary;
+        }
+        
+        edit.children[1].children[0].children[2].children[0].value=data.comment;
+        triggerEvent(edit, "input")
+        popIn(edit, 500, true)
+
+        edit.children[0].children[1].children[0].addEventListener("click", ()=>{
+            popOut(edit, 500, true);
+        })
+
+        edit.addEventListener("submit", async (s)=>{
+            s.preventDefault()
+            data.primary=s.target[0].valueAsNumber;
+            data.secondary=s.target[1].valueAsNumber;
+            data.comment=s.target[2].value;
+
+            let entry = e.target.parentElement.parentElement.parentElement;
+            entry.children[0].children[0].children[0].children[0].innerHTML=data.secondary;
+            entry.children[0].children[2].children[0].children[0].innerHTML=data.primary;
+            entry.children[1].children[1].children[0].innerHTML=data.comment;
+
+            entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
+            
+            await requests.editEntry(data);
+            
+            let boxDate = sessionStorage.getItem("currentBox");
+            let newEntries = await getEntriesOn(boxDate);
+            let newIntake=0;
+            newEntries.cons.forEach(cal =>{
+                newIntake+=(cal.kcal*(cal.gram/100));
+            });
+            newEntries.acts.forEach(exer =>{
+                newIntake-=((exer.duration/60)*exer.burnrate);
+            });
+            document.getElementById("day-intake").innerHTML=newIntake;
+
+            popOut(edit, 500, true);
+        })
+    });
 }
