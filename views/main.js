@@ -819,21 +819,21 @@ async function updateUnit(){
     createEntryBoxes(newEntries, boxDate);
 }
 
-function editEntry(){
+async function editEntry(){
     $(`.manager-content-info-box-entry-content-main-edit-button`).click(async function(e){
         let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
 
         const edit = document.getElementById("edit-entry")
         if (data.type){
-            edit.children[1].children[0].children[0].children[0].children[0].innerText="Gram";
-            edit.children[1].children[0].children[0].children[1].value=data.primary;
-            edit.children[1].children[0].children[1].children[0].children[0].innerText="Kcal";
-            edit.children[1].children[0].children[1].children[1].value=data.secondary;
+            edit.querySelector("#edit-entry-form-primary-unit").innerText="Gram";
+            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
+            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal";
+            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
         } else {
-            edit.children[1].children[0].children[0].children[0].children[0].innerText="Minutes";
-            edit.children[1].children[0].children[0].children[1].value=data.primary;
-            edit.children[1].children[0].children[1].children[0].children[0].innerText="Kcal/h";
-            edit.children[1].children[0].children[1].children[1].value=data.secondary;
+            edit.querySelector("#edit-entry-form-primary-unit").innerText="Minutes";
+            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
+            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal/h";
+            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
         }
         
         edit.children[1].children[0].children[2].children[0].value=data.comment;
@@ -846,14 +846,15 @@ function editEntry(){
 
         edit.addEventListener("submit", async (s)=>{
             s.preventDefault()
+            popOut(edit, 500, true);
             data.primary=s.target[0].valueAsNumber;
             data.secondary=s.target[1].valueAsNumber;
             data.comment=s.target[2].value;
 
             let entry = e.target.parentElement.parentElement.parentElement;
-            entry.children[0].children[0].children[0].children[0].innerHTML=data.secondary;
-            entry.children[0].children[2].children[0].children[0].innerHTML=data.primary;
-            entry.children[1].children[1].children[0].innerHTML=data.comment;
+            entry.querySelector(".entry-primary-amount").innerHTML=data.primary;
+            entry.querySelector(".entry-secondary-amount").innerHTML=data.secondary;
+            entry.querySelector(".manager-content-info-box-entry-content-main-comment").children[0].innerHTML=data.comment;
 
             entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
             
@@ -868,9 +869,7 @@ function editEntry(){
             newEntries.acts.forEach(exer =>{
                 newIntake-=((exer.duration/60)*exer.burnrate);
             });
-            document.getElementById("day-intake").innerHTML=newIntake;
-
-            popOut(edit, 500, true);
-        })
+            document.getElementById("day-intake").innerHTML=utils.roundNum(newIntake);
+        }, { once: true })
     });
 }
