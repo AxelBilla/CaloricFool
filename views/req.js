@@ -1,4 +1,4 @@
-class user{
+class requests{
   static async login(form){
     const req = await fetch("/login",{
       method: "POST",
@@ -53,17 +53,6 @@ class user{
     });
     const res = await req.json()
     console.log("fI: ",res)
-    return res;
-  }
-  
-  static async newWeight(){
-    const tkn = localStorage.getItem("token");
-    const req = await fetch("/newWeight",{ // same as above
-      method: "POST",
-      body: JSON.stringify({token: tkn}), // Same as above
-      headers: {"Content-Type": "application/json"} // Same as above
-    });
-    const res = await req.json()
     return res;
   }
 
@@ -126,11 +115,35 @@ class user{
     return res;
   }
 
+  static async editEntry(form, id){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/addEntry",{
+      method: "POST",       
+      body: JSON.stringify({type: form.target[0].entryType, primaryInfo: form.target[1].value, secondaryInfo: form.target[2].value, comment: form.target[3].value, id: id, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      headers: {"Content-Type": "application/json"} 
+    });
+    const res = await req.json()
+    return res;
+  }
+
   static async addInfo(form, date){
     const tkn = localStorage.getItem("token");
     const req = await fetch("/addInfo",{
       method: "POST",       
       body: JSON.stringify({weight: form.target[0].value, height: form.target[1].value, age: form.target[2].value, bodytype: form.target[3].bodyType, date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      headers: {"Content-Type": "application/json"} 
+    });
+    const res = await req.json()
+    return res;
+  }
+
+  static async editSettings(){
+    const tkn = localStorage.getItem("token");
+    const theme = localStorage.getItem("theme");
+    const unit = localStorage.getItem("unit");
+    const req = await fetch("/editSettings",{
+      method: "POST",       
+      body: JSON.stringify({theme: theme, unit: unit, token: tkn}),
       headers: {"Content-Type": "application/json"} 
     });
     const res = await req.json()

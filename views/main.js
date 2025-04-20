@@ -29,8 +29,27 @@ window.addEventListener("load", function(){
 
 
     popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
-    switchCacheValue("settings-theme", "theme");
-    switchCacheValue("settings-unit", "unit");
+    switchCacheValue("settings-theme", "theme", 1, 0, ()=>{
+        requests.editSettings(); updateTheme();
+        let theme = document.getElementById("settings-theme");
+        let content = localStorage.getItem("theme")
+        if(content==1){
+            switchElement(theme.children[0], theme.children[1], content, content)
+        } else {
+            switchElement(theme.children[1], theme.children[0], content, content)
+        }});
+        
+    switchCacheValue("settings-unit", "unit", 1, 0, ()=>{
+        requests.editSettings(); updateUnit();
+        let unit = document.getElementById("settings-unit");
+        let content = localStorage.getItem("unit")
+        if(content==1){
+            switchElement(unit.children[0], unit.children[1], content, content)
+        } else {
+            switchElement(unit.children[1], unit.children[0], content, content)
+        }
+        });
+    
     
     popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("<p>Are you sure <br>you want to logout from this account?</p>", 1, "YES")) // Manages opening & closing of warning logout menu
     
@@ -49,7 +68,7 @@ window.addEventListener("load", function(){
     
 
     // Triggers the login sequence if the user's "token" (held in their localStorage cache) is valid
-    user.tokenLog().then(data => {
+    requests.tokenLog().then(data => {
         if(data){
             loginSequence();
         }
@@ -58,7 +77,7 @@ window.addEventListener("load", function(){
     // Triggers the login sequence if the user's inputted credentials are valid
     $('#login-form').submit(function(e) {
         e.preventDefault();
-        user.login(e).then(data=>{
+        requests.login(e).then(data=>{
             if(data.status){
                 loginSequence();
             } else {
@@ -70,7 +89,7 @@ window.addEventListener("load", function(){
     // Triggers the register sequence if the credentials given to create the user's account do not conflict with pre-existing accounts'
     $('#register-form').submit(function(e) {
         e.preventDefault();
-        user.register(e).then(data=>{
+        requests.register(e).then(data=>{
             if(data.status){
                 registerSequence(e.target[0].value)
             } else {
@@ -90,7 +109,7 @@ window.addEventListener("load", function(){
         }
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
         console.log(e, date)
-        user.addEntry(e, date).then(data=>{
+        requests.addEntry(e, date).then(data=>{
             if(data.status){
                 const slider = document.getElementById("content-slider"); 
                 let day = createDay(data.entry);
@@ -157,9 +176,9 @@ window.addEventListener("load", function(){
         date = new Date();
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
         
-        user.addInfo(e, date).then(data => {
+        requests.addInfo(e, date).then(data => {
             if(data.status){
-                updateUserInfo();
+                updateUser();
                 if(e.target["isRegistering"]===1){
                     e.target["isRegistering"]=0;
                     popOut(e.target.parentElement.parentElement, 500, true);
@@ -190,11 +209,11 @@ window.addEventListener("load", function(){
 async function loginSequence(){
     gotoFrom("manager", "sign-login");
 
-    const settings = await user.getSettings(); // Get USER's settings
+    const settings = await requests.getSettings(); // Get USER's settings
     localStorage.setItem("unit", settings.unit);
     localStorage.setItem("theme", settings.theme);
 
-    updateUserInfo();
+    updateUser();
     createDayBoxes();
 }
 
@@ -384,17 +403,27 @@ function slideGrab(slides){
     });
 }
 
-async function updateUserInfo(){
-    const username = await user.getName(); // Get USER's name
+async function updateUser(){
+    const username = await requests.getName(); // Get USER's name
 
-    let info = await user.getLastInfo(); // Get latest info of USER
+    let info = await requests.getLastInfo(); // Get latest info of USER
     let units = {weight: "kg", height: "cm"}; // Sets default values for the units
 
-    if(localStorage.getItem("unit")==="1"){ // 0=Metric, 1=Imperial. 1==True
+    let storedUnit = localStorage.getItem("unit");
+    if(storedUnit==="1"){ // 0=Metric, 1=Imperial. 1==True
         info.weight = utils.toLBS(info.weight); // Turns the collected info's weight from the default KG to LBS
         units.weight = "lbs"; // Switch from KG to LBS
         info.height = utils.toInch(info.height); // Turns the collection info's height from the default CM to INCHES
         units.height = '"'; // Switch from CM to INCHES (" symbol)
+        let unitbtn = document.getElementById("settings-unit");
+        switchElement(unitbtn.children[0], unitbtn.children[1], storedUnit, storedUnit);
+    }
+    
+    let storedTheme = localStorage.getItem("theme");
+    if(storedTheme==="1"){
+        // change css
+        let themebtn = document.getElementById("settings-theme");
+        switchElement(themebtn.children[0], themebtn.children[1], storedTheme, storedTheme);
     }
 
     const name = document.getElementById("user-name");
@@ -421,6 +450,7 @@ async function updateUserInfo(){
 
     editForm.bodytype["bodyType"]=info.bodytype;
     switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype["bodyType"], 1);
+    
 }
 
 function openElement(clickedParent, targetChild, exceptChild=""){
@@ -460,6 +490,7 @@ function dayBoxClick(){
         };
 
         let boxDate = e.currentTarget.getElementsByClassName("getDate")[0].innerHTML;
+        sessionStorage.setItem("currentBox", e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
         let newEntries = await getEntriesOn(boxDate);
         createEntryBoxes(newEntries, boxDate);
     });
@@ -472,7 +503,7 @@ async function createEntryBoxes(entries, date){
     if(!date instanceof Date){
         date = new Date(date)
     }
-    let infos = await user.getInfoFrom(date);
+    let infos = await requests.getInfoFrom(date);
 
     let goal=0;
     if(infos.bodytype==0){
@@ -540,13 +571,13 @@ function createEntry(el){
     }
     let newEl = document.createElement("div");
     newEl.classList.add("manager-content-info-box-entry");
-    newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT ENTRY</button></div></div></div><div class="entry-data hidden">${el.entryid}</div>`;
+    newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT</button></div></div></div><div class="entry-data hidden">${el.entryid}::${el.hasOwnProperty("kcal")}</div>`; // Keeps ID & Type (true == Cons. & false == Acts.) so we can edit them later.
     return newEl;
 }
 
 async function createDayBoxes(){
     const parent = document.getElementById("content-slider");
-    let entries = await user.getEntries()
+    let entries = await requests.getEntries()
     parent.replaceChildren();
 
     try{
@@ -561,12 +592,14 @@ async function createDayBoxes(){
     }
 
     let elFirst = true;
+    let allDays = [];
     for(let i=0; i<Object.keys(entries).length; i++){
         let currentDay; let previousDay;
         Object.entries(entries)[i][1].forEach(async el =>{
             currentDay = el.timeof.year+"-"+el.timeof.month+"-"+el.timeof.day
-            if(currentDay!=previousDay){
+            if(!allDays.includes(currentDay)){
                 let newEl = createDay(el);
+                console.log("I am: ", el)
                 if(elFirst){
                     newEl.classList.add("bigbox-modifier");
                     newEl.classList.remove("smallbox-modifier")
@@ -574,7 +607,7 @@ async function createDayBoxes(){
                 }
                 parent.appendChild(newEl);
             }
-            previousDay=currentDay;
+            allDays.push(currentDay)
         }
     )}
     const getDate = $(parent).find(".getDate")
@@ -591,11 +624,11 @@ async function getEntriesOn(date) {
     endDate.setMilliseconds(endDate.getMilliseconds()-1);
     startDate.setMinutes(startDate.getMinutes()-startDate.getTimezoneOffset())
     endDate.setMinutes(endDate.getMinutes()-endDate.getTimezoneOffset())
-    let newEntries = await user.getEntriesFrom(startDate, endDate);
+    let newEntries = await requests.getEntriesFrom(startDate, endDate);
     return newEntries
 }
 
-function popOut(element, speed=500, bg=false, extraFunc=()=>{return;}){
+function popOut(element, speed=500, bg=false, extraFunc){
     if(sessionStorage.getItem("currentPopup")==="information"){
         sessionStorage.setItem("currentPopup", "settings")
     } else {
@@ -619,10 +652,10 @@ function popOut(element, speed=500, bg=false, extraFunc=()=>{return;}){
             bgElement.classList.add("hidden")
         });
     }
-    extraFunc();
+    extraFunc?.();
 }
 
-function popIn(element, speed=500, bg=false, extraFunc=()=>{return;}){
+function popIn(element, speed=500, bg=false, extraFunc){
     if(element.id!==""){
         sessionStorage.setItem("currentPopup", element.id)
     }
@@ -644,10 +677,10 @@ function popIn(element, speed=500, bg=false, extraFunc=()=>{return;}){
         bg.classList.remove("hidden");
         bg.animate(keyframe, option);
     }
-    extraFunc();
+    extraFunc?.();
 }
 
-function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc=()=>{return;}){
+function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc){
     const el = document.getElementById(element);
     const entrance = document.getElementById(entryBtn);
     const exit = document.getElementById(exitBtn);
@@ -656,7 +689,7 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc
     if(entryBtn!=exitBtn){
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
-                extraFunc();
+                extraFunc?.();
                 popIn(el, speed, bg);
             }
         })
@@ -668,7 +701,7 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc
     } else {
         entrance.addEventListener("click", ()=> {
             if(el.classList.contains("hidden")){
-                extraFunc();
+                extraFunc?.();
                 popIn(el, speed, bg);
             } else {
                 popOut(el, speed, bg);
@@ -695,39 +728,42 @@ function setEntryType(){
     })
 }
 
-function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{return;}){
+function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
-        if(localStorage.getItem(item)===valueOn){
+        if(localStorage.getItem(item)==valueOn){
             localStorage.setItem(item, valueOff);
-            effectFunc();
+            effectFunc?.();
         } else {
             localStorage.setItem(item, valueOn);
-            effectFunc();
+            effectFunc?.();
         }
     })
 }
 
-function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc=()=>{return;}){
+function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
         if(element[item]==valueOn){
             element[item]= valueOff;
-            effectFunc();
+            effectFunc?.();
         } else {
             element[item]= valueOn;
-            effectFunc();
+            effectFunc?.();
         }
     })
 }
 
 function switchElement(firstEl, secondEl, anchorData, dataOn){
+    console.log("FTRKQ: ", firstEl, secondEl)
     if (anchorData!==dataOn){
-        secondEl.classList.add("hidden")
-        popIn(firstEl)
+        secondEl.classList.add("hidden");
+        console.log("fakku")
+        popIn(firstEl);
     } else {
-        firstEl.classList.add("hidden")
-        popIn(secondEl)
+        firstEl.classList.add("hidden");
+        console.log("tappu")
+        popIn(secondEl);
     }
 }
 
@@ -767,4 +803,15 @@ function exitPopup(){
             }
         }
     })
+}
+
+function updateTheme(){
+    
+}
+
+async function updateUnit(){
+    updateUser()
+    let boxDate = sessionStorage.getItem("currentBox");
+    let newEntries = await getEntriesOn(boxDate);
+    createEntryBoxes(newEntries, boxDate);
 }

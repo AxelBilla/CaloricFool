@@ -29,4 +29,8 @@ export class user{
     static addInfo(req){
         return mod.addInfo(req);
     }
+
+    static editSettings(req){
+        return mod.editSettings(req);
+    }
 }

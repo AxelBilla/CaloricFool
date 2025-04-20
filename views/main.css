@@ -51,6 +51,7 @@
 
 html{
     height: 100%;
+    overflow: hidden;
 }
 body{
     display: flex;
@@ -60,7 +61,8 @@ body{
     width: 100vw;
     position: absolute;
     z-index: 0;
-    overflow:hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
     align-items: center;
 }
 
@@ -464,6 +466,8 @@ body{
                                     box-shadow: var(--clearsky) 0px 0px 2px 2px;
                                     border-radius: 10px;
                                     padding: 5px;
+                                    padding-left: 20px;
+                                    padding-right: 20px;
                                     margin: 0px;
                                     height: fit-content;
                                     border: none;
@@ -598,12 +602,22 @@ body{
                     margin-left: 8%;
                     margin-right: 10%;
                     overflow: hidden;
-                    .settings-content-form-field-button-active{
+                    .settings-content-form-field-button-left{
                         display: flex;
                         align-items: center;
                         width: 50%;
                         height: 100%;
                         margin-left: 0px; /*TURNS TO "auto" when switching to the 2nd option, back into "0px" when switching to the 1st*/
+                        background-color: bisque;
+                        justify-content: center;/*TO DELETE*/
+
+                    }
+                    .settings-content-form-field-button-right{
+                        display: flex;
+                        align-items: center;
+                        width: 50%;
+                        height: 100%;
+                        margin-left: auto; /*TURNS TO "auto" when switching to the 2nd option, back into "0px" when switching to the 1st*/
                         background-color: bisque;
                         justify-content: center;/*TO DELETE*/
 

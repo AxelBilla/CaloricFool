@@ -100,5 +100,11 @@ app.post('/addInfo', async function(req, res){
   res.json(exec);
 })
 
+app.post('/editSettings', async function(req, res){
+  console.log("---tr---\n editSettings \n----tr----", req.body)
+  const exec = await user.editSettings(req.body); 
+  res.json(exec);
+})
+
 const httpsServer = https.createServer(credentials, app);
 httpsServer.listen(8443);

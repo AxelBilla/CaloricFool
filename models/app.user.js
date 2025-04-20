@@ -193,6 +193,10 @@ export class user{
         console.log(req, date)
         return await db_user.addInfo(req.token, req, date)
     }
+
+    static async editSettings(req){
+        return await db_user.editSettings(req.token, req)
+    }
 }
 
 function generateToken(){

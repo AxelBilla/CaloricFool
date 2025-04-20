@@ -70,4 +70,11 @@ export class user{
     return {status: true};
   }
 
+  static async editSettings(userToken, newSettings){
+    const request = await sql`
+      UPDATE users SET settingid=(SELECT settingid FROM settings WHERE unit=${newSettings.unit} AND theme=${newSettings.theme}) WHERE userid=(SELECT userid FROM tokens WHERE tokenid=${userToken})
+    `
+    return {status: true};
+  }
+
 }
