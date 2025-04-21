@@ -203,6 +203,15 @@ export class user{
         }
         return await db_entry.editEntry(req.token, req)
     }
+
+    static async deleteEntry(req){
+        if(req.type){
+            req.type="consumptions";
+        } else {
+            req.type="activities";
+        }
+        return await db_entry.deleteEntry(req.token, req)
+    }
 }
 
 function generateToken(){

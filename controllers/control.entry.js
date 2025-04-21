@@ -17,4 +17,8 @@ export class entry{
     static editEntry(req){
         return mod.editEntry(req);
     }
+
+    static deleteEntry(req){
+        return mod.deleteEntry(req);
+    }
 }

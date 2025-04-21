@@ -53,7 +53,9 @@ window.addEventListener("load", function(){
         });
     
     
-    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("Are you sure\nyou want to logout from this account?", 1, "YES")) // Manages opening & closing of warning logout menu
+    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("Are you sure\nyou want to logout from this account?", "YES", ()=>{
+        loginSequence();
+    })) // Manages opening & closing of warning logout menu
     
     
     //
@@ -83,7 +85,7 @@ window.addEventListener("load", function(){
             if(data.status){
                 loginSequence();
             } else {
-                setWarning("Invalid Credentials,\nplease try again.", 0, "RETRY")
+                setWarning("Invalid Credentials,\nplease try again.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             };
         })
@@ -96,7 +98,7 @@ window.addEventListener("load", function(){
             if(data.status){
                 registerSequence(e.target[0].value)
             } else {
-                setWarning("An account\nis already\n registered with this email.", 0, "RETRY")
+                setWarning("An account\nis already\n registered with this email.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             };
         })
@@ -163,7 +165,7 @@ window.addEventListener("load", function(){
                 dayBoxClick();
                 popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
             } else {
-                setWarning("An error has occured,\nplease try again.", 0, "RETRY")
+                setWarning("An error has occured,\nplease try again.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             };
         })
@@ -194,26 +196,11 @@ window.addEventListener("load", function(){
                     popOut(e.target.parentElement.parentElement);
                 }
             } else {
-                setWarning("An error has occured,\nplease try again.", 0, "RETRY")
+                setWarning("An error has occured,\nplease try again.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             }
         })
     })
-
-    document.getElementById("warning-content").addEventListener("submit", (e)=>{
-        e.preventDefault()
-        console.log(e)
-        switch (e.submitter.getAttribute("warnType")) {
-            case "1":
-                logoutSequence()
-                break;
-            default:
-                break;
-        }
-        return false;
-    })
-
-    
 })
 
 async function loginSequence(){
@@ -779,12 +766,21 @@ function switchElement(firstEl, secondEl, anchorData, dataOn){
     }
 }
 
-function setWarning(txtMsg, warnType=0, txtBtn="YES"){
+function setWarning(txtMsg, txtBtn="YES", extraFunc){
     const warnMsg = document.getElementById("warning-message")
     const warnBtn = document.getElementById("warning-btn")
     warnMsg.children[0].innerText=txtMsg;
     warnBtn.children[0].innerHTML=txtBtn;
-    warnBtn.setAttribute("warnType", warnType);
+
+    let content = document.getElementById("warning-content");
+    content.replaceWith(content.cloneNode(true)); // Replaces node with itself so we can get rid of all those damned event that may remain (fuck em)
+    content = document.getElementById("warning-content"); // Since we replaced it, albeit with a near-identical copy of itself, the element of our "content" doesn't exist in our DOM anymore so we have to get it again
+    content.addEventListener("submit", (e)=>{
+        e.preventDefault();
+        popOut(content.parentElement, 500, true);
+        extraFunc?.();
+    }, {once: true})
+
 }
 
 function triggerEvent(target, event){
@@ -852,6 +848,15 @@ async function editEntry(){
         edit.children[0].children[1].children[0].addEventListener("click", ()=>{
             popOut(edit, 500, true);
         })
+
+        edit.querySelector("#edit-entry-delete").addEventListener("click", ()=>{
+            popIn(document.getElementById("warning"), 500, true)
+            setWarning("Are you sure\nyou'd like to\ndelete this\nentry?\nThis cannot be undone.", "YES", ()=>{
+                requests.deleteEntry(data); // Sends out the kill order (o7)
+                let entryDiv = e.target.parentElement.parentElement.parentElement.parentElement; // For (possible) future maintainability's sake
+                entryDiv.remove(); // Shows to the user the results of their actions ('em bastards are effin' monsters, I tell ya!)
+            })
+        }, {once: true})
 
         edit.addEventListener("submit", async (s)=>{
             s.preventDefault()

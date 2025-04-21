@@ -100,6 +100,12 @@ app.post('/editEntry', async function(req, res){
   res.json(exec);
 })
 
+app.post('/deleteEntry', async function(req, res){
+  console.log("\n\n---tr---\n deleteEntry \n----tr----\n", req.body)
+  const exec = await entry.deleteEntry(req.body); 
+  res.json(exec);
+})
+
 app.post('/addInfo', async function(req, res){
   console.log("\n\n---tr---\n addInfo \n----tr----\n", req.body)
   const exec = await user.addInfo(req.body); 

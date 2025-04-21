@@ -130,6 +130,17 @@ class requests{
     return res;
   }
 
+  static async deleteEntry(data){
+    const tkn = localStorage.getItem("token");
+    const req = await fetch("/deleteEntry",{
+      method: "POST",       
+      body: JSON.stringify({id: data.id, type: data.type, token: tkn}),
+      headers: {"Content-Type": "application/json"} 
+    });
+    const res = await req.json()
+    return res;
+  }
+
   static async addInfo(form, date){
     const tkn = localStorage.getItem("token");
     const req = await fetch("/addInfo",{

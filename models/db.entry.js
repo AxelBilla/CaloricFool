@@ -46,4 +46,11 @@ export class entry{
     return {status: true};
   }
 
+  static async deleteEntry(userToken, req){ // Gets every entry of [USER] in either the "Activities" or "Consumptions" table based on a given [entryName]
+    const request = await sql`
+      DELETE FROM ${sql(req.type)} WHERE entryid=${req.id} AND userid=(SELECT userid FROM tokens WHERE tokenid=${userToken})
+    `
+    return {status: true};
+  }
+
 }
