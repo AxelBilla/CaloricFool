@@ -176,7 +176,10 @@ window.addEventListener("load", function(){
             e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
             e.target[1].value=utils.roundNum(utils.toCM(e.target[1].value), 3);
         };
-        e.target[3].bodyType ??= 0; // Yes, I learned about those operators. Yes, I fucking hate how there's built-in operators for undefined/null.
+        console.log(e)
+        if(e.target[3].getAttribute("bodyType")!=1){
+            e.target[3].setAttribute("bodyType", 0);
+        }
         
         date = new Date();
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
@@ -184,7 +187,7 @@ window.addEventListener("load", function(){
         requests.addInfo(e, date).then(data => {
             if(data.status){
                 updateUser();
-                if(e.target.getAttribute("isRegistering")===1){
+                if(e.target.getAttribute("isRegistering")==1){
                     e.target.setAttribute("isRegistering", 0);
                     popOut(e.target.parentElement.parentElement, 500, true);
                 } else {
@@ -198,8 +201,10 @@ window.addEventListener("load", function(){
     })
 
     document.getElementById("warning-content").addEventListener("submit", (e)=>{
-        switch (e.target[0].warnType) {
-            case 1:
+        e.preventDefault()
+        console.log(e)
+        switch (e.submitter.getAttribute("warnType")) {
+            case "1":
                 logoutSequence()
                 break;
             default:
@@ -246,7 +251,7 @@ function registerSequence(name){
 }
 
 function logoutSequence(){
-    localStorage.removeItem("token");
+    localStorage.setItem("token", "");
     window.location.reload();
 }
 
@@ -551,6 +556,7 @@ async function createEntryBoxes(entries, date){
 }
 
 function createEntry(el){
+    console.log("constr: ", el)
     el.primary={};
     el.secondary={};
     if(el.hasOwnProperty("kcal")){
@@ -753,18 +759,18 @@ function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc){
 function switchElementValue(btn, item, valueOn=1, valueOff=0, effectFunc){
     const element = document.getElementById(btn);
     element.addEventListener("click", ()=>{
-        if(element[item]==valueOn){
-            element[item]= valueOff;
+        if(element.getAttribute(item)==valueOn){
+            element.setAttribute(item, valueOff);
             effectFunc?.();
         } else {
-            element[item]= valueOn;
+            element.setAttribute(item, valueOn);
             effectFunc?.();
         }
     })
 }
 
 function switchElement(firstEl, secondEl, anchorData, dataOn){
-    if (anchorData!==dataOn){
+    if (anchorData!=dataOn){
         secondEl.classList.add("hidden");
         popIn(firstEl);
     } else {

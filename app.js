@@ -113,4 +113,4 @@ app.post('/editSettings', async function(req, res){
 })
 
 const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(8443);
+httpsServer.listen(443);

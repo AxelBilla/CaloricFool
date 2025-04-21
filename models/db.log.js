@@ -12,7 +12,7 @@ export class login{
     `
     let res;
     try{
-      res=await bcrypt.compare(pswd, request[0].password);
+      res={status: await bcrypt.compare(pswd, request[0].password)};
     } catch (e) {
       res={status: false, err: e}
     }

@@ -112,7 +112,7 @@ class requests{
     const tkn = localStorage.getItem("token");
     const req = await fetch("/addEntry",{
       method: "POST",       
-      body: JSON.stringify({type: form.target[0].entryType, primaryInfo: form.target[1].value, secondaryInfo: form.target[2].value, comment: form.target[3].value, date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      body: JSON.stringify({type: form.target[0].getAttribute("entryType"), primaryInfo: form.target[1].value, secondaryInfo: form.target[2].value, comment: form.target[3].value, date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
       headers: {"Content-Type": "application/json"} 
     });
     const res = await req.json()
@@ -134,7 +134,7 @@ class requests{
     const tkn = localStorage.getItem("token");
     const req = await fetch("/addInfo",{
       method: "POST",       
-      body: JSON.stringify({weight: form.target[0].value, height: form.target[1].value, age: form.target[2].value, bodytype: form.target[3].bodyType, date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
+      body: JSON.stringify({weight: form.target[0].value, height: form.target[1].value, age: form.target[2].value, bodytype: form.target[3].getAttribute("bodyType"), date: date, token: tkn}), // 0: Cons/Act; 1: Gram; 2: Kcal; 3: Comment; 4: Date; 5: Hour.
       headers: {"Content-Type": "application/json"} 
     });
     const res = await req.json()
