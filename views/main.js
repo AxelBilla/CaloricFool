@@ -53,9 +53,7 @@ window.addEventListener("load", function(){
         });
     
     
-    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>setWarning("Are you sure\nyou want to logout from this account?", "YES", ()=>{
-        loginSequence();
-    })) // Manages opening & closing of warning logout menu
+    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>{setWarning("Are you sure\nyou want to logout from this account?", "YES", logoutSequence)}) // Manages opening & closing of warning logout menu
     
     
     //
