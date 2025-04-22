@@ -1,5 +1,6 @@
+const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
+
 window.addEventListener("load", function(){
-    const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
 
     bgAnim(); // Should never stop, animates the background
 
@@ -12,8 +13,6 @@ window.addEventListener("load", function(){
     popupHandler("entry", "add-entry", "exit-entry", 500, true) // Manages the opening & closing of our new entry menu
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
     setEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
-
-    formHightlight("edit-entry", "edit-entry-submit-btn", defaultHighlight, "edit-entry-form-primary-amount", "edit-entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the edit entry form
 
     openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button"); // Close & Open individual entries, while also avoiding to do so if you click on the edit button (otherwise it'll close whenever you want to make an edit which can be annoying as hell)
 
@@ -475,14 +474,14 @@ function createEntry(el){
     el.primary={};
     el.secondary={};
     if(el.hasOwnProperty("kcal")){
-        el.primary.unit=" kcal";
-        el.primary.amount=el.kcal;
-        el.secondary.amount=el.gram;
+        el.secondary.unit=" kcal";
+        el.secondary.amount=el.kcal;
+        el.primary.amount=el.gram;
         if(localStorage.getItem("unit")==="1"){
-            el.secondary.amount=utils.roundNum(utils.toLBS(el.secondary.amount)/1000, 2);
-            el.secondary.unit=" lbs";
+            el.primary.amount=utils.roundNum(utils.toLBS(el.primary.amount)/1000, 2);
+            el.primary.unit=" lbs";
         } else {
-            el.secondary.unit=" g";
+            el.primary.unit=" g";
         }
     } else {
         el.primary.unit=" minute(s)";
@@ -580,6 +579,9 @@ function setEntryType(){
 }
 
 async function editEntry(){
+    let editMenu = document.getElementById("edit-entry");
+    editMenu.replaceWith(editMenu.cloneNode(true))
+    formHightlight("edit-entry", "edit-entry-submit-btn", defaultHighlight, "edit-entry-form-primary-amount", "edit-entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the edit entry form
     $(".manager-content-info-box-entry-content-main-edit-button").click(async function(e){
         let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
 
