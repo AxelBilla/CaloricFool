@@ -176,7 +176,6 @@ window.addEventListener("load", function(){
             e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
             e.target[1].value=utils.roundNum(utils.toCM(e.target[1].value), 3);
         };
-        console.log(e)
         if(e.target[3].getAttribute("bodyType")!=1){
             e.target[3].setAttribute("bodyType", 0);
         }
@@ -472,7 +471,6 @@ async function updateUnit(){
 
 
 function createEntry(el){
-    console.log("constr: ", el)
     el.primary={};
     el.secondary={};
     if(el.hasOwnProperty("kcal")){
@@ -554,7 +552,7 @@ async function createEntryBoxes(entries, date){
             return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
         });
     } catch(e){
-        console.log("empty entries")
+        console.log("no entries")
     };
     for(let i=0; i<entries.length; i++){
         parent.appendChild(createEntry(entries[i]));
@@ -611,9 +609,10 @@ async function editEntry(){
                 requests.deleteEntry(data); // Sends out the kill order (o7)
                 let entryDiv = e.target.parentElement.parentElement.parentElement.parentElement; // For (possible) future maintainability's sake
                 entryDiv.remove(); // Shows to the user the results of their actions ('em bastards are effin' monsters, I tell ya!)
+                popOut(edit, 500, true);
                 updateTracker();
             })
-        }, {once: true})
+        })
 
         edit.addEventListener("submit", async (s)=>{
             s.preventDefault()
@@ -629,7 +628,6 @@ async function editEntry(){
 
             entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
             
-            console.log("djao: ", data)
             await requests.editEntry(data);
 
             updateTracker();
@@ -664,7 +662,7 @@ async function createDayBoxes(){
             return new Date(b.timeof.year+"-"+b.timeof.month+"-"+b.timeof.day) - new Date(a.timeof.year+"-"+a.timeof.month+"-"+a.timeof.day);
         });
     } catch(e){
-        console.log("empty days")
+        console.log("no days")
     }
 
     let elFirst = true;
