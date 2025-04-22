@@ -121,7 +121,7 @@ window.addEventListener("load", function(){
                     var targetDay=slider.children[0]; // Since everything's ordered by date, and we know our slider has at least 1 child, the child at index 0 will ALWAYS exist and ALWAYS be at the top
                     let targetCheck=0; // Used to know whether our entry's date is the most recent (=0), already exists (=1) or comes after this date (=2)
                     for(let i = 0; i<slider.children.length; i++){
-                        let newDate = new Date(slider.children[i].lastElementChild.innerHTML);
+                        let newDate = new Date(slider.children[i].getAttribute("getDate"));
                         if(newDate.getTime()>=dayDate.getTime()){ 
                             if(newDate.getTime()===dayDate.getTime()){
                                 targetCheck=1; // == Our date already exists, we can end our loop
@@ -151,7 +151,7 @@ window.addEventListener("load", function(){
                             }
                         }
                         let newEntry = createEntry(data.entry); // Creates the entry proper
-                        targetGoal.parentNode.insertBefore(newEntry, goal.nextSibling); // A day can't exist without an entry, so we know that there'll always be something below our intake/goal tracker.
+                        targetGoal.parentNode.insertBefore(newEntry, targetGoal.nextSibling); // A day can't exist without an entry, so we know that there'll always be something below our intake/goal tracker.
                         editEntry(); // Reapplies our editEntry event to account for the newly created entry
                     }
                     dayBoxClick(); // Reapplies our dayBoxClick event to account for the newly created day box 
