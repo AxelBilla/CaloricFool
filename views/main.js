@@ -13,35 +13,35 @@ window.addEventListener("load", function(){
     formHightlight("entry", "entry-submit-btn", defaultHighlight, "entry-form-primary-amount", "entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
     setEntryType();  // Allows us to give a value to the element within our form handling the type of entry (act/cons)
 
-    formHightlight("edit-entry", "edit-entry-submit-btn", defaultHighlight, "edit-entry-form-primary-amount", "edit-entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the new entry form
+    formHightlight("edit-entry", "edit-entry-submit-btn", defaultHighlight, "edit-entry-form-primary-amount", "edit-entry-form-secondary-amount");  // Highlights the submit button when the primary and secondary fields (gram&kcal || minutes&kcal/h) are filled in the edit entry form
 
-    openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button");
+    openElement("manager-content-info-box-entry-content", "manager-content-info-box-entry-content-main", "manager-content-info-box-entry-content-main-edit-button"); // Close & Open individual entries, while also avoiding to do so if you click on the edit button (otherwise it'll close whenever you want to make an edit which can be annoying as hell)
 
     formHightlight("information-form", "information-submit-btn", defaultHighlight, "information-form-weight", "information-form-height", "information-form-age"); // Highlights the submit button when all the informations (weight, height & age) are filled in the information form (ON by default)
     popupHandler("information", "settings-editinfo", "exit-information", 500, false, ()=>{
-        document.getElementById("information").children[0].children[1].classList.remove("hidden");
-        triggerEvent(document.getElementById("information-form"), "input")
+        document.getElementById("information").children[0].children[1].classList.remove("hidden"); // We hide the exit button on registry, so to be 100% sure there's no issue we make sure it's always removed when opening that menu
+        triggerEvent(document.getElementById("information-form"), "input") // The only time it's not filled in are at registry (no information stored yet) and when a user clears a field manually, so we're automatically triggering the event that's being listened to so our field checking function parse throughs the field and highlight the button (since the fields should naturally be filled in)
     }) // Manages the opening & closing of our information menu
 
-    switchElementValue("information-form-bodytype", "bodyType", 1, 0, 
+    switchElementValue("information-form-bodytype", "bodyType", 1, 0, // switch <information-form-bodytype>'s "bodyType" attribute value so we can know use it once the information form is submitted
         ()=>{
             let userType=document.getElementById("information-form-bodytype"); 
-            switchElement(userType.children[0], userType.children[1], userType.getAttribute("bodyType"), 1);
-        });
+            switchElement(userType.children[0], userType.children[1], userType.getAttribute("bodyType"), 1); // Clicking on that button has to both trigger the value swap AND change the image we're displaying at the same time, so I just use the option function parameter from my switchElementValue function to get everything working properly
+        }); 
 
 
     popupHandler("settings","open-settings","exit-settings", 500, true) // Manages the opening & closing of our settings
-    switchCacheValue("settings-theme", "theme", 1, 0, ()=>{
-        requests.editSettings(); updateTheme();
+    switchCacheValue("settings-theme", "theme", 1, 0, ()=>{ // Same thing as switchElementValue, except with data that we may want to persist on reload. (not really necessary for any of our settings since we already update them on every login (token or not))
+        requests.editSettings(); updateTheme(); // Sends out the edit requests & updates the page to reflect our current setting
         let theme = document.getElementById("settings-theme");
         let content = localStorage.getItem("theme")
         if(content==1){
-            switchElement(theme.children[0], theme.children[1], content, content)
+            switchElement(theme.children[0], theme.children[1], content, content) // Similar kind of element as for our bodytype button, so similar requirements
         } else {
             switchElement(theme.children[1], theme.children[0], content, content)
         }});
         
-    switchCacheValue("settings-unit", "unit", 1, 0, ()=>{
+    switchCacheValue("settings-unit", "unit", 1, 0, ()=>{ // Same thing as for themes
         requests.editSettings(); updateUnit();
         let unit = document.getElementById("settings-unit");
         let content = localStorage.getItem("unit")
@@ -53,23 +53,23 @@ window.addEventListener("load", function(){
         });
     
     
-    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>{setWarning("Are you sure\nyou want to logout from this account?", "YES", logoutSequence)}) // Manages opening & closing of warning logout menu
+    popupHandler("warning","open-logout","exit-warning", 500, true, ()=>{setWarning("Are you sure\nyou want to logout from this account?", "YES", logoutSequence)}) // Manages opening & closing of warning logout menu.
     
     
-    //
+    // Triggers when going to the sign up form from login page
     const register = document.getElementById("register");
     register.addEventListener("click", function(){
-        gotoFrom("sign-register", "sign-login", '75'); // Triggers when going to the sign up form from login page
+        gotoFrom("sign-register", "sign-login", '75');
     })
 
-    //
+    // Triggers when going back to the login form from the sign up page
     const login = document.getElementById("login");
     login.addEventListener("click", function(){
-        gotoFrom("sign-login", "sign-register"); // Triggers when going back to the login form from the sign up page
+        gotoFrom("sign-login", "sign-register");
     })
     
 
-    // Triggers the login sequence if the user's "token" (held in their localStorage cache) is valid
+    // Triggers the login sequence if the user's "token" (held in localStorage) is valid
     requests.tokenLog().then(data => {
         if(data){
             loginSequence();
@@ -102,65 +102,66 @@ window.addEventListener("load", function(){
         })
     })
 
-    //
+    // Triggers when submitting a new entry
     document.getElementById("entry-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         let date;
-        if(e.target[4].value===""){
-            date = new Date();
+        if(e.target[4].value===""){ // Putting a date is optional, but we NEED a date. So.....
+            date = new Date(); // If there's no day, we can just use a default date (which creates a date object with the time and date at the time it's instantiated)
         } else {
-            date = new Date(e.target[4].value+" "+e.target[5].value);
+            date = new Date(e.target[4].value+" "+e.target[5].value); // However, if there IS a day, we take the day and time inputted and use them to create our date (i.e, it'll often be smth like <"01/01/2011"+" "+"18:23">, which create a proper <01/01/2011 18:23> date that the date class can use. But, since you might not have an hour, doing the same will get you a <01/01/2011 00:00> date (since we can create an instance of date with just the "dd/mm/yyyy" format, at the price of a default hour at midnight))
         }
-        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(); // However, because of timezone-related issues + the possible date defaulting, we have to descontruct our date into a usable string so it can be send to and used by our DB.
         requests.addEntry(e, date).then(data=>{
-            if(data.status){
-                const slider = document.getElementById("content-slider"); 
-                let day = createDay(data.entry);
-                if(slider.children.length>0){
-                    let dayDate = new Date(`${data.entry.timeof.year}-${data.entry.timeof.month}-${data.entry.timeof.day}`);
-                    var targetDay=slider.children[0];
-                    let targetCheck=0;
+            if(data.status){ // data.status can only be <true> (everything went well, request successful) OR <false> (something went wrong, request aborted)
+                const slider = document.getElementById("content-slider"); // Get the parent of all our day boxes
+                let day = createDay(data.entry); // Create a day box for our new entry (necessary when the entry is on a day that doesn't exist yet (i.e, in the future or even prior to using the app))
+                if(slider.children.length>0){ // Checks if the user has any day boxes already displayed
+                    let dayDate = new Date(`${data.entry.timeof.year}-${data.entry.timeof.month}-${data.entry.timeof.day}`); // Construct a date object so we can compare their epoch time (and since we only have a date, it'll tell us if a date comes before another or not) 
+                    var targetDay=slider.children[0]; // Since everything's ordered by date, and we know our slider has at least 1 child, the child at index 0 will ALWAYS exist and ALWAYS be at the top
+                    let targetCheck=0; // Used to know whether our entry's date is the most recent (=0), already exists (=1) or comes after this date (=2)
                     for(let i = 0; i<slider.children.length; i++){
                         let newDate = new Date(slider.children[i].lastElementChild.innerHTML);
-                        if(newDate.getTime()>=dayDate.getTime()){
+                        if(newDate.getTime()>=dayDate.getTime()){ 
                             if(newDate.getTime()===dayDate.getTime()){
-                                targetCheck=1;
+                                targetCheck=1; // == Our date already exists, we can end our loop
                                 break;
                             } else {
-                                targetDay=slider.children[i];
+                                targetDay=slider.children[i]; // == This date is more recent than ours, we assign this date to targetDay 
                                 targetCheck=2;
                             }
                         }
                     }
-                    if(targetCheck!==1){
-                        if(targetCheck!==0){
-                            targetDay.parentNode.insertBefore(day, targetDay.nextSibling);
+                    if(targetCheck!==1){ // Checks if our date doesn't already exist
+                        if(targetCheck!==0){ // Checks if our date isn't the most recent one
+                            targetDay.parentNode.insertBefore(day, targetDay.nextSibling); // Inserts our date's day below the most recent date we found, which is before the one that's right below it (basically, if our date is [10/10/2010] it'll be smth like '[12/10/2010] - {INSERTED HERE} - [8/10/2010]', where [12/10/2010] is our most recent one & [8/10/2010] is the one that used to be right below it)
                         } else {
-                            targetDay.parentNode.insertBefore(day, targetDay);
+                            targetDay.parentNode.insertBefore(day, targetDay); // Inserts out date's day before (above) everything
                         }
                     }
-                    const bigbox = $(slider).find(`.bigbox-modifier`)[0]
-                    if(bigbox.lastElementChild.innerHTML==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){
+                    const bigbox = slider.getElementsByClassName("bigbox-modifier")[0] // Gets us every element with the "bigbox-modifier" class, who can't EVER be given to more than two elements.
+                    if(sessionStorage.getItem("currentBox")==data.entry.timeof.year+"-"+data.entry.timeof.month+"-"+data.entry.timeof.day){ // Checks if our entry date's corresponds to the currently opened date box
                         let entries = document.getElementById("entry-menu");
-                        let entryDate = new Date(`2024-04-04 ${data.entry.timeof.hour}:${data.entry.timeof.minute}`)
-                        let goal = entries.children[0];
+                        let entryDate = new Date(`2024-04-04 ${data.entry.timeof.hour}:${data.entry.timeof.minute}`) // Uses a bogus date so we can compare the hours
+                        let targetGoal = entries.children[0]; // our intake/goal tracker is always the first(0) element drawn in our entry menu 
                         for(let i = 1; i<entries.children.length; i++){
                             let newDate = new Date(`2024-04-04 ${entries.children[i].children[0].children[0].children[0].textContent}:${entries.children[i].children[0].children[0].children[1].textContent}`)
                             if(newDate.getTime()>=entryDate.getTime()){
-                                goal=entries.children[i];
+                                targetGoal=entries.children[i]; // Same kinda trick as for our day boxes, except for entries.
                             }
                         }
-                        let newEntry = createEntry(data.entry);
-                        goal.parentNode.insertBefore(newEntry, goal.nextSibling);
-                        editEntry();
+                        let newEntry = createEntry(data.entry); // Creates the entry proper
+                        targetGoal.parentNode.insertBefore(newEntry, goal.nextSibling); // A day can't exist without an entry, so we know that there'll always be something below our intake/goal tracker.
+                        editEntry(); // Reapplies our editEntry event to account for the newly created entry
                     }
-                } else {
-                    day.classList.add("bigbox-modifier");
-                    day.classList.remove("smallbox-modifier")
-                    slider.appendChild(day)
-                    triggerEvent(day, "click");
+                    dayBoxClick(); // Reapplies our dayBoxClick event to account for the newly created day box 
+                } else { // Reminder, this happens when we don't have any day boxes at all (i.e, new account)
+                    day.classList.add("bigbox-modifier"); // Gives it the bigbox look
+                    day.classList.remove("smallbox-modifier") // Gotta remove the default "smallbox-modifier"
+                    slider.appendChild(day) // Slider doesn't have any children, so we can just append it for it to become children #1 (0)
+                    dayBoxClick(); // Reapplies our dayBoxClick event to account for the newly created day box 
+                    triggerEvent(slider.children[0], "click"); // Manually triggers the clicking event so it opens
                 }
-                dayBoxClick();
                 popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
             } else {
                 setWarning("An error has occured,\nplease try again.", "RETRY")
@@ -169,7 +170,7 @@ window.addEventListener("load", function(){
         })
     })
 
-    //
+    // Triggers when submitting new informations
     document.getElementById("information-form").addEventListener("submit", (e)=>{
         e.preventDefault();
         if(localStorage.getItem("unit")==="1"){
@@ -579,7 +580,7 @@ function setEntryType(){
 }
 
 async function editEntry(){
-    $(`.manager-content-info-box-entry-content-main-edit-button`).click(async function(e){
+    $(".manager-content-info-box-entry-content-main-edit-button").click(async function(e){
         let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
 
         const edit = document.getElementById("edit-entry")
@@ -645,7 +646,8 @@ function createDay(el){
     newEl.classList.add("f-idendidad");
     newEl.classList.add("no-select");
     newEl.classList.add("smallbox-modifier");
-    newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
+    newEl.setAttribute("getDate", `${el.timeof.year}-${el.timeof.month}-${el.timeof.day}`)
+    newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div>`;
     return newEl;
 }
 
@@ -684,28 +686,28 @@ async function createDayBoxes(){
             allDays.push(currentDay);
         }
     )}
-    const getDate = $(parent).find(".getDate")
-    let newEntries = await getEntriesOn(getDate[0].innerHTML);
-    createEntryBoxes(newEntries, getDate[0].innerHTML);
+    let getDate = sessionStorage.getItem("currentBox");
+    let newEntries = await getEntriesOn(getDate);
+    createEntryBoxes(newEntries, getDate);
     dayBoxClick()
 }
 
 function dayBoxClick(){
-    $(`.manager-content-slider-box`).click(async function(e){ // Use JQuery to get when any single element with that class is clicked
+    $(".manager-content-slider-box").click(async function(e){ // Use JQuery to get when any single element with that class is clicked
 
         let modifier = e.currentTarget.classList.contains("bigbox-modifier");
-        const slider = document.getElementById("content-slider")
-        const bigbox = $(slider).find(`.bigbox-modifier`)
+        const slider = document.getElementById("content-slider");
+        const bigbox = $(slider).find(".bigbox-modifier"); // Using JQuery because it's more concise than looping through every children of slider myself
         if(!modifier){
             // When it's small do:
             bigbox[0].classList.remove("bigbox-modifier");
-            bigbox[0].classList.add("smallbox-modifier")
-            e.currentTarget.classList.remove("smallbox-modifier")
-            e.currentTarget.classList.add("bigbox-modifier")
+            bigbox[0].classList.add("smallbox-modifier");
+            e.currentTarget.classList.remove("smallbox-modifier");
+            e.currentTarget.classList.add("bigbox-modifier");
         };
 
-        let boxDate = e.currentTarget.getElementsByClassName("getDate")[0].innerHTML;
-        sessionStorage.setItem("currentBox", e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
+        let boxDate = e.currentTarget.getAttribute("getDate");
+        sessionStorage.setItem("currentBox", boxDate);
         let newEntries = await getEntriesOn(boxDate);
         createEntryBoxes(newEntries, boxDate);
     });
