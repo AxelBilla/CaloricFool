@@ -201,6 +201,9 @@ window.addEventListener("load", function(){
     })
 })
 
+
+
+
 async function loginSequence(){
     gotoFrom("manager", "sign-login");
 
@@ -240,11 +243,63 @@ function logoutSequence(){
     window.location.reload();
 }
 
+
+
+
 // Switches from our current interface(origin) to another interface(destination)
 function gotoFrom(destination, origin, height=0, width=0){
     const start = document.getElementById(origin);
     const end = document.getElementById(destination);
     fadeToAnim(start, 0, end, height, width);
+}
+
+function triggerEvent(target, event){
+    let newEvent = new Event(event);
+    target.dispatchEvent(newEvent);
+}
+
+
+
+
+
+function slideGrab(slides){
+    const slider = document.getElementById(slides);
+
+    let isDown = false;
+    let startX;
+    let startY;
+    let scrollLeft;
+    let scrollTop;
+
+    slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - slider.offsetLeft;
+    startY = e.pageY - slider.offsetTop;
+    scrollLeft = slider.scrollLeft;
+    scrollTop = slider.scrollTop;
+    slider.style.cursor = 'grabbing';
+    });
+
+    slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.style.cursor = 'grab';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const y = e.pageY - slider.offsetTop;
+    const walkX = (x - startX) * 1; // Change this number to adjust the scroll speed
+    const walkY = (y - startY) * 1; // Change this number to adjust the scroll speed
+    slider.scrollLeft = scrollLeft - walkX;
+    slider.scrollTop = scrollTop - walkY;
+    });
 }
 
 //
@@ -298,7 +353,6 @@ function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWi
     });
 }
 
-
 // Takes a page(page) to listen to and alters a button(btn)'s CSS based on whether the given fields(field1->field5) are filled or not.  
 function formHightlight(page, btn, colors, ...fields){
     
@@ -350,53 +404,9 @@ function formHightlight(page, btn, colors, ...fields){
     });
 };
 
-// Takes a text field(textID) and executes a given function(textGetFunc) when a specific type of event(eventTrigger) is triggered to edit the HTML contained within said text field.
-function updateText(eventTrigger, textID, textGetFunc){
-    const text = document.getElementById(textID);
-    window.addEventListener(eventTrigger, function(){
-        text.innerHTML=textGetFunc;
-    })
-};
 
-function slideGrab(slides){
-    const slider = document.getElementById(slides);
 
-    let isDown = false;
-    let startX;
-    let startY;
-    let scrollLeft;
-    let scrollTop;
 
-    slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - slider.offsetLeft;
-    startY = e.pageY - slider.offsetTop;
-    scrollLeft = slider.scrollLeft;
-    scrollTop = slider.scrollTop;
-    slider.style.cursor = 'grabbing';
-    });
-
-    slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.style.cursor = 'grab';
-    });
-
-    slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.style.cursor = 'grab';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const y = e.pageY - slider.offsetTop;
-    const walkX = (x - startX) * 1; // Change this number to adjust the scroll speed
-    const walkY = (y - startY) * 1; // Change this number to adjust the scroll speed
-    slider.scrollLeft = scrollLeft - walkX;
-    slider.scrollTop = scrollTop - walkY;
-    });
-}
 
 async function updateUser(){
     const username = await requests.getName(); // Get USER's name
@@ -448,97 +458,18 @@ async function updateUser(){
     
 }
 
-function openElement(clickedParent, targetChild, exceptChild=""){
-    $(document).on("click", `.${clickedParent}`,function(e){ // Use JQuery to get when any single element with that class is clicked
-        let childID;
-        for(let i = 0; i<e.currentTarget.children.length; i++){
-            if(e.currentTarget.children[i].classList.contains(targetChild)){
-                childID=i;
-                break;
-            }
-        };
-
-        if(!e.target.classList.contains(exceptChild)){ // Checks if the exact div we clicked on has our "exceptChild" in its classes 
-            if(!e.currentTarget.children[childID].classList.contains("hidden")){
-                //When it's visible do:
-                e.currentTarget.children[childID].classList.add("hidden")
-            } else {
-                // When it's hidden do:
-                e.currentTarget.children[childID].classList.remove("hidden")
-            };
-        }
-    });
+function updateTheme(){
+    // TO DO (switches CSS)
 }
 
-function dayBoxClick(){
-    $(`.manager-content-slider-box`).click(async function(e){ // Use JQuery to get when any single element with that class is clicked
-
-        let modifier = e.currentTarget.classList.contains("bigbox-modifier");
-        const slider = document.getElementById("content-slider")
-        const bigbox = $(slider).find(`.bigbox-modifier`)
-        if(!modifier){
-            // When it's small do:
-            bigbox[0].classList.remove("bigbox-modifier");
-            bigbox[0].classList.add("smallbox-modifier")
-            e.currentTarget.classList.remove("smallbox-modifier")
-            e.currentTarget.classList.add("bigbox-modifier")
-        };
-
-        let boxDate = e.currentTarget.getElementsByClassName("getDate")[0].innerHTML;
-        sessionStorage.setItem("currentBox", e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
-        let newEntries = await getEntriesOn(boxDate);
-        createEntryBoxes(newEntries, boxDate);
-    });
+async function updateUnit(){
+    updateUser()
+    let boxDate = sessionStorage.getItem("currentBox");
+    let newEntries = await getEntriesOn(boxDate);
+    createEntryBoxes(newEntries, boxDate);
 }
 
-async function createEntryBoxes(entries, date){
-    const parent = document.getElementById("entry-menu");
-    parent.replaceChildren();
 
-    if(!date instanceof Date){
-        date = new Date(date)
-    }
-    let infos = await requests.getInfoFrom(date);
-
-    let goal=0;
-    if(infos.bodytype==0){
-        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))*1.2
-    } else {
-        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))*1.2
-    }
-
-    let intake=0;
-    entries.cons.forEach(cal =>{
-        intake+=(cal.kcal*(cal.gram/100));
-    });
-    entries.acts.forEach(exer =>{
-        intake-=((exer.duration/60)*exer.burnrate);
-    });
-
-    let newEl = document.createElement("div");
-    newEl.id="tracker-goal";
-    newEl.classList.add("manager-content-info-box-goal");
-    newEl.classList.add("f-idendidad");
-    newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span>&nbsp/&nbsp<span id="day-goal">${utils.roundNum(goal)}</span>&nbspkcal</p>`;
-    if(parent.hasChildNodes()){
-        parent.replaceChildren(newEl)
-    } else {
-        parent.appendChild(newEl);
-    }
-
-    entries = entries.cons.concat(entries.acts);
-    try{
-        entries.sort(function(a,b){
-            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
-        });
-    } catch(e){
-        console.log("empty entries")
-    };
-    for(let i=0; i<entries.length; i++){
-        parent.appendChild(createEntry(entries[i]));
-    }
-    editEntry();
-}
 
 function createEntry(el){
     console.log("constr: ", el)
@@ -572,6 +503,151 @@ function createEntry(el){
     newEl.classList.add("manager-content-info-box-entry");
     newEl.setAttribute("entry-data", JSON.stringify({id: el.entryid, type: el.hasOwnProperty("kcal"), primary: el.primary.amount, secondary: el.secondary.amount, comment: el.comment}))
     newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT</button></div></div></div>`; // Keeps ID & Type (true == Cons. & false == Acts.) so we can edit them later.
+    return newEl;
+}
+
+async function getEntriesOn(date) {
+    let startDate = new Date(date);
+    let endDate = new Date(date);
+    endDate.setDate(endDate.getDate()+1);
+    endDate.setMilliseconds(endDate.getMilliseconds()-1);
+    startDate.setMinutes(startDate.getMinutes()-startDate.getTimezoneOffset())
+    endDate.setMinutes(endDate.getMinutes()-endDate.getTimezoneOffset())
+    let newEntries = await requests.getEntriesFrom(startDate, endDate);
+    return newEntries
+}
+
+async function createEntryBoxes(entries, date){
+    const parent = document.getElementById("entry-menu");
+    parent.replaceChildren();
+
+    if(!date instanceof Date){
+        date = new Date(date)
+    }
+    let infos = await requests.getInfoFrom(date);
+
+    let goal=0;
+    if(infos.bodytype==0){
+        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))*1.2
+    } else {
+        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))*1.2
+    }
+
+    let intake=0;
+    entries.cons.forEach(cal =>{
+        intake+=(cal.kcal*(cal.gram/100));
+    });
+    entries.acts.forEach(exer =>{
+        intake-=((exer.duration/60)*exer.burnrate);
+    });
+
+    let newEl = createTracker(intake, goal)
+    if(parent.hasChildNodes()){
+        parent.replaceChildren(newEl)
+    } else {
+        parent.appendChild(newEl);
+    }
+
+    entries = entries.cons.concat(entries.acts);
+    try{
+        entries.sort(function(a,b){
+            return (b.timeof.hour*100+b.timeof.minute) - (a.timeof.hour*100+a.timeof.minute);
+        });
+    } catch(e){
+        console.log("empty entries")
+    };
+    for(let i=0; i<entries.length; i++){
+        parent.appendChild(createEntry(entries[i]));
+    }
+    editEntry();
+}
+
+function setEntryType(){
+    const btn = document.getElementById("entry-form-type");
+    btn.setAttribute("entryType", 0); // set as a cons. by default
+    btn.addEventListener("click", (e) =>{
+        if (e.target.getAttribute("entryType")==0){
+            e.target.setAttribute("entryType", 1); // 1: Act.
+            e.target.value="EXERCISE MODE";
+            e.target.form[1].previousElementSibling.innerText="Minutes";
+            e.target.form[2].previousElementSibling.innerText="Kcal/h";
+        } else {
+            e.target.setAttribute("entryType", 0); // 0: Cons.
+            e.target.value="INTAKE MODE";
+            e.target.form[1].previousElementSibling.innerText="Gram";
+            e.target.form[2].previousElementSibling.innerText="Kcal";
+        }
+    })
+}
+
+async function editEntry(){
+    $(`.manager-content-info-box-entry-content-main-edit-button`).click(async function(e){
+        let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
+
+        const edit = document.getElementById("edit-entry")
+        if (data.type){
+            edit.querySelector("#edit-entry-form-primary-unit").innerText="Gram";
+            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
+            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal";
+            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
+        } else {
+            edit.querySelector("#edit-entry-form-primary-unit").innerText="Minutes";
+            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
+            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal/h";
+            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
+        }
+        
+        edit.querySelector("#edit-entry-form-comment").value=data.comment;
+        triggerEvent(edit, "input")
+        popIn(edit, 500, true)
+
+        edit.children[0].children[1].children[0].addEventListener("click", ()=>{
+            popOut(edit, 500, true);
+        })
+
+        edit.querySelector("#edit-entry-delete").addEventListener("click", ()=>{
+            popIn(document.getElementById("warning"), 500, true)
+            setWarning("Are you sure\nyou'd like to\ndelete this\nentry?\nThis cannot be undone.", "YES", ()=>{
+                requests.deleteEntry(data); // Sends out the kill order (o7)
+                let entryDiv = e.target.parentElement.parentElement.parentElement.parentElement; // For (possible) future maintainability's sake
+                entryDiv.remove(); // Shows to the user the results of their actions ('em bastards are effin' monsters, I tell ya!)
+                updateTracker();
+            })
+        }, {once: true})
+
+        edit.addEventListener("submit", async (s)=>{
+            s.preventDefault()
+            popOut(edit, 500, true);
+            data.primary=s.target[1].valueAsNumber;
+            data.secondary=s.target[2].valueAsNumber;
+            data.comment=s.target[3].value;
+
+            let entry = e.target.parentElement.parentElement.parentElement;
+            entry.querySelector(".entry-primary-amount").innerHTML=data.primary;
+            entry.querySelector(".entry-secondary-amount").innerHTML=data.secondary;
+            entry.querySelector(".manager-content-info-box-entry-content-main-comment").children[0].innerHTML=data.comment;
+
+            entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
+            
+            console.log("djao: ", data)
+            await requests.editEntry(data);
+
+            updateTracker();
+        }, { once: true })
+    });
+}
+
+
+
+
+
+function createDay(el){
+    let newEl = document.createElement("div");
+    newEl.classList.add("manager-content-slider-box");
+    newEl.classList.add("f-idendidad");
+    newEl.classList.add("no-select");
+    newEl.classList.add("smallbox-modifier");
+    newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
     return newEl;
 }
 
@@ -616,17 +692,66 @@ async function createDayBoxes(){
     dayBoxClick()
 }
 
+function dayBoxClick(){
+    $(`.manager-content-slider-box`).click(async function(e){ // Use JQuery to get when any single element with that class is clicked
 
-async function getEntriesOn(date) {
-    let startDate = new Date(date);
-    let endDate = new Date(date);
-    endDate.setDate(endDate.getDate()+1);
-    endDate.setMilliseconds(endDate.getMilliseconds()-1);
-    startDate.setMinutes(startDate.getMinutes()-startDate.getTimezoneOffset())
-    endDate.setMinutes(endDate.getMinutes()-endDate.getTimezoneOffset())
-    let newEntries = await requests.getEntriesFrom(startDate, endDate);
-    return newEntries
+        let modifier = e.currentTarget.classList.contains("bigbox-modifier");
+        const slider = document.getElementById("content-slider")
+        const bigbox = $(slider).find(`.bigbox-modifier`)
+        if(!modifier){
+            // When it's small do:
+            bigbox[0].classList.remove("bigbox-modifier");
+            bigbox[0].classList.add("smallbox-modifier")
+            e.currentTarget.classList.remove("smallbox-modifier")
+            e.currentTarget.classList.add("bigbox-modifier")
+        };
+
+        let boxDate = e.currentTarget.getElementsByClassName("getDate")[0].innerHTML;
+        sessionStorage.setItem("currentBox", e.currentTarget.getElementsByClassName("getDate")[0].innerHTML);
+        let newEntries = await getEntriesOn(boxDate);
+        createEntryBoxes(newEntries, boxDate);
+    });
 }
+
+
+
+
+function createTracker(intake, goal){
+    let newEl = document.createElement("div");
+    newEl.id="tracker-goal";
+    newEl.classList.add("manager-content-info-box-goal");
+    newEl.classList.add("f-idendidad");
+    newEl.innerHTML = `<p><span id="day-intake">${utils.roundNum(intake)}</span>&nbsp/&nbsp<span id="day-goal">${utils.roundNum(goal)}</span>&nbspkcal</p>`;
+    return newEl;
+}
+
+async function updateTracker(){
+    let date = sessionStorage.getItem("currentBox");
+    let entries = await getEntriesOn(date);
+    let infos = await requests.getInfoFrom(date);
+
+    let goal=0;
+    if(infos.bodytype==0){
+        goal = (447.593 + (9.247*infos.weight) + (3.098*infos.height) - (4.330*infos.age))*1.2
+    } else {
+        goal = (88.362 + (13.397*infos.weight) + (4.799*infos.height) - (5.677*infos.age))*1.2
+    }
+
+    let intake=0;
+    entries.cons.forEach(cal =>{
+        intake+=(cal.kcal*(cal.gram/100));
+    });
+    entries.acts.forEach(exer =>{
+        intake-=((exer.duration/60)*exer.burnrate);
+    });
+
+    let newTracker = createTracker(intake, goal);
+    document.getElementById("tracker-goal").replaceWith(newTracker);
+}
+
+
+
+
 
 function popOut(element, speed=500, bg=false, extraFunc){
     if(sessionStorage.getItem("currentPopup")==="information"){
@@ -710,23 +835,24 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc
     }
 }
 
-function setEntryType(){
-    const btn = document.getElementById("entry-form-type");
-    btn.setAttribute("entryType", 0); // set as a cons. by default
-    btn.addEventListener("click", (e) =>{
-        if (e.target.getAttribute("entryType")==0){
-            e.target.setAttribute("entryType", 1); // 1: Act.
-            e.target.value="EXERCISE MODE";
-            e.target.form[1].previousElementSibling.innerText="Minutes";
-            e.target.form[2].previousElementSibling.innerText="Kcal/h";
-        } else {
-            e.target.setAttribute("entryType", 0); // 0: Cons.
-            e.target.value="INTAKE MODE";
-            e.target.form[1].previousElementSibling.innerText="Gram";
-            e.target.form[2].previousElementSibling.innerText="Kcal";
+function exitPopup(){
+    window.addEventListener("keydown", (e)=>{
+        if(e.key==="Escape"){
+            let popup = sessionStorage.getItem("currentPopup");
+            if(popup!==""){
+                if(popup!=="information"){
+                    popOut(document.getElementById(popup), 500, true)
+                } else {
+                    popOut(document.getElementById(popup)) // Since information is the only popup without a bg
+                }
+            }
         }
     })
 }
+
+
+
+
 
 function switchCacheValue(btn, item, valueOn=1, valueOff=0, effectFunc){
     const element = document.getElementById(btn);
@@ -764,6 +890,39 @@ function switchElement(firstEl, secondEl, anchorData, dataOn){
     }
 }
 
+// Takes a text field(textID) and executes a given function(textGetFunc) when a specific type of event(eventTrigger) is triggered to edit the HTML contained within said text field.
+function updateText(eventTrigger, textID, textGetFunc){
+    const text = document.getElementById(textID);
+    window.addEventListener(eventTrigger, function(){
+        text.innerHTML=textGetFunc;
+    })
+};
+
+function openElement(clickedParent, targetChild, exceptChild=""){
+    $(document).on("click", `.${clickedParent}`,function(e){ // Use JQuery to get when any single element with that class is clicked
+        let childID;
+        for(let i = 0; i<e.currentTarget.children.length; i++){
+            if(e.currentTarget.children[i].classList.contains(targetChild)){
+                childID=i;
+                break;
+            }
+        };
+
+        if(!e.target.classList.contains(exceptChild)){ // Checks if the exact div we clicked on has our "exceptChild" in its classes 
+            if(!e.currentTarget.children[childID].classList.contains("hidden")){
+                //When it's visible do:
+                e.currentTarget.children[childID].classList.add("hidden")
+            } else {
+                // When it's hidden do:
+                e.currentTarget.children[childID].classList.remove("hidden")
+            };
+        }
+    });
+}
+
+
+
+
 function setWarning(txtMsg, txtBtn="YES", extraFunc){
     const warnMsg = document.getElementById("warning-message")
     const warnBtn = document.getElementById("warning-btn")
@@ -779,109 +938,4 @@ function setWarning(txtMsg, txtBtn="YES", extraFunc){
         extraFunc?.();
     }, {once: true})
 
-}
-
-function triggerEvent(target, event){
-    let newEvent = new Event(event);
-    target.dispatchEvent(newEvent);
-}
-
-function createDay(el){
-    let newEl = document.createElement("div");
-    newEl.classList.add("manager-content-slider-box");
-    newEl.classList.add("f-idendidad");
-    newEl.classList.add("no-select");
-    newEl.classList.add("smallbox-modifier");
-    newEl.innerHTML = `<div class="manager-content-slider-box-date"><p><span>${el.timeof.day}</span>/<span>${el.timeof.month}</span></p></div><div class="manager-content-slider-box-year"><p>${el.timeof.year}</p></div><div class="getDate hidden">${el.timeof.year}-${el.timeof.month}-${el.timeof.day}</div>`;
-    return newEl;
-}
-
-function exitPopup(){
-    window.addEventListener("keydown", (e)=>{
-        if(e.key==="Escape"){
-            let popup = sessionStorage.getItem("currentPopup");
-            if(popup!==""){
-                if(popup!=="information"){
-                    popOut(document.getElementById(popup), 500, true)
-                } else {
-                    popOut(document.getElementById(popup)) // Since information is the only popup without a bg
-                }
-            }
-        }
-    })
-}
-
-function updateTheme(){
-    // TO DO (switches CSS)
-}
-
-async function updateUnit(){
-    updateUser()
-    let boxDate = sessionStorage.getItem("currentBox");
-    let newEntries = await getEntriesOn(boxDate);
-    createEntryBoxes(newEntries, boxDate);
-}
-
-async function editEntry(){
-    $(`.manager-content-info-box-entry-content-main-edit-button`).click(async function(e){
-        let data = JSON.parse(e.target.parentElement.parentElement.parentElement.parentElement.getAttribute("entry-data"));
-
-        const edit = document.getElementById("edit-entry")
-        if (data.type){
-            edit.querySelector("#edit-entry-form-primary-unit").innerText="Gram";
-            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
-            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal";
-            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
-        } else {
-            edit.querySelector("#edit-entry-form-primary-unit").innerText="Minutes";
-            edit.querySelector("#edit-entry-form-primary-amount").value=data.primary;
-            edit.querySelector("#edit-entry-form-secondary-unit").innerText="Kcal/h";
-            edit.querySelector("#edit-entry-form-secondary-amount").value=data.secondary;
-        }
-        
-        edit.children[1].children[0].children[2].children[0].value=data.comment;
-        triggerEvent(edit, "input")
-        popIn(edit, 500, true)
-
-        edit.children[0].children[1].children[0].addEventListener("click", ()=>{
-            popOut(edit, 500, true);
-        })
-
-        edit.querySelector("#edit-entry-delete").addEventListener("click", ()=>{
-            popIn(document.getElementById("warning"), 500, true)
-            setWarning("Are you sure\nyou'd like to\ndelete this\nentry?\nThis cannot be undone.", "YES", ()=>{
-                requests.deleteEntry(data); // Sends out the kill order (o7)
-                let entryDiv = e.target.parentElement.parentElement.parentElement.parentElement; // For (possible) future maintainability's sake
-                entryDiv.remove(); // Shows to the user the results of their actions ('em bastards are effin' monsters, I tell ya!)
-            })
-        }, {once: true})
-
-        edit.addEventListener("submit", async (s)=>{
-            s.preventDefault()
-            popOut(edit, 500, true);
-            data.primary=s.target[0].valueAsNumber;
-            data.secondary=s.target[1].valueAsNumber;
-            data.comment=s.target[2].value;
-
-            let entry = e.target.parentElement.parentElement.parentElement;
-            entry.querySelector(".entry-primary-amount").innerHTML=data.primary;
-            entry.querySelector(".entry-secondary-amount").innerHTML=data.secondary;
-            entry.querySelector(".manager-content-info-box-entry-content-main-comment").children[0].innerHTML=data.comment;
-
-            entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
-            
-            await requests.editEntry(data);
-            
-            let boxDate = sessionStorage.getItem("currentBox");
-            let newEntries = await getEntriesOn(boxDate);
-            let newIntake=0;
-            newEntries.cons.forEach(cal =>{
-                newIntake+=(cal.kcal*(cal.gram/100));
-            });
-            newEntries.acts.forEach(exer =>{
-                newIntake-=((exer.duration/60)*exer.burnrate);
-            });
-            document.getElementById("day-intake").innerHTML=utils.roundNum(newIntake);
-        }, { once: true })
-    });
 }
