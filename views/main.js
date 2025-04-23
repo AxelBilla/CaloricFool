@@ -162,6 +162,7 @@ window.addEventListener("load", function(){
                     triggerEvent(slider.children[0], "click"); // Manually triggers the clicking event so it opens
                 }
                 popOut(e.target.parentElement.parentElement, 500, true); // Target is the form, the form is held within a div which itself is held within a div (necessary to have the header), so we have to get the parent's parent to pop our menu in and out correctly
+                updateTracker();
             } else {
                 setWarning("An error has occured,\nplease try again.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
@@ -632,7 +633,6 @@ async function editEntry(){
             entry.parentElement.setAttribute("entry-data", JSON.stringify(data))
             
             await requests.editEntry(data);
-
             updateTracker();
         }, { once: true })
     });
