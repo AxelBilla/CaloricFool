@@ -33,6 +33,10 @@ export class user{
             const currentDate = new Date();
             const expDate = new Date(val.expiration_date)
             if(expDate>=currentDate){
+                if((expDate.getTime()-currentDate.getTime())<86400000){
+                    currentDate.setDate(currentDate.getDate()+1)
+                    db_token.updateTokenExpiration(req.token, currentDate); // Adds +1 day to the token's lifespan if it's still valid    
+                }
                 status=true;
                 await user.getNewWeight(req)
             }
@@ -65,13 +69,14 @@ export class user{
             var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user        
 
             let currentDate = new Date(req.date); // Creates a timestamp for the current moment in time
-            currentDate = new Date(currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate());
+            const currentDay = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate();
+            currentDate = new Date(currentDay);
             currentDate.setMilliseconds(currentDate.getMilliseconds()-1); // Makes it so all entries will be from before today
-            const currentDay = currentDate.getFullYear()+"-"+currentDate.getMonth()+"-"+currentDate.getDate();
 
             let infoDate = new Date(lastInfos.updatedate);
-            const infoDay = infoDate.getFullYear()+"-"+infoDate.getMonth()+"-"+infoDate.getDate();
+            const infoDay = infoDate.getFullYear()+"-"+(infoDate.getMonth()+1)+"-"+infoDate.getDate();
 
+            console.log("farks: ", currentDay, infoDay, currentDate, infoDate, lastInfos, req.date)
             if(currentDay!=infoDay){ //Makes sure infos exist & it's actually from this day
                 infoDate = new Date(infoDate.getFullYear()+"-"+(infoDate.getMonth()+1)+"-"+infoDate.getDate()); // Make it so all entries are accounted for, even those on the same day but prior to a new entry being made (i.e, if you messed up and want to update your infos, it won't have an adverse effect on the next weight update for today's entries)
 
@@ -128,10 +133,22 @@ export class user{
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate()+time);
 
-        let tknExists = await db_token.hasToken(req.email);
-        if(tknExists){
-            db_token.remToken(req.email);
-            db_token.addToken(newToken, req.email, currentDate, expiryDate);
+        let tkn = await db_token.hasToken(req.email);
+        if(tkn.exists){
+            const val = await db_token.getTokenValidity(tkn.token);
+            const currentDate = new Date();
+            const expDate = new Date(val.expiration_date)
+            if(expDate>=currentDate){ // Checks if expDate is superior,
+                if((expDate.getTime()-currentDate.getTime())<86400000){ // and if it is so by stricly more than a day (86.400.000 miliseconds)
+                    currentDate.setDate(currentDate.getDate()+1)
+                    db_token.updateTokenExpiration(tkn.token, currentDate); // Adds +1 day to the token's lifespan if it's still valid    
+                }
+                newToken=tkn.token;
+                console.log("trigiqpof")
+            } else {
+                db_token.remToken(req.email);
+                db_token.addToken(newToken, req.email, currentDate, expiryDate);
+            }
         } else {
            db_token.addToken(newToken, req.email, currentDate, expiryDate);
         }

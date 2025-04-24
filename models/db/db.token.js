@@ -20,21 +20,29 @@ export class token{
     const request = await sql`
       INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate}, (SELECT userid FROM users WHERE email=${email}))
     `
-    return true
+    return {status: true};
   }
   
   static async remToken(email){
     const request = await sql`
       DELETE FROM Tokens WHERE userid=(SELECT userid FROM Users WHERE email=${email})
     `
-    return request;
+    return {status: true};
+  }
+
+  static async updateTokenExpiration(token, newDate){
+    const request = await sql`
+      UPDATE tokens SET expiration_date=${newDate} WHERE tokenid=${token}
+    `
+    return {status: true};
   }
 
   static async hasToken(email){
     const request = await sql`
-    SELECT EXISTS (SELECT t.userid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email})
+    SELECT EXISTS (SELECT t.userid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}), tokenid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}
     `
-    return request[0].exists;
+    console.log(request)
+    return {status: true, exists: request[0].exists, token: request[0].tokenid};
   }
 
 }
