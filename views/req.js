@@ -1,7 +1,7 @@
 class requests{
   static async login(form){
     let date = new Date();
-    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();;
+    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
     const req = await fetch("/login",{
       method: "POST",
       body: JSON.stringify({email: form.target[0].value, password: form.target[1].value, remember: form.target[3].checked, date: date}),
@@ -25,7 +25,7 @@ class requests{
 
   static async tokenLog(){
     let date = new Date();
-    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+    date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
     const tkn = localStorage.getItem("token");
     const req = await fetch("/tokenLog",{ // Fetch request at the "[website]/request" URL
       method: "POST",

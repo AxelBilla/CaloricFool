@@ -309,7 +309,7 @@ function bgAnim(){
         transform: [ "rotate(0deg)", "rotate(-20deg)", "rotate(0deg)", "rotate(20deg)", "rotate(50deg)", "rotate(70deg)", "rotate(100deg)", "rotate(120deg)", "rotate(140deg)", "rotate(170deg)", "rotate(200deg)", "rotate(230deg)", "rotate(260deg)", "rotate(290deg)", "rotate(310deg)", "rotate(340deg)", "rotate(360deg)"]
     };
     let option = {
-        duration: 50000,
+        duration: 5000,
         iterations: Infinity
     };
     bg.animate(keyframe, option); 

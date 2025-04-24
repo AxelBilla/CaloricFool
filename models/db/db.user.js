@@ -1,4 +1,4 @@
-import sql from '../models/db.connect.js';
+import sql from './db.connect.js'
 
 export class user{
 

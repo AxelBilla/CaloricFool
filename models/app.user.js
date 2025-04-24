@@ -1,5 +1,5 @@
 import { login as db_log } from './db/db.log.js'; 
-import { user as db_user } from './db.user.js';
+import { user as db_user } from './db/db.user.js';
 import { entry as db_entry } from './db/db.entry.js';
 import { token as db_token } from './db/db.token.js';
 
@@ -65,12 +65,15 @@ export class user{
             var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user        
 
             const currentDate = new Date(req.date); // Creates a timestamp for the current moment in time
-            const infoDate = new Date(lastInfos.updatedate);
-            
-            const infoDay = infoDate.getDate()+"/"+infoDate.getMonth()+"/"+infoDate.getFullYear();
-            const currentDay = currentDate.getDate()+"/"+currentDate.getMonth()+"/"+currentDate.getFullYear();
+            currentDate.setMilliseconds(currentDate.getMilliseconds()-1); // Makes it so all entries will be from before today
+            const currentDay = currentDate.getFullYear()+"-"+currentDate.getMonth()+"-"+currentDate.getDate();
+
+            let infoDate = new Date(lastInfos.updatedate);
+            const infoDay = infoDate.getFullYear()+"-"+infoDate.getMonth()+"-"+infoDate.getDate();
 
             if(currentDay!=infoDay){ //Makes sure infos exist & it's actually from this day
+                infoDate = new Date(infoDate.getFullYear()+"-"+(infoDate.getMonth()+1)+"-"+infoDate.getDate()); // Make it so all entries are accounted for, even those on the same day but prior to a new entry being made (i.e, if you messed up and want to update your infos, it won't have an adverse effect on the next weight update for today's entries)
+
                 if(lastInfos.bodytype == 0){ // Changes the calcs based on the body type, 0=fem 1=masc. (Revised Harris Benedict)
                     var bmr = 447.593 + (9.247*lastInfos.weight) + (3.098*lastInfos.height) - (4.330*lastInfos.age);
                 } else {
@@ -99,7 +102,6 @@ export class user{
                 
                 lastInfos.weight=newWeight; // Sets our latest infos' weight to our new weight
                 lastInfos.updatedate=currentDate; // Sets our latest infos' date to today
-                console.log("\n\n---tr---\n newWeight \n----tr----\n", req.token, lastInfos)
                 return await db_user.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
             } else {
                 return {status: false};

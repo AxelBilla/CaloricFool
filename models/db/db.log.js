@@ -1,4 +1,4 @@
-import sql from '../models/db.connect.js'
+import sql from './db.connect.js'
 
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
