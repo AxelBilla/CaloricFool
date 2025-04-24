@@ -64,7 +64,8 @@ export class user{
         try{
             var lastInfos = await db_user.getUserLastInfo(req.token); // Gets the latest infos in the db for this user        
 
-            const currentDate = new Date(req.date); // Creates a timestamp for the current moment in time
+            let currentDate = new Date(req.date); // Creates a timestamp for the current moment in time
+            currentDate = new Date(currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+currentDate.getDate());
             currentDate.setMilliseconds(currentDate.getMilliseconds()-1); // Makes it so all entries will be from before today
             const currentDay = currentDate.getFullYear()+"-"+currentDate.getMonth()+"-"+currentDate.getDate();
 
@@ -101,7 +102,7 @@ export class user{
                 const newWeight = lastInfos.weight+((((intake-(bmr*1.2)))/7700)*dayList.length); // Calcs to get someone's new weight. By taking our daily intake and substracting it with our Basal Metabolic Rate multiplied by 1.25(Sendentary PA, chosen since we're handling physical activities ourselves) and dividing that sum by the calorific value of 1kg of fat (7700), we get the amount lost in a day. Which we can then multiply by the number of days and add to our latest weight to calculate our new weight.
                 
                 lastInfos.weight=newWeight; // Sets our latest infos' weight to our new weight
-                lastInfos.updatedate=currentDate; // Sets our latest infos' date to today
+                lastInfos.updatedate=req.date; // Sets our latest infos' date to today
                 return await db_user.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
             } else {
                 return {status: false};
