@@ -23,7 +23,7 @@
 /* Color Controller */  
 /*------------------*/
 :root {
-    --light: rgb(255, 255, 255);
+    --light: #ffffff;
     --gray: #F1F0FA;
     --midgray: #ccc;
     --darkgray: #646464;
@@ -33,10 +33,14 @@
     --content: #98bcec;
     --main: #01A7C2;
     --shade: #006989;
+    --txton: #2b2b2b;
     --fadedtxt: #757575;
     --fadedbg: #7575756c;
     --button: #a6dafcf5;
     --clearsky: #dff9ff73;
+    --bg1: #cee1f2;
+    --bg2: #a5c8e8; 
+    --bg3: #d1daf2;
 }
 
 
@@ -69,7 +73,7 @@ body{
 #background{
     display: flex;
     flex-grow: 1;
-    background-image: linear-gradient(to right top, hsl(209, 59%, 88%), #a5c8e8, #d1daf2);
+    background-image: linear-gradient(to right top, var(--bg1), var(--bg2), var(--bg3));
     background-repeat: repeat;
     min-width: 40000px;
     min-height: 40000px;
@@ -135,7 +139,7 @@ body{
                 border: none;
                 border-radius: 10px;
                 box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -1px 2px 0px inset;
-                color: var(--dark);
+                color: var(--txton);
                 font-size: 1.5em;
                 width: 80%;
                 max-height: 50px;
@@ -600,12 +604,14 @@ body{
                     width: 40%;
                     min-width: 140px;
                     height: 100%;
+                    max-height: 100px;
                     cursor: pointer;
                     border: none;
                     border-radius: 20px;
-                    background-color: var(--button);
+                    background-color: var(--border);
                     margin-left: 8%;
                     margin-right: 10%;
+                    padding: 0px;
                     overflow: hidden;
                     .settings-content-form-field-button-left{
                         display: flex;
@@ -613,9 +619,19 @@ body{
                         width: 50%;
                         height: 100%;
                         margin-left: 0px;
-                        background-color: bisque;
+                        border-radius: 20px;
+                        background-color: var(--button);
                         justify-content: center;/*TO DELETE*/
-
+                        img{
+                            width: 60%;
+                            padding-top: 10%;
+                            padding-bottom: 10%;
+                        };
+                        p{
+                            font-size: 2em;
+                            margin: 0px;
+                            overflow: hidden;
+                        };
                     }
                     .settings-content-form-field-button-right{
                         display: flex;
@@ -623,9 +639,19 @@ body{
                         width: 50%;
                         height: 100%;
                         margin-left: auto;
-                        background-color: bisque;
+                        border-radius: 20px;
+                        background-color: var(--button);
                         justify-content: center;/*TO DELETE*/
-
+                        img{
+                            width: 50%;
+                            padding-top: 10%;
+                            padding-bottom: 10%;
+                        };
+                        p{
+                            font-size: 2em;
+                            margin: 0px;
+                            overflow: hidden;
+                        };
                     }
                 };
                 .settings-content-form-field-title{
@@ -971,6 +997,7 @@ body{
                         height: 60%;
                         border: none;
                         border-radius: 20px;
+                        color: var(--dark);
                         background-color: var(--light);
                         box-shadow: var(--clearsky) 0px 2px 8px 0px, var(--border) 0px -2px 3px 0px inset;
                         font-size: 1.8em;
@@ -999,6 +1026,7 @@ body{
                 min-height: 40px;
                 margin-top: 2%;
                 cursor: pointer;
+                color: var(--dark);
                 background-color: var(--button);
                 box-shadow: var(--content) 0px 0px 6px 0px, var(--clearsky) 0px -2px 6px 0px inset;
             };

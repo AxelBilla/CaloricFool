@@ -1,6 +1,7 @@
-const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "dark"};
+const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "txton"};
 
 window.addEventListener("load", function(){
+    updateTheme();
 
     bgAnim(); // Should never stop, animates the background
 
@@ -423,10 +424,10 @@ async function updateUser(){
         let unitbtn = document.getElementById("settings-unit");
         switchElement(unitbtn.children[0], unitbtn.children[1], storedUnit, storedUnit);
     }
-    
+
+    updateTheme();
     let storedTheme = localStorage.getItem("theme");
     if(storedTheme==="1"){
-        // change css
         let themebtn = document.getElementById("settings-theme");
         switchElement(themebtn.children[0], themebtn.children[1], storedTheme, storedTheme);
     }
@@ -459,7 +460,37 @@ async function updateUser(){
 }
 
 function updateTheme(){
-    // TO DO (switches CSS)
+    if(localStorage.getItem("theme")==1){
+        document.documentElement.style.setProperty('--light', '#c1c1c1');
+        document.documentElement.style.setProperty('--dark', '#dddddd');
+        document.documentElement.style.setProperty('--gray', '#575757');
+        document.documentElement.style.setProperty('--midgray', '#979797');
+        document.documentElement.style.setProperty('--main', '#DF4040');
+        document.documentElement.style.setProperty('--menu', '#777');
+        document.documentElement.style.setProperty('--border', '#4d4d4db0');
+        document.documentElement.style.setProperty('--content', '#4f4f4f');
+        document.documentElement.style.setProperty('--button', '#4f4f4ff5');
+        document.documentElement.style.setProperty('--clearsky', '#93969773');
+        document.documentElement.style.setProperty('--txton', '#404040');
+        document.documentElement.style.setProperty('--bg1', '#9b9b9b');
+        document.documentElement.style.setProperty('--bg2', '#6a6a6a');
+        document.documentElement.style.setProperty('--bg3', '#8a8a8a');
+    } else {
+        document.documentElement.style.setProperty('--light', '#ffffff');
+        document.documentElement.style.setProperty('--dark', '#2b2b2b');
+        document.documentElement.style.setProperty('--gray', '#F1F0FA');
+        document.documentElement.style.setProperty('--midgray', '#ccc');
+        document.documentElement.style.setProperty('--main', '#01A7C2');
+        document.documentElement.style.setProperty('--menu', '#cfe0f7');
+        document.documentElement.style.setProperty('--border', '#91b7edb1');
+        document.documentElement.style.setProperty('--content', '#98bcec');
+        document.documentElement.style.setProperty('--button', '#a6dafcf5');
+        document.documentElement.style.setProperty('--clearsky', '#dff9ff73');
+        document.documentElement.style.setProperty('--txton', '#2b2b2b');
+        document.documentElement.style.setProperty('--bg1', '#cee1f2');
+        document.documentElement.style.setProperty('--bg2', '#a5c8e8');
+        document.documentElement.style.setProperty('--bg3', '#d1daf2');
+    }
 }
 
 async function updateUnit(){
