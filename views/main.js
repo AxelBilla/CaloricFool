@@ -461,17 +461,18 @@ async function updateUser(){
 
 function updateTheme(){
     if(localStorage.getItem("theme")==1){
-        document.documentElement.style.setProperty('--light', '#c1c1c1');
-        document.documentElement.style.setProperty('--dark', '#dddddd');
+        document.documentElement.style.setProperty('--light', '#b9b9b9');
+        document.documentElement.style.setProperty('--dark', '#bfbfbf');
         document.documentElement.style.setProperty('--gray', '#575757');
         document.documentElement.style.setProperty('--midgray', '#979797');
         document.documentElement.style.setProperty('--main', '#DF4040');
         document.documentElement.style.setProperty('--menu', '#777');
         document.documentElement.style.setProperty('--border', '#4d4d4db0');
-        document.documentElement.style.setProperty('--content', '#4f4f4f');
+        document.documentElement.style.setProperty('--content', '#4d4d4d');
         document.documentElement.style.setProperty('--button', '#4f4f4ff5');
         document.documentElement.style.setProperty('--clearsky', '#93969773');
         document.documentElement.style.setProperty('--txton', '#404040');
+        document.documentElement.style.setProperty('--days', '#959595');
         document.documentElement.style.setProperty('--bg1', '#9b9b9b');
         document.documentElement.style.setProperty('--bg2', '#6a6a6a');
         document.documentElement.style.setProperty('--bg3', '#8a8a8a');
@@ -487,6 +488,7 @@ function updateTheme(){
         document.documentElement.style.setProperty('--button', '#a6dafcf5');
         document.documentElement.style.setProperty('--clearsky', '#dff9ff73');
         document.documentElement.style.setProperty('--txton', '#2b2b2b');
+        document.documentElement.style.setProperty('--days', '#2b2b2b');
         document.documentElement.style.setProperty('--bg1', '#cee1f2');
         document.documentElement.style.setProperty('--bg2', '#a5c8e8');
         document.documentElement.style.setProperty('--bg3', '#d1daf2');

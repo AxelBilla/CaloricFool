@@ -34,6 +34,7 @@
     --main: #01A7C2;
     --shade: #006989;
     --txton: #2b2b2b;
+    --days: #2b2b2b;
     --fadedtxt: #757575;
     --fadedbg: #7575756c;
     --button: #a6dafcf5;
@@ -220,7 +221,7 @@ body{
                 flex-direction: column;
                 justify-content: space-evenly;
                 align-items: center;
-                color: var(--dark);
+                color: var(--txton);
                 font-size: 4em;
                 margin: 0px;
             };
@@ -230,7 +231,7 @@ body{
                 justify-content: space-evenly;
                 align-items: center;
                 p{
-                    color: var(--dark);
+                    color: var(--txton);
                     margin: 0px;
                     font-size: 2em;
                 };
@@ -244,7 +245,7 @@ body{
             align-items: center;
             overflow: hidden;
             p{
-                color: var(--dark);
+                color: var(--txton);
                 margin: 0px;
                 font-size: 6em;
             };
@@ -290,6 +291,7 @@ body{
                 border-radius: 20px;
                 background-color: var(--button);
                 overflow: hidden;
+                color: var(--days);
                 box-shadow: var(--border) 0px 2px 8px 0px, var(--border) 0px -2px 6px 0px inset;
                 p{
                     margin: 0px;
@@ -302,11 +304,9 @@ body{
                 margin-top: 5%;
                 margin-bottom: 5%;
                 .manager-content-slider-box-date{
-                    color: var(--dark);
                     font-size: 3em;
                 };
                 .manager-content-slider-box-year{
-                    color: var(--dark);
                     font-size: 1.7em;
                 };
             };
@@ -317,11 +317,9 @@ body{
                 margin-top: 5%;
                 margin-bottom: 5%;
                 .manager-content-slider-box-date{
-                    color: var(--dark);
                     font-size: 1.8em;
                 };
                 .manager-content-slider-box-year{
-                    color: var(--dark);
                     font-size: 1.1em;
                 };
             };
@@ -369,7 +367,7 @@ body{
                         overflow: hidden;
                         font-size: 1.5em;
                         margin: 2%;
-                        color: var(--dark);
+                        color: var(--txton);
                     };
                 };
                 .manager-content-info-box-entry{
@@ -393,7 +391,7 @@ body{
                         border-radius: 20px;
                         background-color: var(--menu);
                         box-shadow: var(--border) 0px -2px 6px 0px inset;
-                        color: var(--dark);
+                        color: var(--txton);
                     };
                     .manager-content-info-box-entry-content{
                         display: flex;
@@ -413,7 +411,7 @@ body{
                             padding-left: 2%;
                             align-items: center;
                             .manager-content-info-box-entry-content-details-text{
-                                color:var(--dark);
+                                color: var(--txton);
                                 margin-left: 1%;
                             };
                             .manager-content-info-box-entry-content-details-bar{
@@ -424,7 +422,7 @@ body{
                                 margin-left: 1%;
                                 margin-top: 0.5%;
                                 border-radius: 10px;
-                                background-color: var(--dark);
+                                background-color: var(--txton);
                             };
                         };
                         .manager-content-info-box-entry-content-main{
@@ -443,7 +441,7 @@ body{
                                 height: 0.3em;
                                 margin-bottom: 2%;
                                 border-radius: 20px;
-                                background-color: var(--dark);
+                                background-color: var(--txton);
                             };
                             .manager-content-info-box-entry-content-main-comment{
                                 display: flex;
@@ -628,6 +626,7 @@ body{
                             padding-bottom: 10%;
                         };
                         p{
+                            color: var(--dark);
                             font-size: 2em;
                             margin: 0px;
                             overflow: hidden;
@@ -648,6 +647,7 @@ body{
                             padding-bottom: 10%;
                         };
                         p{
+                            color: var(--dark);
                             font-size: 2em;
                             margin: 0px;
                             overflow: hidden;
@@ -997,7 +997,7 @@ body{
                         height: 60%;
                         border: none;
                         border-radius: 20px;
-                        color: var(--dark);
+                        color: var(--txton);
                         background-color: var(--light);
                         box-shadow: var(--clearsky) 0px 2px 8px 0px, var(--border) 0px -2px 3px 0px inset;
                         font-size: 1.8em;
