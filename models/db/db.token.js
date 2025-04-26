@@ -38,11 +38,14 @@ export class token{
   }
 
   static async hasToken(email){
-    const request = await sql`
-    SELECT EXISTS (SELECT t.userid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}), tokenid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}
-    `
-    console.log(request)
-    return {status: true, exists: request[0].exists, token: request[0].tokenid};
+    try{
+      const request = await sql`
+      SELECT EXISTS (SELECT t.userid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}), tokenid FROM Tokens t, Users u WHERE t.userid=u.userid AND u.email=${email}
+      `
+      return {status: true, exists: request[0].exists, token: request[0].tokenid};
+    } catch (e) {
+      return {status: false, exists: false};
+    }
   }
 
 }
