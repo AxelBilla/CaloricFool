@@ -1,7 +1,7 @@
 const defaultHighlight={bgOff: "midgray", bgOn: "light", txtOff: "fadedtxt", txtOn: "txton"};
 
 window.addEventListener("load", function(){
-    updateTheme();
+    updateTheme(); // Updates theme on load
 
     bgAnim(); // Should never stop, animates the background
 
@@ -174,12 +174,12 @@ window.addEventListener("load", function(){
     // Triggers when submitting new informations
     document.getElementById("information-form").addEventListener("submit", (e)=>{
         e.preventDefault();
-        if(localStorage.getItem("unit")==="1"){
-            e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3);
+        if(localStorage.getItem("unit")==="1"){ // Checks if we're on Imperial or Metric
+            e.target[0].value=utils.roundNum(utils.toKG(e.target[0].value), 3); // Converts from Imperial to Metric cuz we store everything in Metric on the backend
             e.target[1].value=utils.roundNum(utils.toCM(e.target[1].value), 3);
         };
         if(e.target[3].getAttribute("bodyType")!=1){
-            e.target[3].setAttribute("bodyType", 0);
+            e.target[3].setAttribute("bodyType", 0); // Can only be 0 or 1, so we default to 0 if it's anything different from 1
         }
         
         date = new Date();
@@ -187,8 +187,8 @@ window.addEventListener("load", function(){
         
         requests.addInfo(e, date).then(data => {
             if(data.status){
-                updateUser();
-                if(e.target.getAttribute("isRegistering")==1){
+                updateUser(); // Update user infos page-wide
+                if(e.target.getAttribute("isRegistering")==1){ // Checks if it's the first use (when registering)
                     e.target.setAttribute("isRegistering", 0);
                     popOut(e.target.parentElement.parentElement, 500, true);
                 } else {
@@ -213,20 +213,20 @@ async function loginSequence(){
     localStorage.setItem("theme", settings.theme);
 
     updateUser();
-    createDayBoxes();
+    createDayBoxes(); // Create the day slider's boxes & everything related to them (entries)
 }
 
 function registerSequence(name){
     gotoFrom("manager", "sign-register");
 
     const username = document.getElementById("user-name");
-    username.innerHTML=name;
+    username.innerHTML=name; // Edits the user's overview box to have the correct nickname
 
-    localStorage.setItem("unit", 0);
+    localStorage.setItem("unit", 0); // Settings all at 0 by default
     localStorage.setItem("theme", 0);
 
     const infoMenu = document.getElementById("information")
-    infoMenu.children[0].children[1].classList.add("hidden");
+    infoMenu.children[0].children[1].classList.add("hidden"); // Hides the Quit Button
     infoMenu.children[1].children[0].setAttribute("isRegistering", 1);
     if(infoMenu.children[1].children[0][0].value!==""){
         infoMenu.children[1].children[0][0].value="";
@@ -872,10 +872,10 @@ function popupHandler(element, entryBtn, exitBtn, speed=500, bg=false, extraFunc
 
 function exitPopup(){
     window.addEventListener("keydown", (e)=>{
-        if(e.key==="Escape"){
-            let popup = sessionStorage.getItem("currentPopup");
-            if(popup!==""){
-                if(popup!=="information"){
+        if(e.key==="Escape" && document.getElementById("information").children[1].children[0].getAttribute("isRegistering")!=1){ // if pressing Escape & user is not registering
+            let popup = sessionStorage.getItem("currentPopup"); // gets what popup is currently displayed
+            if(popup!==""){ // checks if there's a popup displayed or not 
+                if(popup!=="information"){ // hard checks if it's our Information menu or not
                     popOut(document.getElementById(popup), 500, true)
                 } else {
                     popOut(document.getElementById(popup)) // Since information is the only popup without a bg
