@@ -71,7 +71,7 @@ window.addEventListener("load", function(){
 
     // Triggers the login sequence if the user's "token" (held in localStorage) is valid
     requests.tokenLog().then(data => {
-        if(data){
+        if(data.status){
             loginSequence();
         }
     })
@@ -226,12 +226,12 @@ function registerSequence(name){
     localStorage.setItem("theme", 0);
 
     const infoMenu = document.getElementById("information")
-    infoMenu.children[0].children[1].classList.add("hidden"); // Hides the Quit Button
-    infoMenu.children[1].children[0].setAttribute("isRegistering", 1);
-    if(infoMenu.children[1].children[0][0].value!==""){
-        infoMenu.children[1].children[0][0].value="";
-        infoMenu.children[1].children[0][1].value="";
-        infoMenu.children[1].children[0][2].value="";
+    infoMenu.querySelector("#exit-header-information").classList.add("hidden"); // Hides the Quit Button
+    infoMenu.querySelector("#information-form").setAttribute("isRegistering", 1); // Tells the form this is the user's first time registering
+    if(infoMenu.querySelector("#information-form-weight").value!==""){ // If the fields are already filled, we expunge them (Basically, a user could log out, create a new account for whatever reason, and have this pre-filled by their browser. We want to avoid that, so we're getting rid of them)
+        infoMenu.querySelector("#information-form-weight").value="";
+        infoMenu.querySelector("#information-form-height").value="";
+        infoMenu.querySelector("#information-form-age").value="";
     }
 
     popIn(infoMenu, 500, true)
@@ -240,8 +240,8 @@ function registerSequence(name){
 }
 
 function logoutSequence(){
-    localStorage.setItem("token", "");
-    window.location.reload();
+    localStorage.setItem("token", ""); // We're logging out, so we delete the user's stored token
+    window.location.reload(); // Then we reload the whole website, so now he'll be back at the login screen (can't auto-login without a token, after all)
 }
 
 
@@ -254,6 +254,7 @@ function gotoFrom(destination, origin, height=0, width=0){
     fadeToAnim(start, 0, end, height, width);
 }
 
+// Small tool I made myself cuz the syntax to trigger an event manually is pretty annoying when you're using the built-in events instead of custom ones.
 function triggerEvent(target, event){
     let newEvent = new Event(event);
     target.dispatchEvent(newEvent);
@@ -262,7 +263,7 @@ function triggerEvent(target, event){
 
 
 
-
+// Lets use slide up and down (only vertical motions) any slider
 function slideGrab(slides){
     const slider = document.getElementById(slides);
 
@@ -273,37 +274,37 @@ function slideGrab(slides){
     let scrollTop;
 
     slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - slider.offsetLeft;
+    isDown = true; // Used to indicate we have the mouse down when moving
+    startX = e.pageX - slider.offsetLeft; // Gets the coordinates when clicking down
     startY = e.pageY - slider.offsetTop;
     scrollLeft = slider.scrollLeft;
     scrollTop = slider.scrollTop;
-    slider.style.cursor = 'grabbing';
+    slider.style.cursor = 'grabbing'; // Changes the cursor's style so our user isn't confused
     });
 
     slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.style.cursor = 'grab';
+    isDown = false; // Shows that the user's mouse is no longer in the slider's area
+    slider.style.cursor = 'grab'; // Go back to the regular grab style so the user doesn't think he's still moving stuff
     });
 
     slider.addEventListener('mouseup', () => {
-    isDown = false;
+    isDown = false; // Same thing as above, but for when the user is no longer pressing down
     slider.style.cursor = 'grab';
     });
 
     document.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
+    if (!isDown) return; // Basically cancels the event if the user isn't pressing down 
     e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
+    const x = e.pageX - slider.offsetLeft; // Gets the current position
     const y = e.pageY - slider.offsetTop;
-    const walkX = (x - startX) * 1; // Change this number to adjust the scroll speed
-    const walkY = (y - startY) * 1; // Change this number to adjust the scroll speed
-    slider.scrollLeft = scrollLeft - walkX;
+    const walkX = (x - startX) * 1; // Handles scroll speed
+    const walkY = (y - startY) * 1; // Handles scroll speed
+    slider.scrollLeft = scrollLeft - walkX; // Moves our slider
     slider.scrollTop = scrollTop - walkY;
     });
 }
 
-//
+// Animates our background (not all that visible, but still)
 function bgAnim(){
     const bg = document.getElementById("background");
     let keyframe = {
@@ -311,7 +312,7 @@ function bgAnim(){
     };
     let option = {
         duration: 5000,
-        iterations: Infinity
+        iterations: Infinity // Means it never stops
     };
     bg.animate(keyframe, option); 
 }
@@ -340,16 +341,16 @@ function fadeToAnim(element, newOpacity, nextElement=0, adjustHeight=0, adjustWi
     };
     let anim = element.animate(keyframe, option);
     anim.addEventListener('finish', () => {
-        element.classList.add("hidden")
-        if(nextElement!=0){
-            nextElement.classList.remove("hidden");
-            if(adjustHeight!=0){
+        element.classList.add("hidden") // Since our "hidden" class includes a "display: none", we have to explicitly wait for the animation to finish before giving it (gets priority otherwise, regardless of being written prior/after the animation order)
+        if(nextElement!=0){ // Checks if there's an element to follow up on or not
+            nextElement.classList.remove("hidden"); // If so, remove its "hidden" class
+            if(adjustHeight!=0){ // Checks if there's a need to change the height & width of the followed up on element
                 nextElement.style.height=adjustHeight+'%';
             }
             if(adjustWidth!=0){
                 nextElement.style.width=adjustWidth+'%';
             }
-            let nextAnim = nextElement.animate({opacity: [0,100]},option)
+            nextElement.animate({opacity: [0,100]},option)
         }
     });
 }
@@ -359,12 +360,13 @@ function formHightlight(page, btn, colors, ...fields){
     
     let fieldTotal = fields.length;
     const lgbtn = document.getElementById(btn);
-    if(lgbtn['isActive']!==1){
-        lgbtn['isActive']=0;
+    if(lgbtn['isActive']!==1){ // Checks if our legitimate button (the actual element) is already active or not
+        lgbtn['isActive']=0; // If not, set it to 0 (inactive) just in case
     }
     const el = document.getElementById(page);
     
-    el.addEventListener("input", ()=>{        
+    el.addEventListener("input", ()=>{   
+        // Get the actual values from our CSS :root variables
         const light = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOn}`), name: colors.bgOn};
         const midgray = {value: getComputedStyle(document.documentElement).getPropertyValue(`--${colors.bgOff}`), name: colors.bgOff};
         
@@ -376,29 +378,27 @@ function formHightlight(page, btn, colors, ...fields){
             if(fl!=''){
                 let fieldElement = document.getElementById(fl);
                 if(fieldElement.value!=''){
-                    fieldValid++
+                    fieldValid++ // Gets how many fields are valid (filled)
                 }
             }
         })
         
-        if(fieldValid==fieldTotal){
-            if (lgbtn['isActive']!=1){
-                // When all fields are filled do:
-                if(getComputedStyle(lgbtn).backgroundColor!=light.value){
-                    colorBgFade(lgbtn, midgray, light)
+        if(fieldValid===fieldTotal){ // If all fields are valid
+            if (lgbtn['isActive']!=1){ // But the button isn't active,
+                if(getComputedStyle(lgbtn).backgroundColor!=light.value){ // Checks that it's not already lit up
+                    colorBgFade(lgbtn, midgray, light); // Fade its color to the proper one
                 }
                 lgbtn.style.color=dark.value;
                 lgbtn.style.backgroundColor=`var(--${light.name})`;
-                lgbtn.classList.add('clickable')
+                lgbtn.classList.add('clickable'); // Shows the user they can click on the button
             }
             lgbtn['isActive']=1;
-        } else {
+        } else { // If a field is missing
             if(lgbtn['isActive']===1){
-                // When not enough fields are filled do: 
-                colorBgFade(lgbtn, light, midgray)
+                colorBgFade(lgbtn, light, midgray); // Same thing as above, but we don't need to check if it's already lit up or not
                 lgbtn.style.color=faded.value;
                 lgbtn.style.backgroundColor=`var(--${midgray.name})`;
-                lgbtn.classList.remove('clickable')
+                lgbtn.classList.remove('clickable'); // Shows the user they can't click on the button
             }
             lgbtn['isActive']=0;
         }
@@ -422,14 +422,14 @@ async function updateUser(){
         info.height = utils.toInch(info.height); // Turns the collection info's height from the default CM to INCHES
         units.height = '"'; // Switch from CM to INCHES (" symbol)
         let unitbtn = document.getElementById("settings-unit");
-        switchElement(unitbtn.children[0], unitbtn.children[1], storedUnit, storedUnit);
+        switchElement(unitbtn.children[0], unitbtn.children[1], storedUnit, storedUnit); // Switches the icons for each options between each others (here it'd be the KG & LBS icons)
     }
 
     updateTheme();
     let storedTheme = localStorage.getItem("theme");
     if(storedTheme==="1"){
         let themebtn = document.getElementById("settings-theme");
-        switchElement(themebtn.children[0], themebtn.children[1], storedTheme, storedTheme);
+        switchElement(themebtn.children[0], themebtn.children[1], storedTheme, storedTheme); // Same as above (but with the SUN & MOON icons)
     }
 
     const name = document.getElementById("user-name");
@@ -444,7 +444,7 @@ async function updateUser(){
 
     name.innerHTML=username; // Edits text to go from our page's default username to our actual username
 
-
+    // Same thing as above but with the information form
     const editForm = {weight: document.getElementById("information-form-weight"), height: document.getElementById("information-form-height"), age: document.getElementById("information-form-age"), bodytype: document.getElementById("information-form-bodytype"), submit: document.getElementById("information-submit-btn")};
     editForm.weight.value=utils.roundNum(info.weight);
     editForm.weight.nextElementSibling.children[0].innerHTML=units.weight;
@@ -455,12 +455,12 @@ async function updateUser(){
     editForm.age.value=info.age;
 
     editForm.bodytype.setAttribute("bodyType", info.bodytype);
-    switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype.getAttribute("bodyType"), 1);
+    switchElement(editForm.bodytype.children[0], editForm.bodytype.children[1], editForm.bodytype.getAttribute("bodyType"), 1); // Same as above (but with the MASC & FEM icons)
     
 }
 
 function updateTheme(){
-    if(localStorage.getItem("theme")==1){
+    if(localStorage.getItem("theme")==1){ // Switchs out the CSS :root variables's values based on the theme (0=LIGHT, 1=DARK)
         document.documentElement.style.setProperty('--light', '#b9b9b9');
         document.documentElement.style.setProperty('--dark', '#bfbfbf');
         document.documentElement.style.setProperty('--gray', '#575757');
@@ -495,7 +495,7 @@ function updateTheme(){
     }
 }
 
-async function updateUnit(){
+async function updateUnit(){ // Since we have a LOT of reliant on a specific unit, it's easier to just reload everything (we could manually edit everything, it'd be more optimized even, but it's just faster that way given the limited amount of time I have)
     updateUser()
     let boxDate = sessionStorage.getItem("currentBox");
     let newEntries = await getEntriesOn(boxDate);
@@ -507,23 +507,23 @@ async function updateUnit(){
 function createEntry(el){
     el.primary={};
     el.secondary={};
-    if(el.hasOwnProperty("kcal")){
-        el.secondary.unit=" kcal";
-        el.secondary.amount=el.kcal;
-        el.primary.amount=el.gram;
-        if(localStorage.getItem("unit")==="1"){
-            el.primary.amount=utils.roundNum(utils.toLBS(el.primary.amount)/1000, 2);
-            el.primary.unit=" lbs";
+    if(el.hasOwnProperty("kcal")){ // Checks if it's an act. or con. ("kcal" can only be present in a con.)
+        el.secondary.unit=" kcal"; // Sets the secondary information's unit text
+        el.secondary.amount=el.kcal; // Sets its value
+        el.primary.amount=el.gram; // Do the same for the primary information
+        if(localStorage.getItem("unit")==="1"){ // However, if the user is using imperial
+            el.primary.amount=utils.roundNum(utils.toLBS(el.primary.amount)/1000, 2); // Converts the data obtained into LBS 
+            el.primary.unit=" lbs"; // And set the unit's text to the imperial equivalent
         } else {
-            el.primary.unit=" g";
+            el.primary.unit=" g"; // Otherwise just set the unit's text to metric (since our unit's value doesn't change)
         }
     } else {
-        el.primary.unit=" minute(s)";
+        el.primary.unit=" minute(s)"; // Same thing as above
         el.primary.amount=el.duration;
         el.secondary.unit=" kcal/h";
         el.secondary.amount=el.burnrate;
     }
-    if (`${el.timeof.hour}`.length==1){
+    if (`${el.timeof.hour}`.length==1){ // Formats our time so we don't end up with [10:1] instead of [10:01] or even [2:1] instead of [02:01]
         el.timeof.hour=`0${el.timeof.hour}`;
     }
     if (`${el.timeof.minute}`.length==1){
@@ -531,14 +531,14 @@ function createEntry(el){
     }
 
 
-    let newEl = document.createElement("div");
+    let newEl = document.createElement("div"); // Creates our HTML element with all the necessary data
     newEl.classList.add("manager-content-info-box-entry");
     newEl.setAttribute("entry-data", JSON.stringify({id: el.entryid, type: el.hasOwnProperty("kcal"), primary: el.primary.amount, secondary: el.secondary.amount, comment: el.comment}))
     newEl.innerHTML = `<div class="manager-content-info-box-entry-hour f-idendidad"><p><span class="entry-hour">${el.timeof.hour}</span>:<span class="entry-minute">${el.timeof.minute}</span></p></div><div class="manager-content-info-box-entry-content clickable"><div class="manager-content-info-box-entry-content-details f-idendidad"><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-primary-amount">${el.primary.amount}</span><span class="entry-primary-unit">${el.primary.unit}</span></p></div><div class="manager-content-info-box-entry-content-details-bar"></div><div class="manager-content-info-box-entry-content-details-text"><p><span class="entry-secondary-amount">${el.secondary.amount}</span><span class="entry-secondary-unit">${el.secondary.unit}</span></p></div></div><div class="manager-content-info-box-entry-content-main clickable hidden f-idendidad" ><div class="manager-content-info-box-entry-content-main-bar"></div><div class="manager-content-info-box-entry-content-main-comment"><p>${el.comment}</p></div><div class="manager-content-info-box-entry-content-main-edit"><button class="manager-content-info-box-entry-content-main-edit-button f-iconic">EDIT</button></div></div></div>`; // Keeps ID & Type (true == Cons. & false == Acts.) so we can edit them later.
     return newEl;
 }
 
-async function getEntriesOn(date) {
+async function getEntriesOn(date) { // Get all entry on a specific day
     let startDate = new Date(date);
     let endDate = new Date(date);
     endDate.setDate(endDate.getDate()+1);

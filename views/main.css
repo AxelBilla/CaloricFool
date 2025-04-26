@@ -1168,7 +1168,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
             };
             .manager-header-appname{
                 p{
-                    font-size: 3em;
+                    font-size: 2.5em;
                 };
             };
         };
@@ -1281,7 +1281,39 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 @media screen and (max-width: 1200px) and (min-width:700px) {
     .manager{
+        .manager-header{
+            height: 15%;
+            .manager-header-user{
+                .manager-header-user-name{
+                    font-size: 3em;
+                };
+                .manager-header-user-details{
+                    p{
+                        font-size: 1.2em;
+                    };
+                };
+            };
+            .manager-header-appname{
+                p{
+                    font-size: 4em;
+                };
+            };
+        };
         .manager-content{
+            .manager-content-slider{
+                .manager-content-slider-box{
+                    .manager-content-slider-box-date{
+                        p{
+                            font-size: 0.75em;
+                        };
+                    };
+                    .manager-content-slider-box-year{
+                        p{
+                            font-size: 0.8em;
+                        };
+                    };
+                };
+            };
             .manager-content-info{
                 .manager-content-info-box{
                     height: 70%;

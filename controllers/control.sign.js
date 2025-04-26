@@ -1,5 +1,5 @@
-// ALL THINGS RELATED TO A USER ATTEMPTING TO LOG IN
-import {user as app} from "../models/app.user.js";
+// ALL THINGS RELATED TO HANDLING A USER'S ATTEMPT(S) TO SIGN IN
+import {login as app} from "../models/app.log.js";
 
 export class sign{
     static login(req){ // Checks if account with a given email AND assword exists in DB (true/false)

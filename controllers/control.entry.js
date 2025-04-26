@@ -1,24 +1,24 @@
-// ALL THINGS RELATED TO GETTING A USER'S INFOS
-import {user as mod} from "../models/app.user.js";
+// ALL THINGS RELATED TO HANDLING A USER'S ENTRIES
+import {entry as app} from "../models/app.entry.js";
 
 export class entry{
     static getEntries(req){
-        return mod.getEntries(req);
+        return app.getEntries(req);
     }
 
     static getEntriesFrom(req){
-        return mod.getEntriesFrom(req);
+        return app.getEntriesFrom(req);
     }
 
     static addEntry(req){
-        return mod.addEntry(req);
+        return app.addEntry(req);
     }
 
     static editEntry(req){
-        return mod.editEntry(req);
+        return app.editEntry(req);
     }
 
     static deleteEntry(req){
-        return mod.deleteEntry(req);
+        return app.deleteEntry(req);
     }
 }

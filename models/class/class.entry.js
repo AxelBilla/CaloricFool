@@ -1,5 +1,5 @@
 class Entries{
-  constructor(id, comment, date, user){
+  constructor(id, comment, date, user){ // Just in case, you have to get into TS to get private props & meths
     this.entryid = id;
     this.comment = comment;
     this.timeof = date;
