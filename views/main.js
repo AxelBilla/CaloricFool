@@ -83,7 +83,7 @@ window.addEventListener("load", function(){
             if(data.status){
                 loginSequence();
             } else {
-                setWarning("Invalid Credentials,\nplease try again.", "RETRY")
+                setWarning("Invalid Credentials,\nplease try\nagain.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             };
         })
@@ -96,7 +96,7 @@ window.addEventListener("load", function(){
             if(data.status){
                 registerSequence(e.target[0].value)
             } else {
-                setWarning("An account\nis already\n registered with this email.", "RETRY")
+                setWarning("Email is invalid,\n or an account\nis already\n registered with\nthis email.", "RETRY")
                 popIn(document.getElementById("warning"), 500, true)
             };
         })
