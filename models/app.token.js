@@ -1,12 +1,13 @@
 import { token as db_token } from './db/db.token.js';
+import {Tokens} from './class/class.tokens.js';
 
 export class token{
 
     static async giveToken(req){
         try{
-            let newToken=generateToken(); // Generates a new token
-            while(db_token.checkToken(newToken)==true){
-                newToken=generateToken(); // Keeps on generating new tokens until we happen on one that's not already in use (Low probability of this loop to ever be used)
+            let newTokenID=generateToken(); // Generates a new token
+            while(db_token.checkToken(newTokenID)==true){
+                newTokenID=generateToken(); // Keeps on generating new tokens until we happen on one that's not already in use (Low probability of this loop to ever be used)
             };
 
             let time = 1;
@@ -28,15 +29,17 @@ export class token{
                         currentDate.setDate(currentDate.getDate()+1)
                         db_token.updateTokenExpiration(tkn.token, currentDate); // Adds +1 day to the token's lifespan if it's still valid    
                     }
-                    newToken=tkn.token; // Give back the same token, as it'll still be valid for the next 24h (minimum)
+                    newTokenID=tkn.token; // Give back the same token, as it'll still be valid for the next 24h (minimum)
                 } else {
+                    let newToken = new Tokens(newTokenID, currentDate, expiryDate);
                     db_token.remToken(req.email); // If the token is expired, delete it
-                    db_token.addToken(newToken, req.email, currentDate, expiryDate); // And create a new one for the user to use
+                    db_token.addToken(newToken, req.email); // And create a new one for the user to use
                 }
             } else {
-            db_token.addToken(newToken, req.email, currentDate, expiryDate); // If the user doesn't have a token, create one for them
+            let newToken = new Tokens(newTokenID, currentDate, expiryDate);
+            db_token.addToken(newToken, req.email); // If the user doesn't have a token, create one for them
             }
-            return newToken; // Give out the newly create
+            return newTokenID; // Give out the newly create
         } catch (e) {
             console.log(e)
             return;

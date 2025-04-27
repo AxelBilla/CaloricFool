@@ -42,7 +42,8 @@ export class information{
     static async addInfo(req, date){
         try{
             let toDate = new Date(date) // Turns the date we got from the user into a practical object (Also, this avoids issues with timezones, since we get the actual date from our user's side as a string AND THEN reconstruct it)
-            return await db_info.addInfo(req.token, req, toDate)
+            req["updatedate"] = toDate;
+            return await db_info.addInfo(req.token, req)
         } catch (e) {
             console.log(e)
             return {status: false}
@@ -92,7 +93,7 @@ export class information{
                 
                 lastInfos.weight=newWeight; // Sets our latest infos' weight to our new weight
                 lastInfos.updatedate=req.date; // Sets our latest infos' date to today
-                return await db_info.addInfo(req.token, lastInfos, lastInfos.updatedate); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
+                return await db_info.addInfo(req.token, lastInfos); // TO UN-COMMENT ONCE EVERYTHING'S DONE BEING TESTED // Add our new infos to the db
             } else {
                 return {status: false};
             };

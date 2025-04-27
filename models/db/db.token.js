@@ -26,10 +26,10 @@ export class token{
     }
   }
 
-  static async addToken(token, email, currentDate, expiryDate){ // Creates a [USER]'s "Token" after logging in
+  static async addToken(token, email){ // Creates a [USER]'s "Token" after logging in
     try{
       const request = await sql`
-        INSERT INTO Tokens VALUES(${token}, ${currentDate}, ${expiryDate}, (SELECT userid FROM users WHERE email=${email}))
+        INSERT INTO Tokens VALUES(${token.tokenid}, ${token.creationdate}, ${token.expiration_date}, (SELECT userid FROM users WHERE email=${email}))
       `
       return {status: true};
     } catch (e) {

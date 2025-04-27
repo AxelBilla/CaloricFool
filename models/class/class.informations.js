@@ -1,5 +1,5 @@
 export class Informations{
-  constructor(id, bodytype, age, weight, height, date, user){
+  constructor(bodytype=0, weight=0, height=0, date=0, age=0, id=0, user=0){
     this.informationid=id;
     this.bodytype = bodytype;
     this.age = age;

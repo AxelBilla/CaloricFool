@@ -1,4 +1,5 @@
 import sql from './db.connect.js'
+import {Settings} from '../class/class.settings.js'
 
 export class user{
 
@@ -19,7 +20,8 @@ export class user{
       const request = await sql`
         SELECT s.* FROM Settings s, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.settingid=s.settingid
       `
-      return request[0]; 
+      let newSettings = new Settings(request[0].settingid, request[0].unit, request[0].theme);
+      return newSettings; 
     } catch (e) {
       console.log(e)
       return;

@@ -1,5 +1,5 @@
 export class Tokens{
-  constructor(id, creation, expiration, user){
+  constructor(id, creation, expiration, user=0){
     this.tokenid=id;
     this.creationdate=creation;
     this.expiration_date=expiration

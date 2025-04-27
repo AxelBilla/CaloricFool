@@ -1,4 +1,5 @@
 import sql from './db.connect.js'
+import {Consumptions, Activities} from '../class/class.entry.js'
 
 export class entry{
 
@@ -8,8 +9,13 @@ export class entry{
       const request = await sql`
         SELECT x.* FROM ${sql(entryName)} x, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=x.userid
       `.forEach(row => {
-        delete row.userid; // This info is confidential, I want NO POSSIBLE WAY to get it. So I strip it right away (kinda like hashing the password the instant we get it)
-        entries.push(row);
+        let newEntry
+        if(entryName === "consumptions"){
+          newEntry = new Consumptions(row.comment, row.timeof, row.kcal, row.gram, row.entryid);
+        } else {
+          newEntry = new Activities(row.comment, row.timeof, row.duration, row.burnrate, row.entryid);
+        }
+        entries.push(newEntry);
       });
     }catch(e){
       console.log(e)
@@ -23,8 +29,13 @@ export class entry{
       const request = await sql`
         SELECT x.* FROM ${sql(entryName)} x, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=x.userid AND (x.timeof BETWEEN ${startDate} AND ${endDate})
       `.forEach(row => {
-        delete row.userid;
-        entries.push(row);
+        let newEntry
+        if(entryName === "consumptions"){
+          newEntry = new Consumptions(row.comment, row.timeof, row.kcal, row.gram, row.entryid);
+        } else {
+          newEntry = new Activities(row.comment, row.timeof, row.duration, row.burnrate, row.entryid);
+        }
+        entries.push(newEntry);
       });
     }catch(e){
       console.log(e)

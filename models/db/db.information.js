@@ -1,4 +1,5 @@
 import sql from './db.connect.js'
+import {Informations} from '../class/class.informations.js'
 
 export class information{
 
@@ -8,9 +9,8 @@ export class information{
       const request = await sql`
         SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid
       `.forEach(row => {
-        delete row.userid;
-        delete row.informationid;
-        entries.push(row);
+        let rowInfo = new Informations(row.bodytype, row.weight, row.height, row.updatedate, entry.age);
+        entries.push(rowInfo);
       });
     }catch(e){
       console.log(e)
@@ -24,9 +24,7 @@ export class information{
       const request = await sql`
         SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid ORDER BY UpdateDate DESC limit 1
       `
-      entry = request[0];
-      delete entry.userid;
-      delete entry.informationid;
+      entry = new Informations(request[0].bodytype, request[0].weight, request[0].height, request[0].updatedate, request[0].age);
     }catch(e){
       console.log(e)
     }
@@ -44,9 +42,7 @@ export class information{
         SELECT i.* FROM Informations i, Users u, Tokens t WHERE t.tokenid=${userToken} AND t.userid=u.userid AND u.userid=i.userid AND (i.UpdateDate >= ${maxDate}) ORDER BY UpdateDate ASC limit 1
       `
       }
-      entry = request[0];
-      delete entry.userid;
-      delete entry.informationid;
+      entry = new Informations(request[0].bodytype, request[0].weight, request[0].height, request[0].updatedate, request[0].age);
     }catch(e){
       console.log(e)
     }
@@ -67,10 +63,10 @@ export class information{
     return entries[0];
   }
 
-  static async addInfo(userToken, newInfo, date){
+  static async addInfo(userToken, newInfo){
     try{
       const request = await sql`
-        INSERT INTO Informations VALUES((SELECT MAX(InformationID) FROM Informations)+1, ${newInfo.bodytype}, ${newInfo.age}, ${newInfo.weight}, ${newInfo.height}, ${date}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
+        INSERT INTO Informations VALUES((SELECT MAX(InformationID) FROM Informations)+1, ${newInfo.bodytype}, ${newInfo.age}, ${newInfo.weight}, ${newInfo.height}, ${newInfo.updatedate}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
       `
     }catch(e){
       console.log(e)
