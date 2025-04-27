@@ -1,4 +1,5 @@
 import { entry as db_entry } from './db/db.entry.js';
+import { Consumptions, Activities } from './class/class.entry.js'
 
 export class entry{
     static async getEntries(req){ // Self-explanatory, gets all of a user's entries
@@ -43,13 +44,14 @@ export class entry{
 
     static async addEntry(req){ // Adds an entry based on what the user inputted
         try{
+            let newEntry;
             if (req.type==0){
-                req.type="consumptions" // Gives it the right data to be used in our request to add an entry, based on a binary integer given by the user (this is the name of the table for that kinda entry)
+                newEntry = new Consumptions(req.comment, req.date, req.secondaryInfo, req.primaryInfo);
             } else {
-                req.type="activities"
+                newEntry = new Activities(req.comment, req.date, req.secondaryInfo, req.primaryInfo);
             };
             let date=new Date(req.date) // Turns the date we got from the user into a practical object (Also, this avoids issues with timezones, since we get the actual date from our user's side as a string AND THEN reconstruct it)
-            let exec = await db_entry.addEntry(req.token, req.type, req.primaryInfo, req.secondaryInfo, req.comment, req.date)
+            let exec = await db_entry.addEntry(req.token, newEntry)
             exec.entry.timeof = {day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear(), hour: date.getHours(), minute: date.getMinutes()}; // Deconstruct our date into a practical JSON object to be used by the user (A bit wasteful tbh, I could have left that in the front-end and juste reuse the date inputted by the user. Too late now, might make that change later on tho)
             return exec;
         } catch (e) {

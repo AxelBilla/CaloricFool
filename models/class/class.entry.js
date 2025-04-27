@@ -1,8 +1,9 @@
 class Entries{
-  constructor(comment, date, id=0, user=0){ // Just in case, you have to get into TS to get private props & meths
+  constructor(comment, date, id=0, user=0, type=""){ // Just in case, you have to get into TS to get private props & meths
     this.entryid = id;
     this.comment = comment;
     this.timeof = date;
+    this.type = type;
     this.user = user; // Instance of class.user's <Users> class
   }
 
@@ -18,13 +19,17 @@ class Entries{
   setUser(newUser){
     this.user = newUser;
   }
+  setType(newType){
+    this.type = newType;
+  }
 }
 
 export class Consumptions extends Entries{
-  constructor(comment, date, kcal, gram, id=0, user=0){
-    super(comment, date, id, user);
+  constructor(comment, date, kcal, gram, id=0, user=0, type="consumptions"){
+    super(comment, date, id, user, type);
     this.kcal = kcal;
     this.gram = gram;
+    this.type = type;
   }
   setKcal(newKcal){
     this.kcal = newKcal;
@@ -35,8 +40,8 @@ export class Consumptions extends Entries{
 }
 
 export class Activities extends Entries{
-  constructor(comment, date, duration, burnrate, id=0, user=0){
-    super(comment, date, id, user);
+  constructor(comment, date, duration, burnrate, id=0, user=0, type="activities"){
+    super(comment, date, id, user, type);
     this.duration = duration;
     this.burnrate = burnrate;
   }

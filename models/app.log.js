@@ -1,5 +1,6 @@
 import { login as db_log } from './db/db.login.js'; 
 import { token as db_token } from './db/db.token.js';
+import {Users} from './class/class.user.js'
 
 import { token as app_token} from './app.token.js';
 import { information as app_info} from './app.information.js';
@@ -23,7 +24,8 @@ export class login{
         try{
             const exist = await db_log.getAccount(req.email); // Checks if the account being registred already exists or not
             if(!exist){ // If it doesn't,
-                await db_log.addAccount(req.user, req.email, req.password) // Create the account with the infos submitted by the user
+                let newAccount = new Users(req.user, req.email, req.password)
+                await db_log.addAccount(newAccount) // Create the account with the infos submitted by the user
                 let tkn = await app_token.giveToken(req); // Go through the token attribution process
                 let res = {status: true, token: tkn};
                 return res

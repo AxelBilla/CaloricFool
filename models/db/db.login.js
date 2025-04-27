@@ -33,10 +33,10 @@ export class login{
     return entries[0];
   }
 
-  static async addAccount(nickname, email, password){ // Creates a [USER]'s account after Signup
+  static async addAccount(user){ // Creates a [USER]'s account after Signup
     try{
       const request = await sql`
-        INSERT INTO Users VALUES((SELECT MAX(userid) FROM Users)+1, ${nickname}, ${email}, ${password}, 1);
+        INSERT INTO Users VALUES((SELECT MAX(userid) FROM Users)+1, ${user.nickname}, ${user.email}, ${user.password}, ${user.settings});
       `
     } catch (e) {
       console.log(e)

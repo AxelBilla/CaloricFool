@@ -5,9 +5,9 @@ export class token{
 
     static async giveToken(req){
         try{
-            let newTokenID=generateToken(); // Generates a new token
+            let newTokenID=token.generateToken(); // Generates a new token
             while(db_token.checkToken(newTokenID)==true){
-                newTokenID=generateToken(); // Keeps on generating new tokens until we happen on one that's not already in use (Low probability of this loop to ever be used)
+                newTokenID=token.generateToken(); // Keeps on generating new tokens until we happen on one that's not already in use (Low probability of this loop to ever be used)
             };
 
             let time = 1;
