@@ -1,4 +1,4 @@
-import sql from './db.connect.js'
+import sql from './db.connect.js' // BTW, PostgreJS prepares statements automatically (hence why it's never done manually)
 import {Consumptions, Activities} from '../class/class.entry.js'
 
 export class entry{

@@ -8,11 +8,14 @@ import { information as app_info} from './app.information.js';
 export class login{
     static async login(req){
         try{
-            let log = await db_log.checkLogin(req.email, req.password); // Check if the credentials submitted by a given user are, indeed, that account's
-            if(log.status){ // If so,
-                let tkn = await app_token.giveToken(req); // Go through the token attribution process
-                await app_info.getNewWeight({token: tkn, date: req.date}) // Update a user's weight, if needed
-                return {status: log, token: tkn} // Tells the user everything went flawlessly & gives them their (newly generated or not) token
+            let mail = checkEmail(req.email);
+            if(mail){
+                let log = await db_log.checkLogin(req.email, req.password); // Check if the credentials submitted by a given user are, indeed, that account's
+                if(log.status){ // If so,
+                    let tkn = await app_token.giveToken(req); // Go through the token attribution process
+                    await app_info.getNewWeight({token: tkn, date: req.date}) // Update a user's weight, if needed
+                    return {status: log, token: tkn} // Tells the user everything went flawlessly & gives them their (newly generated or not) token
+                }
             }
         } catch (e) {
             console.log(e)
@@ -22,13 +25,16 @@ export class login{
 
     static async register(req){
         try{
-            const exist = await db_log.getAccount(req.email); // Checks if the account being registred already exists or not
-            if(!exist){ // If it doesn't,
-                let newAccount = new Users(req.user, req.email, req.password)
-                await db_log.addAccount(newAccount) // Create the account with the infos submitted by the user
-                let tkn = await app_token.giveToken(req); // Go through the token attribution process
-                let res = {status: true, token: tkn};
-                return res
+            let mail = checkEmail(req.email);
+            if(mail){
+                const exist = await db_log.getAccount(req.email); // Checks if the account being registred already exists or not
+                if(!exist){ // If it doesn't,
+                    let newAccount = new Users(req.user, req.email, req.password)
+                    await db_log.addAccount(newAccount) // Create the account with the infos submitted by the user
+                    let tkn = await app_token.giveToken(req); // Go through the token attribution process
+                    let res = {status: true, token: tkn};
+                    return res
+                }
             }
         } catch (e) {
             console.log(e)
@@ -58,4 +64,13 @@ export class login{
         }
         return {status: status};
     }     
+}
+
+
+function checkEmail(email){
+    let cutString = email.split(/[ .:;@?!~,`"&|()<>{}\[\]\r\n/\\]+/);
+    if(cutString.length!==3){
+        return false;
+    }
+    return true;
 }
