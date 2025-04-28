@@ -40,7 +40,7 @@ export class Consumptions extends Entries{
 }
 
 export class Activities extends Entries{
-  constructor(comment, date, duration, burnrate, id=0, user=0, type="activities"){
+  constructor(comment, date, burnrate, duration, id=0, user=0, type="activities"){
     super(comment, date, id, user, type);
     this.duration = duration;
     this.burnrate = burnrate;
