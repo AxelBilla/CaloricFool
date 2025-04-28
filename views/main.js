@@ -112,6 +112,7 @@ window.addEventListener("load", function(){
             date = new Date(e.target[4].value+" "+e.target[5].value); // However, if there IS a day, we take the day and time inputted and use them to create our date (i.e, it'll often be smth like <"01/01/2011"+" "+"18:23">, which create a proper <01/01/2011 18:23> date that the date class can use. But, since you might not have an hour, doing the same will get you a <01/01/2011 00:00> date (since we can create an instance of date with just the "dd/mm/yyyy" format, at the price of a default hour at midnight))
         }
         date=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(); // However, because of timezone-related issues + the possible date defaulting, we have to descontruct our date into a usable string so it can be send to and used by our DB.
+        
         requests.addEntry(e, date).then(data=>{
             if(data.status){ // data.status can only be <true> (everything went well, request successful) OR <false> (something went wrong, request aborted)
                 const slider = document.getElementById("content-slider"); // Get the parent of all our day boxes
