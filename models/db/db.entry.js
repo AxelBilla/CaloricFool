@@ -13,7 +13,7 @@ export class entry{
         if(entryName === "consumptions"){
           newEntry = new Consumptions(row.comment, row.timeof, row.kcal, row.gram, row.entryid);
         } else {
-          newEntry = new Activities(row.comment, row.timeof, row.duration, row.burnrate, row.entryid);
+          newEntry = new Activities(row.comment, row.timeof, row.burnrate, row.duration, row.entryid);
         }
         entries.push(newEntry);
       });
@@ -33,7 +33,7 @@ export class entry{
         if(entryName === "consumptions"){
           newEntry = new Consumptions(row.comment, row.timeof, row.kcal, row.gram, row.entryid);
         } else {
-          newEntry = new Activities(row.comment, row.timeof, row.duration, row.burnrate, row.entryid);
+          newEntry = new Activities(row.comment, row.timeof, row.burnrate, row.duration, row.entryid);
         }
         entries.push(newEntry);
       });
