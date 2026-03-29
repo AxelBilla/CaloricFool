@@ -10,6 +10,7 @@ sudo -u postgres psql -d $db_name -c "CREATE TABLE activities (
     timeof timestamp without time zone,
     userid integer NOT NULL
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE activities OWNER TO $db_name"
 
 sudo -u postgres psql -d $db_name -c "CREATE TABLE consumptions (
     entryid integer PRIMARY KEY,
@@ -19,6 +20,7 @@ sudo -u postgres psql -d $db_name -c "CREATE TABLE consumptions (
     timeof timestamp without time zone,
     userid integer NOT NULL
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE consumptions OWNER TO $db_name"
 
 sudo -u postgres psql -d $db_name -c "CREATE TABLE informations (
     informationid integer PRIMARY KEY,
@@ -29,12 +31,14 @@ sudo -u postgres psql -d $db_name -c "CREATE TABLE informations (
     updatedate timestamp without time zone,
     userid integer NOT NULL
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE informations OWNER TO $db_name"
 
 sudo -u postgres psql -d $db_name -c "CREATE TABLE settings (
     settingid integer PRIMARY KEY,
     unit integer,
     theme integer
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE settings OWNER TO $db_name"
 
 sudo -u postgres psql -d $db_name -c "CREATE TABLE tokens (
     tokenid character varying(50) PRIMARY KEY,
@@ -42,6 +46,7 @@ sudo -u postgres psql -d $db_name -c "CREATE TABLE tokens (
     expiration_date timestamp without time zone,
     userid integer NOT NULL
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE tokens OWNER TO $db_name"
 
 sudo -u postgres psql -d $db_name -c "CREATE TABLE users (
     userid integer PRIMARY KEY,
@@ -50,6 +55,10 @@ sudo -u postgres psql -d $db_name -c "CREATE TABLE users (
     password character varying(250),
     settingid integer NOT NULL
 );"
+sudo -u postgres psql -d $db_name -c "ALTER TABLE users OWNER TO $db_name"
+
+
+
 
 sudo -u postgres psql -d $db_name -c "ALTER TABLE ONLY activities
     ADD CONSTRAINT activities_userid_fkey FOREIGN KEY (userid) REFERENCES users(userid);"
