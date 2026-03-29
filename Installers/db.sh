@@ -76,4 +76,9 @@ sudo -u postgres psql -d $db_name -c "
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_settingid_fkey FOREIGN KEY (settingid) REFERENCES settings(settingid);"
 
+sudo -u postgres psql -d $db_name -c "INSERT INTO settings VALUES(1,0,0);"
+sudo -u postgres psql -d $db_name -c "INSERT INTO settings VALUES(2,1,0);"
+sudo -u postgres psql -d $db_name -c "INSERT INTO settings VALUES(4,0,1);"
+sudo -u postgres psql -d $db_name -c "INSERT INTO settings VALUES(5,1,1);"
+
 sudo rm -- $origin

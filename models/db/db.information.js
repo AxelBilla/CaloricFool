@@ -66,7 +66,7 @@ export class information{
   static async addInfo(userToken, newInfo){
     try{
       const request = await sql`
-        INSERT INTO Informations VALUES((SELECT MAX(InformationID) FROM Informations)+1, ${newInfo.bodytype}, ${newInfo.age}, ${newInfo.weight}, ${newInfo.height}, ${newInfo.updatedate}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
+        INSERT INTO Informations VALUES((SELECT MAX(COALESCE(InformationID, 0)) FROM Informations)+1, ${newInfo.bodytype}, ${newInfo.age}, ${newInfo.weight}, ${newInfo.height}, ${newInfo.updatedate}, (SELECT userid FROM Tokens WHERE tokenid=${userToken}))
       `
     }catch(e){
       console.log(e)
