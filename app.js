@@ -15,12 +15,6 @@ const path = require("path");
 const bcrypt = require('bcrypt'); // Using BCrypt to hash passwords
 const saltRounds = 13;
 
-const fs = require('fs');
-const https = require('https');
-const privateKey  = fs.readFileSync('../certs/sslkey.key', 'utf8'); // Cert & Private Key I made with Let's Encrypt
-const certificate = fs.readFileSync('../certs/sslcert.crt', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-
 var express = require("express");
 var app = express();
 
@@ -122,5 +116,4 @@ app.post('/deleteEntry', async function(req, res){
   res.json(exec);
 })
 
-const httpsServer = https.createServer(credentials, app); // Use our credentials to create our HTTPS server
-httpsServer.listen(443); // Listens to the default 443, was planning on having it run on one of the >=8443 ports. However, Cloudflare's tunnel thingy fucked me so fucking hard I just burned out and went with the easy way out (for now, might actually deal with it later on when I want to host another server OR decide to actually maintain this app)
+app.listen(9000);
