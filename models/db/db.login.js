@@ -36,7 +36,7 @@ export class login{
   static async addAccount(user){ // Creates a [USER]'s account after Signup
     try{
       const request = await sql`
-        INSERT INTO Users VALUES((SELECT COALESCE(MAX(userid, 0)) FROM Users)+1, ${user.nickname}, ${user.email}, ${user.password}, ${user.settings});
+        INSERT INTO Users VALUES((SELECT COALESCE(MAX(userid), 0) FROM Users)+1, ${user.nickname}, ${user.email}, ${user.password}, ${user.settings});
       `
     } catch (e) {
       console.log(e)
