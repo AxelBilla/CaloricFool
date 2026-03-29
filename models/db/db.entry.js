@@ -45,7 +45,7 @@ export class entry{
 
   static async addEntry(userToken, entry){ // Gets every entry of [USER] in either the "Activities" or "Consumptions" table based on a given [entryName]
     try{
-      const request = await sql`SELECT MAX(COALESCE(entryid, 0))+1 AS value FROM ${sql(entry.type)}`;
+      const request = await sql`SELECT COALESCE(MAX(entryid, 0))+1 AS value FROM ${sql(entry.type)}`;
       entry.setID(request[0].value);
       if(entry.type=="consumptions"){
         await sql`
