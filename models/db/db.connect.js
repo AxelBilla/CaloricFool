@@ -3,7 +3,7 @@ import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 const fs = require('node:fs');
-const credentials = JSON.parse(fs.readFileSync('./models/.env/db.env.json', 'utf8'));
+const credentials = JSON.parse(fs.readFileSync('./models/db/.env/db.env.json', 'utf8'));
 
 const sql = postgres({
     host                 : 'localhost',            // Postgres ip address[s] or domain name[s]
