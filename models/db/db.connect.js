@@ -11,3 +11,5 @@ const sql = postgres({
     username             : credentials.name,            // Username of database user
     password             : credentials.password,            // Password of database user
 })
+
+export default sql;
